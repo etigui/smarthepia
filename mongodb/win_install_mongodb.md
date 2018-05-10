@@ -1,8 +1,4 @@
 # Install MongoDB on windows as service
-<<<<<<< HEAD
-=======
-
->>>>>>> 207762edf71362186349ea64c956d0aba5de02d7
 	https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/
 
 ### Downlaod here:
