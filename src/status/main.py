@@ -11,6 +11,7 @@
 # 4) Ping the gateway (eg: ping 10.10.5.100)
 
 import utils
+import rpi
 
 
 def main():
@@ -19,6 +20,7 @@ def main():
 
 
 def check_zwave_network():
+
     rpi_ips = {'rpi1': ['129.194.184.124', 5000], 'rpi2': ['129.194.184.125', 5000], 'rpi3': ['129.194.185.199', 5000]}
     status = {}
 
