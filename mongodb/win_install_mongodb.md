@@ -23,6 +23,10 @@
 		path: c:\mongo\data\log\mongod.log
 	storage:
 		dbPath: c:\mongo\data\db
+	# Listen on all interfaces (accept remote access)
+	net:
+	  port: 27017
+	  bindIp: 0.0.0.0
 		
 	
 ### Install MongoDB as Windows service
