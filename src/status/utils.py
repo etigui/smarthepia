@@ -22,7 +22,7 @@ def send_ping(host):
         return False
     return True
 
-
+# Check REST server
 def rest_server_status(url):
     http = urllib3.PoolManager()
     response = http.request('GET', url)
