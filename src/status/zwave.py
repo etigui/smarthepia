@@ -4,6 +4,7 @@ import json
 import rpiinfo
 import utils
 
+mdb_host = "192.168.1.111:27017"
 
 # Z-WAVE network test
 # 1) Ping all the RPI to check if available (eg: ping 10.10.5.100)
@@ -12,6 +13,8 @@ import utils
 #   -> If "Multi Senso" => check (battery, date)
 #   -> If "" => check if (Node not ready or wrong sensor node type ! (check if this string in body)) or (battery (check in body if battery))
 def check_zwave_network():
+    get_db_sensors()
+
     status = {}
 
     # id, ip, port, sensor_ids, status, zwavedb_status
@@ -54,13 +57,17 @@ def check_zwave_network():
 
     # Retrive errors
     for key, values in status.items():
-
         print(f'Status for {key}: {values}')
         print(f'RPI: {key}')
         for value in values:
             print(f'{value}')
         print('')
 
+def get_db_sensors():
+    client = pymongo.MongoClient(mdb_host)
+    sensors = client.smarthepia.multisensors.find({},{'rpi':True,'_id':False, 'sensor_id': True})
+    for sensor in sensors:
+        print(sensor)
 
 def check_sensors(rpi_infos):
     for info in rpi_infos:
@@ -70,7 +77,7 @@ def check_sensors(rpi_infos):
 
 # Add one sensor to the database
 def add_sensors(rpi, sensors_id):
-    client = pymongo.MongoClient('127.0.0.1', 27017)
+    client = pymongo.MongoClient(mdb_host)
     db = client.smarthepia.multisensors
     for sensor_id in sensors_id:
         db.insert_one({'rpi': rpi, 'sensor_id': sensor_id})
