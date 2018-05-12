@@ -63,6 +63,7 @@ def check_zwave_network():
             print(f'{value}')
         print('')
 
+
 def get_db_sensors():
     client = pymongo.MongoClient(mdb_host)
     sensors = client.smarthepia.multisensors.find({},{'rpi':True,'_id':False, 'sensor_id': True})
