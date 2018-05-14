@@ -81,9 +81,9 @@ def cleanup_measures_error(value, measure_type):
         else:
             return False, -1
     elif measure_type == 'p':
-        if value == 'True':
+        if value:
             return True, 1
-        elif value == 'False':
+        elif not value:
             return True, 0
         else:
             return False, -1

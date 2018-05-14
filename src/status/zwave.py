@@ -61,7 +61,7 @@ def check_zwave_network():
                     # db_sensor => (location[0], sensor_id[1], status[2])
                     for db_sensor in db_rpi.sensors:
 
-                        # Mix between RPI name and Sensor id (rpi1.S1 => Raspberry PI1.Sensor1)
+                        # Merging between RPI name and Sensor id (rpi1.S1 => Raspberry PI1.Sensor1)
                         error_device = f'{db_rpi.rpi}.S{db_sensor[1]}'
 
                         # If status != 0 => sensor is disabled (no need to check it)
@@ -82,10 +82,6 @@ def check_zwave_network():
 
                                         # Check if sensor id from RPI is the same as the sensor id from REST server
                                         # Compare room (A500 => A500) and RPI name (rpi1 => PI 1)
-                                        x = rest_info["controller"].replace("Pi ", "rpi")
-                                        #status.setdefault(db_rpi.rpi, []).append([0, "Route get_all_measures available"])
-                                        print(f'{x} == {db_rpi.rpi}')
-                                        print(f'{rest_info["location"]} == {db_sensor[0]}')
                                         if (rest_info['controller'].replace("Pi ", "rpi") == db_rpi.rpi) and (rest_info['location'] == db_sensor[0]):
                                             # status.setdefault(db_rpi.rpi, []).append([0, "Sensor id from REST == sensor id from RPI DB"])
                                             # TODO check timestamp updatetime/battery level
@@ -102,7 +98,6 @@ def check_zwave_network():
                                 status.setdefault(db_rpi.rpi, []).append([1, error_device, "Sensor id not found (REST server)"])
                 else:
                     status.setdefault(db_rpi.rpi, []).append([1, db_rpi.rpi, "Route get_nodes_list not available"])
-
             else:
                 status.setdefault(db_rpi.rpi, []).append([1, db_rpi.rpi, "REST server not available"])
         else:
