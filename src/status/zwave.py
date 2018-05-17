@@ -39,7 +39,8 @@ import utils
 def check_zwave_network():
 
     status = {}
-    mdb_host = "192.168.1.111:27017"
+    #mdb_host = "192.168.1.111:27017"
+    mdb_host = "10.10.5.110:27017"
     db_sensors = get_db_sensors(mdb_host)
 
     # Check all multi-sensors
