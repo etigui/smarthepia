@@ -5,19 +5,17 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-  <h1><%= title %></h1>
-  <p>Welcome to <%= title %></p>
-  <form action="/users" method="post" accept-charset="utf-8">
+  <h1>Welcome to <%= title %></h1>
+  <form action="" method="post" accept-charset="utf-8">
     <table>
       <caption>Login Form</caption>
-
       <tr>
-        <td>User</td>
-        <td><input type="text" name="user" value="" placeholder="User Name" /></td>
+        <td>Username: </td>
+        <td><input type="email" name="username" value="" placeholder="mail@gmail.com" required /></td>
       </tr>
       <tr>
-        <td>data</td>
-        <td><input type="text" name="pass" value="" placeholder="User Name" /></td>
+        <td>Password: </td>
+        <td><input type="password" name="password" value="" placeholder="Password" required /></td>
       </tr>
       <tr>
         <td colspan="2"><input type="submit" name="login" value="Login"></td>
