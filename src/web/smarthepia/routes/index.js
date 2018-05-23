@@ -1,17 +1,24 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/userss');
+var User = require('../models/users');
+var auth = require('../controller/auth');
+var validation = require('../controller/validation');
 
 // GET home page
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'smarthepia' });
+
+    console.log(req.session);
+    if( auth.checkAuth(req, 0)){
+        return res.redirect('/manager');
+    }
+    return res.render('index');
 });
 
 // POST home page
 router.post('/', function(req, res, next) {
 
     // Check if user and pass are defined and not null
-    if (checkInput(req.body.username) && checkInput(req.body.password)){
+    if (validation.checkLoginInput(req.body.username) && validation.checkLoginInput(req.body.password)){
 
         // Check user login
         User.authenticate(req.body.username, req.body.password, function (error, user) {
@@ -36,13 +43,6 @@ router.post('/', function(req, res, next) {
     }
 });
 
-// Check input
-function checkInput(value){
-    if (typeof(value) !== "undefined" && value){
-      return true;
-    }
-    return false;
-}
 
 // Create user
 router.post('/create', function(req, res, next) {
@@ -72,11 +72,8 @@ router.get('/logout', function (req, res, next) {
         req.session.destroy(function (err) {
 
             // Redirect to index
-            if (err) {
-                return next(err);
-            } else {
-                return res.redirect('/');
-            }
+            if (err) return next(err);
+            return res.redirect('/');
         });
     }
 });

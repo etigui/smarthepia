@@ -14,42 +14,37 @@ var MongoStore = require('connect-mongo')(session);
 var URL = require('url-parse');
 
 // MongoDB init and connection
-var mdbUrl = 'mongodb://10.10.5.110/smarthepia';
+var mdbUrl = 'mongodb://192.168.1.111/smarthepia'; //10.10.5.110
 mongoose.connect(mdbUrl).then(() =>  console.log('connection succesful to: ' + mdbUrl)).catch((err) => console.error(err));
 var db = mongoose.connection;
 
 
-if(app.get('env') === 'production'){
+// Init session params
+var sessionParams = {
 
-    // Truse first proxy (NGNIX)
-    app.set('trust proxy', 1)
-
-
-    var sessionConfig = {
-        secret: 'PoKhqJR0uCPnvp0Q1x9jnIAFsBTmNo5i',
-        resave: true,
-        saveUninitialized: false,
-        store: new MongoStore({
-            mongooseConnection: db
-        }),
-        cookie: {secore: true}
-    }
-}else{
-
-}
-
-// Use sessions for tracking logins
-app.use(session({
-    secret: 'work hard',
+    // Use to sign session ID
+    secret: 'PoKhqJR0uCPnvp0Q1x9jnIAFsBTmNo5i',
     resave: true,
     saveUninitialized: false,
     store: new MongoStore({
         mongooseConnection: db
-    })
-}));
+    }),
+    cookie: {}
+}
 
+// Check server mode (dev, prod)
+// Use sessions for tracking logins
+if(app.get('env') === 'production'){
 
+    // Trust first proxy (NGNIX)
+    app.set('trust proxy', 1);
 
+    // Serve secure cookie
+    sessionParams.cookie.secure = true;
+    app.use(session(sessionParams));
+}else{
+    app.use(session(sessionParams));
+}
 
 // Define routes file
 var indexRouter = require('./routes/index');
