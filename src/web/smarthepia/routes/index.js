@@ -1,17 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
-var auth = require('../controller/auth');
-var validation = require('../controller/validation');
+var auth = require('../controllers/auth');
+var validation = require('../controllers/validation');
 
 // GET home page
 router.get('/', function(req, res, next) {
-
-    console.log(req.session);
     if( auth.checkAuth(req, 0)){
         return res.redirect('/manager');
     }
-    return res.render('index');
+    return res.render('pages/index');
 });
 
 // POST home page
@@ -29,7 +27,7 @@ router.post('/', function(req, res, next) {
                 req.session.email = user.email;
                 req.session.username = user.username;
                 req.session.permissions = user.permissions;
-                return res.redirect('/manager');
+                return res.redirect('manager');
             }else {
                 var err = new Error('Wrong email or password.');
                 err.status = 401;
@@ -48,8 +46,8 @@ router.post('/', function(req, res, next) {
 router.post('/create', function(req, res, next) {
 
     var userData = {
-        email: "test@gmail.com",
-        username: "test",
+        email: "2@gmail.com",
+        username: "2",
         password: "admin",
         lastConnection: new Date(),
         enable: true,
@@ -60,7 +58,7 @@ router.post('/create', function(req, res, next) {
         if (error) {
             return next(error);
         }
-        return res.render('index', { type: 'success', message: 'User created' });
+        return res.render('pages/index', { type: 'success', message: 'User created' });
     });
 });
 

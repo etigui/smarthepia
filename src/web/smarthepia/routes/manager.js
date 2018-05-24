@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var auth = require('../controller/auth');
+var auth = require('../controllers/auth');
 
 
 // GET manager index
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, 0)){
-        return res.render('manager', { username: req.session.username });
+        return res.render('pages/manager', { username: req.session.username });
     }else{
         return res.redirect('/');
     }
