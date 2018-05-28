@@ -36,39 +36,7 @@
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 <% include ../partials/nav %>
-<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
-    <div class="main-menu-content">
-        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            <li class=" navigation-header"><span>Gestion</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i>
-            </li>
-            <li class=" nav-item"><a href="/manager"><i class="ft-home"></i><span class="menu-title" data-i18n="">Home</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Statistique</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-sliders"></i><span class="menu-title" data-i18n="">Automatisation</span></a>
-            </li>
-            <li class=" nav-item active"><a href="/manager/users"><i class="ft-user"></i><span class="menu-title" data-i18n="">Users</span></a>
-            </li>
-
-
-            <li class=" navigation-header"><span>Réseau</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-layout"></i><span class="menu-title" data-i18n="">Salles</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-wifi"></i><span class="menu-title" data-i18n="">Z-Wave</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-cpu"></i><span class="menu-title" data-i18n="">KNX</span></a>
-            </li>
-
-            <li class=" navigation-header"><span>Message</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-alert-triangle"></i><span class="menu-title" data-i18n="">Warning</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-x-circle"></i><span class="menu-title" data-i18n="">Error</span></a>
-            </li>
-        </ul>
-    </div>
-</div>
+<% include ../partials/menu %>
 <div class="app-content content">
     <div class="content-wrapper">
         <div class="content-header row">
@@ -81,14 +49,13 @@
             <!-- Description -->
             <section id="description" class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Description</h4>
+                    <h4 class="card-title">Users list</h4>
                     <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                     <div class="heading-elements">
                         <ul class="list-inline mb-0">
                             <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
                             <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
                             <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                            <li><a data-action="close"><i class="ft-x"></i></a></li>
                         </ul>
                     </div>
                 </div>
@@ -110,17 +77,14 @@
                                                 <label for="email">First name</label>
                                                 <input id="firstnameUser" type="text" class="form-control square" id="email" placeholder="Email Address" disabled>
                                             </fieldset>
-                                            <br>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Last name</label>
                                                 <input id="lastnameUser" type="text" class="form-control square" id="title" placeholder="Password" disabled>
                                             </fieldset>
-                                            <br>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Email</label>
                                                 <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password" disabled>
                                             </fieldset>
-                                            <br>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Active</label>
                                                 <select id="activeUser" class="form-control square" id="profession">
@@ -129,7 +93,6 @@
                                                 </select>
 
                                             </fieldset>
-                                            <br>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Permission</label>
                                                 <select id="permissionUser" class="form-control square" id="profession">
@@ -183,6 +146,148 @@
                 </div>
             </section>
             <!--/ Description -->
+            <section id="description" class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Add user</h4>
+                    <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                            <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form class="form">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-12">
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Email</label>
+                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Email</label>
+                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                </fieldset>
+                            </div>
+                            <div class="col-xl-6 col-lg-12">
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Email</label>
+                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Email</label>
+                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="form-actions right">
+                            <button type="reset" class="btn btn-warning mr-1">
+                                <i class="fa fa-refresh position-right"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-check-square-o"></i> Save
+                            </button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+
+
+
+
+
+            <!-- <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title" id="hidden-label-card-center">Add user</h4>
+                            <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collpase show">
+                            <div class="card-body">
+                                <form class="form">
+                                    <div class="form-body">
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <input type="" id="" class="form-control square" placeholder=""  required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <input type="" id="" class="form-control square" placeholder=""  required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <input type="" id="" class="form-control square" placeholder=""  required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <input type="" id="" class="form-control square" placeholder=""  required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <input type="" id="" class="form-control square" placeholder=""  required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <input type="" id="" class="form-control square" placeholder=""  required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <select id="activeUser" class="form-control square">
+                                                    <option value="true">true</option>
+                                                    <option value="false">false</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-12 mb-2">
+                                                <label for="donationinput2">xx<span class="danger">*</span></label>
+                                                <select id="permissionUser" class="form-control square">
+                                                    <option value="user">user</option>
+                                                    <option value="manager">manager</option>
+                                                    <option value="admin">admin</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-actions right">
+                                        <button type="reset" class="btn btn-danger mr-1">
+                                            <i class="fa fa-refresh position-right"></i> Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa fa-check-square-o"></i> Save
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
         </div>
     </div>
 </div>

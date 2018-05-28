@@ -28,39 +28,7 @@
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 <% include ../partials/nav %>
-<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
-    <div class="main-menu-content">
-        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            <li class=" navigation-header"><span>Gestion</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i>
-            </li>
-            <li class=" nav-item"><a href="/manager"><i class="ft-home"></i><span class="menu-title" data-i18n="">Home</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Statistique</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-sliders"></i><span class="menu-title" data-i18n="">Automatisation</span></a>
-            </li>
-            <li class=" nav-item"><a href="/manager/users"><i class="ft-user"></i><span class="menu-title" data-i18n="">Users</span></a>
-            </li>
-
-
-            <li class=" navigation-header"><span>Réseau</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-layout"></i><span class="menu-title" data-i18n="">Salles</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-wifi"></i><span class="menu-title" data-i18n="">Z-Wave</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-cpu"></i><span class="menu-title" data-i18n="">KNX</span></a>
-            </li>
-
-            <li class=" navigation-header"><span>Message</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-alert-triangle"></i><span class="menu-title" data-i18n="">Warning</span></a>
-            </li>
-            <li class=" nav-item"><a href=""><i class="ft-x-circle"></i><span class="menu-title" data-i18n="">Error</span></a>
-            </li>
-        </ul>
-    </div>
-</div>
+<% include ../partials/menu %>
 <div class="app-content content">
     <div class="content-wrapper">
         <div class="content-header row">
@@ -92,7 +60,7 @@
                                         <div class="form-body">
                                             <div class="form-group">
                                                 <label for="donationinput1">Username</label>
-                                                <input type="text" id="uname" class="form-control square" placeholder="Username" name="uname">
+                                                <input type="text" id="uname" class="form-control square" placeholder="Username" name="uname" disabled>
                                             </div>
                                             <div class="form-group">
                                                 <label for="donationinput2">Email</label>
@@ -100,17 +68,14 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="donationinput2">First name</label>
-                                                <input type="text" id="fname" class="form-control square" placeholder="First name" name="fname">
+                                                <input type="text" id="fname" class="form-control square" placeholder="First name" name="fname" disabled>
                                             </div>
                                             <div class="form-group">
                                                 <label for="donationinput2">Last name</label>
-                                                <input type="text" id="lname" class="form-control square" placeholder="Last name" name="lname">
+                                                <input type="text" id="lname" class="form-control square" placeholder="Last name" name="lname" disabled>
                                             </div>
                                         </div>
                                         <div class="form-actions right">
-                                            <button type="button" class="btn btn-warning mr-1">
-                                                <i class="ft-x"></i> Cancel
-                                            </button>
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="fa fa-check-square-o"></i> Save
                                             </button>
@@ -123,7 +88,7 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="card-title" id="basic-layout-square-controls">Password</h4>
+                                <h4 class="card-title" id="basic-layout-square-controls">Change password</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                                 <div class="heading-elements">
                                     <ul class="list-inline mb-0">
@@ -157,7 +122,7 @@
                                             </div>
                                         </div>
                                         <div class="form-actions right">
-                                            <button type="reset" class="btn btn-danger mr-1">Reset
+                                            <button type="reset" class="btn btn-warning mr-1">Reset
                                                 <i class="fa fa-refresh position-right"></i>
                                             </button>
                                             <button type="submit" class="btn btn-primary">

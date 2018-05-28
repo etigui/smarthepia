@@ -2,12 +2,12 @@ var express = require('express');
 var router = express.Router();
 var auth = require('../controllers/auth');
 var dateFormat = require('dateformat');
-var echarts = require('echarts')
+var User = require('../models/users');
 
 // GET manager index
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, 0)){
-        return res.render('pages/manager', { username: req.session.username, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy") });
+        return res.render('pages/manager', { username: req.session.username, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "home" });
     }else{
         return res.redirect('/');
     }
@@ -23,17 +23,20 @@ router.get('/json', function(req, res, next) {
     }else{
         return res.redirect('/');
     }
-
-
-
 });
 
+router.get('/test', function(req, res, next) {
+    User.find( function(err, user) {
+        if (err) throw err;
+        return res.json(user);
+    });
+});
 
 // Get users manage
 // GET manager index
 router.get('/users', function(req, res, next) {
     if(auth.checkAuth(req, 2)){
-        return res.render('pages/users', { username: req.session.username, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy") });
+        return res.render('pages/users', { username: req.session.username, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "users" });
 
         //return res.send('lol');
     }else{
@@ -45,7 +48,7 @@ router.get('/users', function(req, res, next) {
 // GET manager index
 router.get('/profile', function(req, res, next) {
     if(auth.checkAuth(req, 0)){
-        return res.render('pages/profile', { username: req.session.username, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy") });
+        return res.render('pages/profile', { username: req.session.username, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "profile" });
 
         //return res.send('lol');
     }else{
