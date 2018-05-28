@@ -40,10 +40,18 @@ $('#addRow').trigger('click');
 *       js of Individual column searching (text inputs)        *
 ***************************************************************/
 
+var inputCount = 0;
 // Setup - add a text input to each footer cell
 $('.text-inputs-searching tfoot th').each( function () {
-    var title = $(this).text();
-    $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+
+    // If last value we disabled the input
+    inputCount += 1;
+    if (inputCount != ($('.text-inputs-searching tfoot th').length )){
+        var title = $(this).text();
+        $(this).html( '<input type="text" class="form-control square" placeholder="Search '+title+'" />' );
+    }else{
+        $(this).html( '<input type="text" class="form-control square" disabled />' );
+    }
 } );
 
 // DataTable
