@@ -16,11 +16,10 @@ router.get('/', function(req, res, next) {
 router.get('/json', function(req, res, next) {
 
     if(auth.checkAuth(req, 0)){
-        return res.json({"data": [{"active": "1","name": "Etienne", "lastname": "Guignard"},
-                {"active": "1","name": "Etienne", "lastname": "Guignard"},
-                {"active": "1","name": "Etienne", "lastname": "Guignard"},
-                {"active": "0","name": "Etienne", "lastname": "Guignard"},
-                {"active": "1","name": "Etienne", "lastname": "Guignard"}]});
+        return res.json({"data": [
+            {"firstname": "Etienne", "lastname": "Guignard", "email": "0@gmail.com", "enable": "true", "perm": "user", "action": ""},
+            {"firstname": "Geatan", "lastname": "Ringot", "email": "1@gmail.com", "enable": "true", "perm": "manager", "action": ""},
+            {"firstname": "Quentin", "lastname": "Zeller", "email": "2@gmail.com", "enable": "false", "perm": "admin", "action": ""}]});
     }else{
         return res.redirect('/');
     }
