@@ -18,7 +18,7 @@ $(window).on("load", function(){
 
     require.config({
         paths: {
-            echarts: '../../../app-assets/vendors/js/charts/echarts'
+            echarts: '../echarts'
         }
     });
 
@@ -28,8 +28,8 @@ $(window).on("load", function(){
 
     require(
         [
-            'echarts',
-            'echarts/chart/treemap',
+            '../echarts',
+            'echarts/advence/treemap',
         ],
 
 
