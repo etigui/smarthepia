@@ -160,26 +160,45 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        <form class="form">
+                        <form action="/manager/users/create" method="post" class="form">
                         <div class="row">
                             <div class="col-xl-6 col-lg-12">
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Email</label>
-                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                    <label for="title">First name</label>
+                                    <input name="firstnameCreate" type="text" class="form-control square" id="fnc" placeholder="First name">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Last name</label>
+                                    <input name="lastnameCreate"  type="text" class="form-control square" id="lnc" placeholder="Last name">
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="title">Email</label>
-                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                    <input name="emailCreate"  type="email" class="form-control square" id="ec" placeholder="Email">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Permission</label>
+                                    <select name="permissionCreate" id="permissionUserCreate" class="form-control square" >
+                                        <option value="user">user</option>
+                                        <option value="manager">manager</option>
+                                        <option value="admin">admin</option>
+                                    </select>
                                 </fieldset>
                             </div>
                             <div class="col-xl-6 col-lg-12">
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Email</label>
-                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                    <label for="title">Password</label>
+                                    <input name="passwordCreate"  type="password" class="form-control square" id="pc" placeholder="Password">
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Email</label>
-                                    <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password">
+                                    <label for="title">Confirm password</label>
+                                    <input name="cpasswordCreate"  type="password" class="form-control square" id="cpc" placeholder="Confirm password">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Active</label>
+                                    <select name="activeCreate" id="activeUserCreate" class="form-control square" >
+                                        <option value="true">true</option>
+                                        <option value="false">false</option>
+                                    </select>
                                 </fieldset>
                             </div>
                         </div>
@@ -195,99 +214,6 @@
                     </div>
                 </div>
             </section>
-
-
-
-
-
-
-            <!-- <div class="row justify-content-md-center">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title" id="hidden-label-card-center">Add user</h4>
-                            <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
-                            <div class="heading-elements">
-                                <ul class="list-inline mb-0">
-                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card-content collpase show">
-                            <div class="card-body">
-                                <form class="form">
-                                    <div class="form-body">
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <input type="" id="" class="form-control square" placeholder=""  required>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <input type="" id="" class="form-control square" placeholder=""  required>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <input type="" id="" class="form-control square" placeholder=""  required>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <input type="" id="" class="form-control square" placeholder=""  required>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <input type="" id="" class="form-control square" placeholder=""  required>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <input type="" id="" class="form-control square" placeholder=""  required>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <select id="activeUser" class="form-control square">
-                                                    <option value="true">true</option>
-                                                    <option value="false">false</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-12 mb-2">
-                                                <label for="donationinput2">xx<span class="danger">*</span></label>
-                                                <select id="permissionUser" class="form-control square">
-                                                    <option value="user">user</option>
-                                                    <option value="manager">manager</option>
-                                                    <option value="admin">admin</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="form-actions right">
-                                        <button type="reset" class="btn btn-danger mr-1">
-                                            <i class="fa fa-refresh position-right"></i> Cancel
-                                        </button>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fa fa-check-square-o"></i> Save
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
         </div>
     </div>
 </div>
@@ -314,23 +240,24 @@
 <script>
 
     $('#example').dataTable({
+        autoWidth: false,
         destroy: true,
         searching: true,
         type: 'GET',
-        ajax: "/manager/json",
+        ajax: "/manager/users/list",
         columns: [
             { data: "firstname"},
             { data: "lastname"},
             { data: "email"},
             { data: "enable"},
-            { data: "perm"},
+            { data: "permissions"},
             { data: "action"}
-        ],
-        columnDefs: [{
+        ], columnDefs: [{
             targets: 5,
             searching: false,
             orderable: false,
             data: null,
+            className: "text-center",
             render: function (data, type, full, meta){
                 return '<div class="btn-group mr-1 mb-1">\n' +
                     '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
@@ -342,7 +269,14 @@
                     '    </div>\n' +
                     '</div>';
             }
-        }]
+        }, {targets: 4,className: "text-center", render: function (data, type, full, meta){
+            if(data === 0){return 'user';}
+            if(data === 1) {return 'manager';}
+            if(data === 2){return 'admin';}
+        }}, {targets: 3, className: "text-center"},
+            {targets: 2, className: "text-center"},
+            {targets: 1, className: "text-center"},
+            {targets: 0, className: "text-center"}]
     });
 
     $("#example tbody").on('click',"#editUser", function () {

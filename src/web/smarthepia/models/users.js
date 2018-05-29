@@ -8,13 +8,18 @@ var bcrypt = require('bcrypt');
 // - 1 => manager (consign, device)
 // - 2 => admin (all)
 var UserSchema = new mongoose.Schema({
-    email: {
+
+    firstname: {
         type: String,
-        unique: true,
         required: true,
         trim: true
     },
-    username: {
+    lastname: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    email: {
         type: String,
         unique: true,
         required: true,
@@ -38,6 +43,9 @@ var UserSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0,
+    },action: {
+        type: String,
+        default: "",
     }
 });
 

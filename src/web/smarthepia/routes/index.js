@@ -16,16 +16,16 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
 
     // Check if user and pass are defined and not null
-    if (validation.checkLoginInput(req.body.username) && validation.checkLoginInput(req.body.password)){
+    if (validation.checkLoginInput(req.body.email) && validation.checkLoginInput(req.body.password)){
 
         // Check user login
-        User.authenticate(req.body.username, req.body.password, function (error, user) {
+        User.authenticate(req.body.email, req.body.password, function (error, user) {
 
             // Check if no error and if user and pass match
             if (!error || user) {
                 req.session.userId = user._id;
                 req.session.email = user.email;
-                req.session.username = user.username;
+                req.session.lastname = user.lastname;
                 req.session.permissions = user.permissions;
                 return res.redirect('manager');
             }else {
