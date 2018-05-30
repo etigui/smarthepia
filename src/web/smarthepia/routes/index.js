@@ -22,10 +22,11 @@ router.post('/', function(req, res, next) {
         User.authenticate(req.body.email, req.body.password, function (error, user) {
 
             // Check if no error and if user and pass match
-            if (!error || user) {
+            if (!error && user) {
                 req.session.userId = user._id;
                 req.session.email = user.email;
                 req.session.lastname = user.lastname;
+                req.session.firstname = user.firstname;
                 req.session.permissions = user.permissions;
                 return res.redirect('manager');
             }else {

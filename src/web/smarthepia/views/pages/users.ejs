@@ -75,23 +75,23 @@
                                             <span aria-hidden="true">×</span>
                                         </button>
                                     </div>
-                                    <form > <!-- action="" method="post" novalidate -->
+                                    <form id="editUserSubmit" class="form">
                                         <div class="modal-body">
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="email">First name</label>
-                                                <input id="firstnameUser" type="text" class="form-control square" id="email" placeholder="Email Address" disabled>
+                                                <input id="firstnameUserEdit" type="text" class="form-control square" id="email" placeholder="Email Address" disabled>
                                             </fieldset>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Last name</label>
-                                                <input id="lastnameUser" type="text" class="form-control square" id="title" placeholder="Password" disabled>
+                                                <input id="lastnameUserEdit" type="text" class="form-control square" id="title" placeholder="Password" disabled>
                                             </fieldset>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Email</label>
-                                                <input id="emailUser" type="text" class="form-control square" id="title" placeholder="Password" disabled>
+                                                <input id="emailUserEdit" type="text" class="form-control square" id="title" placeholder="Password" disabled>
                                             </fieldset>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Active</label>
-                                                <select id="activeUser" class="form-control square" id="profession">
+                                                <select id="activeUserEdit" class="form-control square" id="profession">
                                                     <option value="true">true</option>
                                                     <option value="false">false</option>
                                                 </select>
@@ -99,7 +99,7 @@
                                             </fieldset>
                                             <fieldset class="form-group floating-label-form-group">
                                                 <label for="title">Permission</label>
-                                                <select id="permissionUser" class="form-control square" id="profession">
+                                                <select id="permissionUserEdit" class="form-control square" id="profession">
                                                     <option value="user">user</option>
                                                     <option value="manager">manager</option>
                                                     <option value="admin">admin</option>
@@ -164,24 +164,32 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        <form action="/manager/users/create" method="post" class="form">
+                        <form id="createUserSubmit" class="form">
                         <div class="row">
                             <div class="col-xl-6 col-lg-12">
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">First name</label>
-                                    <input name="firstnameCreate" type="text" class="form-control square" id="fnc" placeholder="First name">
+                                    <label for="title">First name
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input name="firstnameCreate" type="text" class="form-control square" id="fnc" placeholder="First name" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Last name</label>
-                                    <input name="lastnameCreate"  type="text" class="form-control square" id="lnc" placeholder="Last name">
+                                    <label for="title">Last name
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input name="lastnameCreate"  type="text" class="form-control square" id="lnc" placeholder="Last name" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Email</label>
-                                    <input name="emailCreate"  type="email" class="form-control square" id="ec" placeholder="Email">
+                                    <label for="title">Email
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input name="emailCreate"  type="email" class="form-control square" id="ec" placeholder="Email" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Permission</label>
-                                    <select name="permissionCreate" id="permissionUserCreate" class="form-control square" >
+                                    <label for="title">Permission
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <select name="permissionCreate" id="permissionUserCreate" class="form-control square">
                                         <option value="user">user</option>
                                         <option value="manager">manager</option>
                                         <option value="admin">admin</option>
@@ -190,16 +198,22 @@
                             </div>
                             <div class="col-xl-6 col-lg-12">
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Password</label>
-                                    <input name="passwordCreate"  type="password" class="form-control square" id="pc" placeholder="Password">
+                                    <label for="title">Password
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input name="passwordCreate"  type="password" class="form-control square" id="pc" placeholder="Password" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Confirm password</label>
-                                    <input name="cpasswordCreate"  type="password" class="form-control square" id="cpc" placeholder="Confirm password">
+                                    <label for="title">Confirm password
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input name="cpasswordCreate"  type="password" class="form-control square" id="cpc" placeholder="Confirm password" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Active</label>
-                                    <select name="activeCreate" id="activeUserCreate" class="form-control square" >
+                                    <label for="title">Active
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <select name="activeCreate" id="activeUserCreate" class="form-control square">
                                         <option value="true">true</option>
                                         <option value="false">false</option>
                                     </select>
@@ -251,8 +265,7 @@
 
 <script>
 
-
-
+    genUserTable();
 
     function genUserTable(){
         $('#example').dataTable({
@@ -281,7 +294,7 @@
                         '    </button>\n' +
                         '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
                         '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
-                        '        <button id="deleteUser" class="dropdown-item" type="button">Delete</button>\n' +
+                        '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
                         '    </div>\n' +
                         '</div>';
                 }
@@ -296,64 +309,91 @@
         });
     }
 
-    $("#example tbody").on("click","#deleteUser", function () {
-        alert("alert");
-        //$("#example").load("/manager/users #example");
-        //genUserTable();
-        $('#example').DataTable().ajax.reload();
+    $("#createUserSubmit").submit(function( event ) {
+        event.preventDefault();
+        $.ajax({
+            url: "/manager/users/create",
+            type: "post",
+            dataType:"json",
+            data: $("#createUserSubmit").serialize(),
+            success: function (response) {
+                $('#example').DataTable().ajax.reload();
+                $("#createUserSubmit").get(0).reset();
+                if(response.status === "success"){
+                    toastr.success(response.message , response.status, {closeButton: true})
+                }else if(response.status === "error"){
+                    toastr.error(response.message, response.status, {closeButton: true})
+                }else{
+                    toastr.error("Undefined", "error", {closeButton: true})
+                }
+            }
+        });
+    });
 
-        /*var row = $(this).parents('tr').find("td");
-        var userMail = $("#emailUser").val(row[2].innerText);
+    $("#example tbody").on("click","#deleteUserSubmit", function () {
+        alert("Delete");
+        var row = $(this).parents('tr').find("td");
+        var userMail = row[2].innerText
         if(userMail){
             $.ajax({
                 url: "/manager/users/delete",
                 type: "post",
                 data: {email: userMail},
-                success:
+                dataType:"json",
+                success: function (response) {
+                    $('#example').DataTable().ajax.reload();
+                    if(response.status === "success"){
+                        toastr.success(response.message , response.status, {closeButton: true})
+                    }else if(response.status === "error"){
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    }else{
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
             });
-        }*/
+        }
     });
 
 
+    $("#editUserSubmit").submit(function( event ) {
+        event.preventDefault();
+        emailUser = $("#emailUserEdit").val();
+        permissionUser = $("#permissionUserEdit").val();
+        activeUser = $("#activeUserEdit").val();
+        if (emailUser && permissionUser && activeUser) {
+            $.ajax({
+                url: "/manager/users/edit",
+                type: "post",
+                data: {
+                    email: emailUser,
+                    active: activeUser,
+                    permissions: permissionUser
+                },
+                dataType: "json",
+                success: function (response) {
+                    $('#modalEditUser').modal('toggle');
+                    $('#example').DataTable().ajax.reload();
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }
+    });
+
 
     $("#example tbody").on('click',"#editUser", function () {
-
-        alert("edit");
         var row = $(this).parents('tr').find("td");
-
-        $("#firstnameUser").val(row[0].innerText);
-        $("#lastnameUser").val(row[1].innerText);
-        $("#emailUser").val(row[2].innerText);
-        $("#activeUser").val(row[3].innerText);
-        $("#permissionUser").val(row[4].innerText);
-
-        //document.getElementById('permissionUser').value=;
-            /*$.each(row, function() {
-                console.log($(this).text());
-                $("#usernameUser").val("ss");
-            });*/
-        });
-
-
-
-    $(document).ready(function(){
-
-        genUserTable();
-
-        <% if(message && type) {
-
-            if(type == "success"){ %>
-                toastr.success("<%= message %>", "<%= type %>", {closeButton: true});<%
-            }else if(type == "info"){%>
-                toastr.info("<%= message %>", "<%= type %>", {closeButton: true}); <%
-            }else if(type == "warning"){%>
-                toastr.warning("<%= message %>", "<%= type %>", {closeButton: true}); <%
-            }else{%>
-                toastr.error("<%= message %>", "<%= type %>", {closeButton: true}); <%
-            }
-        } %>
-    })
-
+        $("#firstnameUserEdit").val(row[0].innerText);
+        $("#lastnameUserEdit").val(row[1].innerText);
+        $("#emailUserEdit").val(row[2].innerText);
+        $("#activeUserEdit").val(row[3].innerText);
+        $("#permissionUserEdit").val(row[4].innerText);
+    });
 </script>
 
 </body>
