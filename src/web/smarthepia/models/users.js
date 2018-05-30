@@ -31,7 +31,6 @@ var UserSchema = new mongoose.Schema({
     },
     lastConnection: {
         type: Date,
-        required: true,
         default: Date.now(),
     },
     enable: {

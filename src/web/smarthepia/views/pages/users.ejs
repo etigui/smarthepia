@@ -31,7 +31,11 @@
     <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/buttons.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
     <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/dataTables.colVis.css">
-    <!-- END datat -->
+    <!-- END datatatable -->
+
+    <!-- BEGIN toastr -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
+    <!-- END toastr -->
 
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
@@ -233,51 +237,84 @@
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->
 
+<!-- BEGIN datatable -->
 <script src="/vendors/js/tables/datatable/datatables.min.js" type="text/javascript"></script>
 <script src="/js/scripts/tables/datatables/datatable-api.js" type="text/javascript"></script>
 <script src="/js/scripts/tables/datatables/datatable-basic.js" type="text/javascript"></script>
+<!-- END datatable -->
+
+<!-- BEGIN toastr -->
+<script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
+<script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
+<!-- END toastr -->
+
 
 <script>
 
-    $('#example').dataTable({
-        autoWidth: false,
-        destroy: true,
-        searching: true,
-        type: 'GET',
-        ajax: "/manager/users/list",
-        columns: [
-            { data: "firstname"},
-            { data: "lastname"},
-            { data: "email"},
-            { data: "enable"},
-            { data: "permissions"},
-            { data: "action"}
-        ], columnDefs: [{
-            targets: 5,
-            searching: false,
-            orderable: false,
-            data: null,
-            className: "text-center",
-            render: function (data, type, full, meta){
-                return '<div class="btn-group mr-1 mb-1">\n' +
-                    '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
-                    '        Action\n' +
-                    '    </button>\n' +
-                    '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                    '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
-                    '        <button id="deleteUser" class="dropdown-item" type="button">Delete</button>\n' +
-                    '    </div>\n' +
-                    '</div>';
-            }
-        }, {targets: 4,className: "text-center", render: function (data, type, full, meta){
-            if(data === 0){return 'user';}
-            if(data === 1) {return 'manager';}
-            if(data === 2){return 'admin';}
-        }}, {targets: 3, className: "text-center"},
-            {targets: 2, className: "text-center"},
-            {targets: 1, className: "text-center"},
-            {targets: 0, className: "text-center"}]
+
+
+
+    function genUserTable(){
+        $('#example').dataTable({
+            autoWidth: false,
+            destroy: true,
+            searching: true,
+            type: 'GET',
+            ajax: "/manager/users/list",
+            columns: [
+                { data: "firstname"},
+                { data: "lastname"},
+                { data: "email"},
+                { data: "enable"},
+                { data: "permissions"},
+                { data: "action"}
+            ], columnDefs: [{
+                targets: 5,
+                searching: false,
+                orderable: false,
+                data: null,
+                className: "text-center",
+                render: function (data, type, full, meta){
+                    return '<div class="btn-group mr-1 mb-1">\n' +
+                        '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                        '        Action\n' +
+                        '    </button>\n' +
+                        '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
+                        '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
+                        '        <button id="deleteUser" class="dropdown-item" type="button">Delete</button>\n' +
+                        '    </div>\n' +
+                        '</div>';
+                }
+            }, {targets: 4,className: "text-center", render: function (data, type, full, meta){
+                    if(data === 0){return 'user';}
+                    if(data === 1) {return 'manager';}
+                    if(data === 2){return 'admin';}
+                }}, {targets: 3, className: "text-center"},
+                {targets: 2, className: "text-center"},
+                {targets: 1, className: "text-center"},
+                {targets: 0, className: "text-center"}]
+        });
+    }
+
+    $("#example tbody").on("click","#deleteUser", function () {
+        alert("alert");
+        //$("#example").load("/manager/users #example");
+        //genUserTable();
+        $('#example').DataTable().ajax.reload();
+
+        /*var row = $(this).parents('tr').find("td");
+        var userMail = $("#emailUser").val(row[2].innerText);
+        if(userMail){
+            $.ajax({
+                url: "/manager/users/delete",
+                type: "post",
+                data: {email: userMail},
+                success:
+            });
+        }*/
     });
+
+
 
     $("#example tbody").on('click',"#editUser", function () {
 
@@ -297,18 +334,25 @@
             });*/
         });
 
-    $("#example tbody").on("click","#deleteUser", function () {
-        alert("alert");
-        var row = $(this).parents('tr').find("td");
-        $.each(row, function() {
-            console.log($(this).text());
-        });
-    });
-
-    //$(document).ready(function() {
-    //});
 
 
+    $(document).ready(function(){
+
+        genUserTable();
+
+        <% if(message && type) {
+
+            if(type == "success"){ %>
+                toastr.success("<%= message %>", "<%= type %>", {closeButton: true});<%
+            }else if(type == "info"){%>
+                toastr.info("<%= message %>", "<%= type %>", {closeButton: true}); <%
+            }else if(type == "warning"){%>
+                toastr.warning("<%= message %>", "<%= type %>", {closeButton: true}); <%
+            }else{%>
+                toastr.error("<%= message %>", "<%= type %>", {closeButton: true}); <%
+            }
+        } %>
+    })
 
 </script>
 

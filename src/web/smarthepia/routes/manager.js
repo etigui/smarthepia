@@ -26,7 +26,7 @@ router.get('/profile', function(req, res, next) {
 // GET users => /manager/users
 router.get('/users', function(req, res, next) {
     if(auth.checkAuth(req, 2)){
-        return res.render('pages/users', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "users" });
+        return res.render('pages/users', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "users", type:  req.query.type, message:  req.query.message});
     }else{
         return res.redirect('/');
     }
@@ -36,7 +36,7 @@ router.get('/users', function(req, res, next) {
 router.get('/users/list', function(req, res, next) {
     if(auth.checkAuth(req, 2)){
         res.type('json');
-        var toRemove = {__v: false, _id: false, password : false, lastConnection: false};
+        let toRemove = {__v: false, _id: false, password : false, lastConnection: false};
         User.find({}, toRemove, function(err, user) {
             if (err) throw err;
             return res.json({"data": user});
@@ -51,28 +51,29 @@ router.get('/users/list', function(req, res, next) {
 router.post('/users/create', function(req, res, next) {
     if(auth.checkAuth(req, 2)){
 
-        var firstname = req.param('firstnameCreate');
-        var lastname = req.param('lastnameCreate');
-        var email = req.param('emailCreate');
-        var password = req.param('passwordCreate');
-        var cpassword = req.param('cpasswordCreate');
-        var active = req.param('activeCreate');
-        var permission = req.param('permissionCreate');
-
+        let firstname = req.body.firstnameCreate;
+        let lastname = req.body.lastnameCreate;
+        let email = req.body.emailCreate;
+        let password = req.body.passwordCreate;
+        let cpassword = req.body.cpasswordCreate;
+        let active = req.body.activeCreate;
+        let permission = req.body.permissionCreate;
 
         // Check if user info are not empty or null
         if(firstname && lastname && email && password && cpassword && active && permission){
 
             // Check email validation
-            var re = /^(?:[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
+            let re = /^(?:[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
             if(re.test(email)){
+
+                console.log("mail " + email);
 
                 // Check if password are the same
                 if(password === cpassword){
                     if(validation.CheckUniqueEmail(email)){
 
                         // Modify perm by name
-                        if(permission === "Admin"){
+                        if(permission === "admin"){
                             permission = 2;
                         }else if(permission === "manager"){
                             permission = 1;
@@ -80,45 +81,45 @@ router.post('/users/create', function(req, res, next) {
                             permission = 0;
                         }
 
-                        if(active === "true"){
-                            active = true;
-                        }else{
-                            active = false;
-                        }
-
-                        var userData = {
+                        let newUser = {
                             firstname: firstname,
                             lastname: lastname,
                             email: email,
                             password: password,
-                            lastConnection: new Date(),
                             enable: active,
-                            permissions: permission,
-                            action: ""
+                            permissions: permission
                         };
 
-                        User.create(userData, function (error, user) {
+                        User.create(newUser, function (error, user) {
                             if (error) {
                                 return next(error);
                             }
-                            return res.redirect('/manager/users');
+                            return res.redirect('/manager/users?type=success&message=User account successfully created');
                         });
                     }else{
-                        //TODO email already existe
-                        return res.send("email already existe");
+                        return res.redirect('/manager/users?type=error&message=Email already exist');
                     }
                 }else{
-                    //TODO error not same password
-                    return res.send("not same password");
+                    return res.redirect('/manager/users?type=error&message=Password must match');
                 }
             }else{
-                //TODO error email
-                return res.send("email regex");
+                return res.redirect('/manager/users?type=error&message=email not valid');
             }
         }else{
-            //TODO error not all file are filled
-            return res.send("not all file are filled");
+            return res.redirect('/manager/users?type=error&message=You must fill all the field');
         }
+    }else{
+        return res.redirect('/');
+    }
+});
+
+// POST users delete => /manager/users/delete
+router.get('/users/delete', function(req, res, next) {
+    if(auth.checkAuth(req, 2)){
+        User.remove({email: email}, function(err, user) {
+            if (err) throw err;
+            return res.redirect('/manager/users?type=error&message=You must fill all the field');
+        });
     }else{
         return res.redirect('/');
     }
