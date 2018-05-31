@@ -60,7 +60,7 @@ $(window).on("load", function(){
                         itemStyle: {
                             normal: {
                                 label: {
-                                    show: true,
+                                    show: false,
                                     formatter: "{b}"
                                 },
                                 borderWidth: 1,
@@ -68,7 +68,7 @@ $(window).on("load", function(){
                             },
                             emphasis: {
                                 label: {
-                                    show: true
+                                    show: false
                                 },
                                 color: '#cc99cc',
                                 borderWidth: 3,

@@ -1,0 +1,28 @@
+
+/* Media query for manager index graph*/
+@media only screen and (min-device-width: 320px) {
+    #tree-map {
+        min-height: 400px;
+        width: 100%;
+        min-width: 18em;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-device-width: 360px) {
+    #tree-mapt {
+        min-height: 400px;
+        width: 100%;
+        min-width: 21em;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-device-width: 361px) {
+    #tree-map {
+        min-height: 400px;
+        width: 100%;
+        min-width: 25em;
+        margin: 0 auto;
+
+    }
+}
+

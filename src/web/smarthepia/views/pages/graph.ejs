@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- END Custom CSS-->
 
+
     <link rel="stylesheet" type="text/css" href="/test/test.css">
 
 </head>
@@ -60,8 +61,8 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-                                    <!-- height-400 echart-container or  class="testt" sytle="min-width: 100%;" -->
-                                    <div id="tree-map"></div>
+                                    <!-- height-400 echart-container -->
+                                    <div id="tree-map" class="testt" sytle="min-width: 100%;" ></div>
                                 </div>
                             </div>
                         </div>
@@ -89,105 +90,131 @@
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->
 <script type="text/javascript" src="/test/echarts.min.js"></script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.4.1/math.min.js"></script>
 <script>
-
-
     var dom = document.getElementById("tree-map");
     var myChart = echarts.init(dom);
-    myChart.showLoading();
     var app = {};
     option = null;
-    //var uploadedDataURL = "/test/test.json";
+    var uploadedDataURL = "/test/test.json";
 
+    myChart.showLoading();
 
+    $.getJSON(uploadedDataURL, function (rawData) {
 
-    var dbData = [
-        {id: 1, type: 0, name: 'building A', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
-        {id: 2, type: 0,name: 'building B', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
-        {id: 3, type: 1,name: 'floor 1', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 1},
-        {id: 4, type: 2,name: 'room 1', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 3},
-        {id: 5, type: 3,name: 'sensor 1', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,0,0,0], parent: 4},
-        {id: 6, type: 3,name: 'sensor 2', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,0,0,0], parent: 4},
-        {id: 7, type: 2,name: 'room 2', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 3},
-        {id: 8, type: 1,name: 'floor 1', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 9},
-        {id: 9, type: 0,name: 'building C', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
-        {id: 10, type: 3,name: 'sensor 3', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,1,1,1], parent: 4},
-        {id: 10, type: 3,name: 'sensor 4', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,1,1,1], parent: 4},
-    ];
+        myChart.hideLoading();
 
-    //console.log(math.dot([0,1,1], [1,1,1]));
+        function convert(source, target, basePath) {
+            for (var key in source) {
+                var path = basePath ? (basePath + '.' + key) : key;
+                if (key.match(/^\$/)) {
 
-
-
-    function getNestedChildren(arr, parent) {
-        var out = []
-        for(var i in arr) {
-            if(arr[i].parent === parent) {
-                var children = getNestedChildren(arr, arr[i].id)
-                if(children.length) {
-                    arr[i].children = children
                 }
-                out.push(arr[i])
+                else {
+                    target.children = target.children || [];
+                    var child = {
+                        name: path
+                    };
+                    target.children.push(child);
+                    convert(source[key], child, path);
+                }
+            }
+
+            if (!target.children) {
+                target.value = source.$count || 1;
+            }
+            else {
+                target.children.push({
+                    name: basePath,
+                    value: source.$count
+                });
             }
         }
-        return out
-    }
 
+        var data = [];
 
-    myChart.setOption(option = {
-        animation: false,
-        title: {
-            text: '',
-            subtext: '',
-            left: 'leafDepth'
-        },
-        //hoverable : true,
-        calculable: true,
-        tooltip : {
-            trigger: 'item',
-            formatter: function (info) {
-                return [
-                    "Name: " + info.data.name + "</br>",
-                    "Value: " + info.data.value + "</br>",
-                    "Hierarchy: " + info.data.h + "</br>",
-                    "Type: " + info.data.type+ "</br>",
-                    "Color: " + info.data.itemStyle.color + "</br>",
-                ].join('');
-            }
-        },
-        toolbox: {
-            show : true,
-            feature : {
-                mark : {show: true},
-                saveAsImage : {show: true, title : 'Save', type : 'png'
+        convert(rawData, data, '');
+
+        myChart.setOption(option = {
+            title: {
+                text: '',
+                subtext: '',
+                left: 'leafDepth'
+            },
+            hoverable : true,
+            calculable: true,
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    saveAsImage : {show: true}
                 }
-            }
-        },
-        grid: {
-            borderWidth: 0,
-        },
-        series: [{
-            name: 'hepia',
-            type: 'treemap',
-            roam: false,
-            selectedMode: false,
-            data: getNestedChildren(dbData, 0),
-            breadcrumb: {show: true, textStyle: {fontSize: 100}},
-            leafDepth: 1,
-            levels: [
-                {itemStyle: {normal: {borderColor: '#FFF', borderWidth: 4, gapWidth: 4}}},
-                {itemStyle: {normal: {gapWidth: 4}}},
-            ],
-        }]
-    })
-
-
+            },
+            series: [{
+                name: 'Main',
+                type: 'treemap',
+                //visibleMin: 300,
+                data:  [{
+                    name: 'Building A',            // First tree
+                    value: 10,
+                    children: [{
+                        name: 'nodeAa',       // First leaf of first tree
+                        value: 4
+                    }, {
+                        name: 'nodeAb',       // Second leaf of first tree
+                        value: 6
+                    }]
+                }, {
+                    name: 'nodeB',            // Second tree
+                    value: 20,
+                    children: [{
+                        name: 'nodeBa',       // Son of first tree
+                        value: 20,
+                        children: [{
+                            name: 'nodeBa1',  // Granson of first tree
+                            value: 20
+                        }]
+                    }]
+                }],
+                leafDepth: 2,
+                levels: [
+                    {
+                        itemStyle: {
+                            normal: {
+                                borderColor: '#FFF',
+                                borderWidth: 4,
+                                gapWidth: 4
+                            }
+                        }
+                    },
+                    {
+                        colorSaturation: [0.3, 0.6],
+                        itemStyle: {
+                            normal: {
+                                borderColorSaturation: 0.7,
+                                gapWidth: 2,
+                                borderWidth: 2
+                            }
+                        }
+                    },
+                    {
+                        colorSaturation: [0.3, 0.5],
+                        itemStyle: {
+                            normal: {
+                                borderColorSaturation: 0.6,
+                                gapWidth: 1
+                            }
+                        }
+                    },
+                    {
+                        colorSaturation: [0.3, 0.5]
+                    }
+                ]
+            }]
+        })
+    });
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
     }
-    myChart.hideLoading();
 
     $(function () {
 
