@@ -20,16 +20,13 @@
             <li class="nav-item <%= page=='alarm'?'active':'' %>"><a href="/manager/alarm"><i class="ft-alert-triangle"></i><span class="menu-title" data-i18n="">Alarm</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="navigation-header"><span>Network</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
+                <li class="navigation-header"><span>Devices</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='rooms'?'active':'' %>"><a href="/manager/rooms"><i class="ft-layout"></i><span class="menu-title" data-i18n="">Rooms</span></a></li>
+                <li class="nav-item <%= page=='rooms'?'active':'' %>"><a href="/manager/inventory"><i class="ft-list"></i><span class="menu-title" data-i18n="">Inventory</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='zwave'?'active':'' %>"><a href="/manager/zwave"><i class="ft-wifi"></i><span class="menu-title" data-i18n="">Z-Wave</span></a></li>
-            <% } %>
-            <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='knx'?'active':'' %>"><a href="/manager/knx"><i class="ft-cpu"></i><span class="menu-title" data-i18n="">KNX</span></a></li>
+                <li class="nav-item <%= page=='zwave'?'active':'' %>"><a href="/manager/register"><i class="ft-plus-square"></i><span class="menu-title" data-i18n="">Register</span></a></li>
             <% } %>
         </ul>
     </div>

@@ -289,8 +289,8 @@ router.post('/users/edit', function(req, res, next) {
 
         let reqMail = req.body.email;
         let reqPermission = req.body.permissions;
-        let reqActive = req.body.active;
-        if(reqMail && reqPermission && reqActive) {
+        let reqEnable = req.body.enable;
+        if(reqMail && reqPermission && reqEnable) {
 
             // Modify perm by name
             if(reqPermission === "admin"){
@@ -301,8 +301,15 @@ router.post('/users/edit', function(req, res, next) {
                 reqPermission = 0;
             }
 
+            if(reqEnable === "true"){
+                reqEnable = true;
+            }else{
+                reqEnable = false;
+            }
+            console.log(typeof reqEnable)
+
             // Update user
-            User.findOneAndUpdate({email: reqMail}, {$set: {permissions: reqPermission, active: reqActive}}, function (err, user) {
+            User.findOneAndUpdate({email: reqMail}, {$set: {permissions: reqPermission, enable: reqEnable}}, function (err, user) {
                 if (err) {
                     return next(error);
                 }
