@@ -16,6 +16,19 @@ router.get('/', function(req, res, next) {
     }
 });
 
+//<editor-fold desc="Register routes">
+// GET manager register => /manager/register
+router.get('/register', function(req, res, next) {
+    if(auth.checkAuth(req, 0)){
+        return res.render('pages/register', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "register" });
+    }else{
+        return res.redirect('/');
+    }
+});
+
+
+//</editor-fold>
+
 //<editor-fold desc="Profile routes">
 // GET profile => /manager/profile
 router.get('/profile', function(req, res, next) {

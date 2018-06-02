@@ -23,10 +23,10 @@
                 <li class="navigation-header"><span>Devices</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='rooms'?'active':'' %>"><a href="/manager/inventory"><i class="ft-list"></i><span class="menu-title" data-i18n="">Inventory</span></a></li>
+                <li class="nav-item <%= page=='inventory'?'active':'' %>"><a href="/manager/inventory"><i class="ft-list"></i><span class="menu-title" data-i18n="">Inventory</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='zwave'?'active':'' %>"><a href="/manager/register"><i class="ft-plus-square"></i><span class="menu-title" data-i18n="">Register</span></a></li>
+                <li class="nav-item <%= page=='register'?'active':'' %>"><a href="/manager/register"><i class="ft-plus-square"></i><span class="menu-title" data-i18n="">Register</span></a></li>
             <% } %>
         </ul>
     </div>

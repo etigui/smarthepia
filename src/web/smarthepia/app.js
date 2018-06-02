@@ -14,7 +14,7 @@ var MongoStore = require('connect-mongo')(session);
 var URL = require('url-parse');
 
 // MongoDB init and connection
-var mdbUrl = 'mongodb://10.10.5.110/smarthepia'; //192.168.1.111 10.10.5.110
+var mdbUrl = 'mongodb://192.168.1.111/smarthepia'; //192.168.1.111 10.10.5.110
 mongoose.connect(mdbUrl).then(() =>  console.log('connection succesful to: ' + mdbUrl)).catch((err) => console.error(err));
 var db = mongoose.connection;
 
