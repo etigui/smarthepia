@@ -12,7 +12,12 @@
 	'use strict';
 
 	// Default
-	$('.repeater-default').repeater();
+	$('.repeater-default').repeater({
+        isFirstItemUndeletable: true
+	});
+
+
+
 
 	// Custom Show / Hide Configurations
 	$('.file-repeater, .contact-repeater').repeater({

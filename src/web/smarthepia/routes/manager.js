@@ -3,18 +3,13 @@ var router = express.Router();
 var auth = require('../controllers/auth');
 var dateFormat = require('dateformat');
 var User = require('../models/users');
+var Dependency = require('../models/dependency');
+var Devices = require('../models/devices');
 var validation = require('../controllers/validation');
 var bcrypt = require('bcrypt');
 
 
-// GET manager => /manager
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, 0)){
-        return res.render('pages/manager', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "home" });
-    }else{
-        return res.redirect('/');
-    }
-});
+
 
 //<editor-fold desc="Register routes">
 // GET manager register => /manager/register
@@ -26,8 +21,147 @@ router.get('/register', function(req, res, next) {
     }
 });
 
+router.get('/register/devices/location/list', function(req, res, next) {
+    if(auth.checkAuth(req, 2)){
+        res.type('json');
+        let toRemove = {__v: false, _id: false, value: false, itemStyle: false, comment: false, dependency: false, group: false, rules: false, orientation: false, enable: false};
+        Devices.find({}, toRemove, function(err, location) {
+            if (err) {
+                return next(error);
+            }
+            return res.json({"data": location});
+        });
+
+    }else{
+        return res.redirect('/');
+    }
+});
+
+router.get('/register/devices/dependency/list', function(req, res, next) {
+    if(auth.checkAuth(req, 2)){
+        res.type('json');
+        let toRemove = {__v: false, _id: false, devices: false};
+        Dependency.find({}, toRemove, function(err, dependency) {
+            if (err) {
+                return next(error);
+            }
+            return res.json({"data": dependency});
+        });
+
+    }else{
+        return res.redirect('/');
+    }
+});
+
+
+// GET manager register => /manager/register
+router.post('/register/location/create', function(req, res, next) {
+    if(auth.checkAuth(req, 2)){
+
+        // Check if the dependency name already exist
+        //validation.checkUniqueLocation(locName, function (matchLocation) {
+
+        //});
+
+
+    //{color:
+        // var newLocation = {name: "Building A", type: "Building", parent: 0, comment: "No comment", dependency: "KNX",group: "group", rules: "Default", orientation: "North", enable: true};
+        var newLocation = {name: "Room 1", type: "Room", parent: 4, enable: true};
+
+        Devices.create(newLocation, function (error, user) {
+            if (error) {
+                console.log(error);
+                return next(error);
+            }
+            return res.send("Hello");
+        });
+
+
+    }else{
+        return res.redirect('/');
+    }
+});
+
+// POST register dependency=> /manager/register/dependency
+router.post('/register/create/dependency', function(req, res, next) {
+    if(auth.checkAuth(req, 2)){
+
+        var dictionary = req.body;
+        var args = Object.keys(dictionary).length;
+        var depName = dictionary.depName;
+        var max = Object.keys(dictionary).length -1;
+
+        if(depName && args >= 5 && ((max % 4) === 0)){
+
+            // Check if the dependency name already exist
+            validation.checkUniqueDependency(depName, function (matchDependency) {
+                if(matchDependency){
+
+                    // Empty array to store dependency device
+                    var newDevice = [];
+
+                    // Add dico data to list
+                    var length = max / 4;
+                    for (var i = 0; i < length; i++){
+                        newDevice.push({name: dictionary['dependency['+i+'][depdName]'], ip: dictionary['dependency['+i+'][depdIp]'], port: dictionary['dependency['+i+'][depdPort]'], comment: dictionary['dependency['+i+'][depdComment]']});
+                    }
+                    var newDependency = {depname: depName, devices: newDevice};
+
+                    Dependency.create(newDependency, function (error, user) {
+                        if (error) {
+                            console.log(error);
+                            return next(error);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Dependency has been successfully created"});
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "Dependency name must be unique"});
+                }
+            });
+        }else{
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
+
+    }else{
+        return res.redirect('/');
+    }
+});
+
+
+
 
 //</editor-fold>
+
+//<editor-fold desc="Manager routes">
+// GET manager => /manager
+router.get('/', function(req, res, next) {
+    if(auth.checkAuth(req, 0)){
+        return res.render('pages/manager', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "home" });
+    }else{
+        return res.redirect('/');
+    }
+});
+
+router.get('/list', function(req, res, next) {
+    if(auth.checkAuth(req, 2)){
+        res.type('json');
+        let toRemove = {__v: false, _id: false};
+        Devices.find({}, toRemove, function(err, devices) {
+            if (err) {
+                return next(error);
+            }
+            return res.json({data: devices});
+        });
+
+    }else{
+        return res.redirect('/');
+    }
+});
+//</editor-fold>
+
 
 //<editor-fold desc="Profile routes">
 // GET profile => /manager/profile

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
+var Dependency = require('../models/dependency');
+var Devices = require('../models/devices');
 var bcrypt = require('bcrypt');
 
 module.exports = {
@@ -39,6 +41,27 @@ module.exports = {
                     return callback(false);
                 }
             });
+        });
+    },
+    checkUniqueDependency: function CheckCD(value, callback){
+        Dependency.find({ depname: value }).exec(function (err, dependency) {
+            if (err) {
+                return callback(err)
+            } else if(dependency.length > 0){
+                return callback(false);
+            }else {
+                return callback(true);
+            }
+        });
+    }, checkUniqueLocation: function CheckCL(value, callback){
+        Devices.find({ name: value }).exec(function (err, dependency) {
+            if (err) {
+                return callback(err)
+            } else if(dependency.length > 0){
+                return callback(false);
+            }else {
+                return callback(true);
+            }
         });
     }
 };

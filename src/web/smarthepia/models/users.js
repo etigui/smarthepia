@@ -48,6 +48,7 @@ var UserSchema = new mongoose.Schema({
     }
 });
 
+// TODO check if user is active , otherwise user disables
 // Authenticate input against database
 UserSchema.statics.authenticate = function (email, password, callback) {
     User.findOne({ email: email })
@@ -75,7 +76,6 @@ UserSchema.pre('save', function (next) {
     bcrypt.hash(user.password, 10, function (err, hash) {
 
         if (err) {
-            console.log("c");
             return next(err);
         }
         user.password = hash;

@@ -18,6 +18,10 @@ var mdbUrl = 'mongodb://192.168.1.111/smarthepia'; //192.168.1.111 10.10.5.110
 mongoose.connect(mdbUrl).then(() =>  console.log('connection succesful to: ' + mdbUrl)).catch((err) => console.error(err));
 var db = mongoose.connection;
 
+// Autoincrement module for mongodb
+var ai = require('mongoose-auto-increment');
+ai.initialize(db);
+
 
 // Init session params
 var sessionParams = {

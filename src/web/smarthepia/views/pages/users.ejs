@@ -171,19 +171,19 @@
                                     <label for="title">First name
                                         <span class="danger">*</span>
                                     </label>
-                                    <input name="firstnameCreate" type="text" class="form-control square" id="fnc" placeholder="First name" required>
+                                    <input name="firstnameCreate" type="text" class="form-control square" id="fnc" placeholder="First name" autocomplete="off" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="title">Last name
                                         <span class="danger">*</span>
                                     </label>
-                                    <input name="lastnameCreate"  type="text" class="form-control square" id="lnc" placeholder="Last name" required>
+                                    <input name="lastnameCreate"  type="text" class="form-control square" id="lnc" placeholder="Last name" autocomplete="off" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="title">Email
                                         <span class="danger">*</span>
                                     </label>
-                                    <input name="emailCreate"  type="email" class="form-control square" id="ec" placeholder="Email" required>
+                                    <input name="emailCreate"  type="email" class="form-control square" id="ec" placeholder="Email" autocomplete="off" required>
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="title">Permission
@@ -225,7 +225,7 @@
                                 <i class="fa fa-refresh position-right"></i> Reset
                             </button>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-check-square-o"></i> Save
+                                <i class="fa fa-check-square-o"></i> Send
                             </button>
                         </div>
                         </form>
@@ -343,11 +343,11 @@
                 success: function (response) {
                     $('#example').DataTable().ajax.reload();
                     if(response.status === "success"){
-                        toastr.success(response.message , response.status, {closeButton: true})
+                        toastr.success(response.message , response.status, {closeButton: true});
                     }else if(response.status === "error"){
-                        toastr.error(response.message, response.status, {closeButton: true})
+                        toastr.error(response.message, response.status, {closeButton: true});
                     }else{
-                        toastr.error("Undefined", "error", {closeButton: true})
+                        toastr.error("Undefined", "error", {closeButton: true});
                     }
                 }
             });
