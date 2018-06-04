@@ -52,7 +52,16 @@ if(app.get('env') === 'production'){
 
 // Define routes file
 var indexRouter = require('./routes/index');
-var managerRouter = require('./routes/manager');
+var homeRouter = require('./routes/home');
+var statisticRouter = require('./routes/statistic');
+var automationRouter = require('./routes/automation');
+var userRouter = require('./routes/user');
+var alarmRouter = require('./routes/alarm');
+var deviceRouter = require('./routes/device');
+var locationRouter = require('./routes/location');
+var dependencyRouter = require('./routes/dependency');
+var profileRouter = require('./routes/profile');
+
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -68,7 +77,16 @@ app.use(favicon(path.join(__dirname, 'public', 'images/favicon.ico')));
 
 // Set route path(url) to route file
 app.use('/', indexRouter);
-app.use('/manager', managerRouter);
+app.use('/home', homeRouter);
+app.use('/statistic', statisticRouter);
+app.use('/automation', automationRouter);
+app.use('/user', userRouter);
+app.use('/alarm', alarmRouter);
+app.use('/device', deviceRouter);
+app.use('/location', locationRouter);
+app.use('/dependency', dependencyRouter);
+app.use('/profile', profileRouter);
+
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {

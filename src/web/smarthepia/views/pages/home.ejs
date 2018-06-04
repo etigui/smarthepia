@@ -101,7 +101,7 @@
     option = null;
 
     // Get devices list (devices and location)
-    $.get('/manager/list').done(function (data) {
+    $.get('/home/list').done(function (data) {
         function getNestedChildren(arr, parent) {
             var out = []
             for(var i in arr) {
@@ -128,11 +128,15 @@
             tooltip : {
                 trigger: 'item',
                 formatter: function (info) {
+                    var color = "undefined";
+                    if ('itemStyle' in info.data) {
+                        color = info.data.itemStyle.color;
+                    }
                     return [
                         "Name: " + info.data.name + "</br>",
                         "Value: " + info.data.value + "</br>",
                         "Type: " + info.data.type+ "</br>",
-                        "Color: " + info.data.itemStyle.color + "</br>",
+                        "Color: " + color + "</br>",
                     ].join('');
                 }
             },
@@ -170,7 +174,6 @@
     });
 
 
-
     /*var dbData = [
         {id: 1, type: 0, name: 'building A', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
         {id: 2, type: 0,name: 'building B', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
@@ -186,16 +189,6 @@
     ];*/
 
     //console.log(math.dot([0,1,1], [1,1,1]));
-
-
-
-
-
-
-
-
-
-
 
     $(function () {
 

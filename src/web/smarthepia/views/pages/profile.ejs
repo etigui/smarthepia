@@ -168,12 +168,15 @@
 
 <script>
 
+    onLoad();
 
-    userInfo();
+    function onLoad(){
+        userInfo();
+    }
 
     function userInfo(){
         $.ajax({
-            url: "/manager/profile/load",
+            url: "/profile/load",
             type: "get",
             dataType: "json",
             success: function (response) {
@@ -195,7 +198,7 @@
 
         if (emailUser && firstnameUser && lastnameUser) {
             $.ajax({
-                url: "/manager/profile/edit/user",
+                url: "/profile/edit/user",
                 type: "post",
                 data: {
                     email: emailUser,
@@ -224,7 +227,7 @@
         confirmNewPass = $("#cnpassword").val();
         if (currentPass && newPass && confirmNewPass) {
             $.ajax({
-                url: "/manager/profile/edit/password",
+                url: "/profile/edit/password",
                 type: "post",
                 data: {
                     cpass: currentPass,

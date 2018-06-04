@@ -6,8 +6,8 @@ var validation = require('../controllers/validation');
 
 // GET home page
 router.get('/', function(req, res, next) {
-    if( auth.checkAuth(req, 0)){
-        return res.redirect('/manager');
+    if( auth.checkAuth(req, auth.getUser())){
+        return res.redirect('/home');
     }
     return res.render('pages/index');
 });
@@ -28,7 +28,7 @@ router.post('/', function(req, res, next) {
                 req.session.lastname = user.lastname;
                 req.session.firstname = user.firstname;
                 req.session.permissions = user.permissions;
-                return res.redirect('manager');
+                return res.redirect('/home');
             }else {
                 var err = new Error('Wrong email or password.');
                 err.status = 401;
@@ -42,26 +42,6 @@ router.post('/', function(req, res, next) {
     }
 });
 
-
-// Create user
-router.post('/create', function(req, res, next) {
-
-    var userData = {
-        email: "2@gmail.com",
-        username: "2",
-        password: "admin",
-        lastConnection: new Date(),
-        enable: true,
-        permissions: 2
-    };
-
-    User.create(userData, function (error, user) {
-        if (error) {
-            return next(error);
-        }
-        return res.render('pages/index', { type: 'success', message: 'User created' });
-    });
-});
 
 // GET for logout logout
 router.get('/logout', function (req, res, next) {

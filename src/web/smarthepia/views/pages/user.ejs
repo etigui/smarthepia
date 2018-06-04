@@ -273,7 +273,7 @@
             destroy: true,
             searching: true,
             type: 'GET',
-            ajax: "/manager/users/list",
+            ajax: "/user/list",
             columns: [
                 { data: "firstname"},
                 { data: "lastname"},
@@ -312,7 +312,7 @@
     $("#createUserSubmit").submit(function( event ) {
         event.preventDefault();
         $.ajax({
-            url: "/manager/users/create",
+            url: "/user/create",
             type: "post",
             dataType:"json",
             data: $("#createUserSubmit").serialize(),
@@ -336,7 +336,7 @@
         var userMail = row[2].innerText
         if(userMail){
             $.ajax({
-                url: "/manager/users/delete",
+                url: "/user/delete",
                 type: "post",
                 data: {email: userMail},
                 dataType:"json",
@@ -362,7 +362,7 @@
         activeUser = $("#activeUserEdit").val();
         if (emailUser && permissionUser && activeUser) {
             $.ajax({
-                url: "/manager/users/edit",
+                url: "/user/edit",
                 type: "post",
                 data: {
                     email: emailUser,
