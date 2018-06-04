@@ -25,6 +25,14 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- END Custom CSS-->
 
+    <!-- BEGIN datatable -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/dataTables.colVis.css">
+    <!-- END datatatable -->
+
     <!-- BEGIN toastr -->
     <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
     <!-- END toastr -->
@@ -59,7 +67,40 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-
+                                    <div class="table-responsive">
+                                        <table id="deviceTable" class="table table-striped table-bordered text-inputs-searching dataTable">
+                                            <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Address</th>
+                                                <th>Dpenedency</th>
+                                                <th>Parent</th>
+                                                <th>Enable</th>
+                                                <th>Comment</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -83,65 +124,77 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-xl-6 col-lg-12">
-                                            <div class="form-group">
-                                                <label for="donationinput2">Device name
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <input type="text" id="email" class="form-control square" placeholder="Device name" name="email" autocomplete="off" required="">
+                                    <form id="createDeviceSubmit" class="form">
+                                        <div class="row">
+                                            <div class="col-xl-6 col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="donationinput2">Device name
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <input type="text" name="nameDevice" id="nameDevice" class="form-control square" placeholder="Device name" name="email" autocomplete="off" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="donationinput2">Device address
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <input type="text"  name="idDevice" id="idDevice" class="form-control square" placeholder="Device ID" autocomplete="off" required>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="donationinput2">Dependency
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="dependencyDevice" id="dependencyDevice" class="form-control square">
+                                                        <option value="" selected="" disabled="" hidden="">Select Dependency</option>
+                                                    </select>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="donationinput2">Active
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="activeDevice" id="activeDevice" class="form-control square">
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="donationinput2">Device ID
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <input type="text" id="fname" class="form-control square" placeholder="Device ID" name="fname" autocomplete="off" required="">
-                                            </div>
-                                            <div id="orientationDiv" class="form-group">
-                                                <label for="donationinput2">Dependency
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <select name="dependencyDevice" id="dependencyDevice" class="form-control square">
-                                                    <option value="" selected="" disabled="" hidden="">Select Dependency</option>
-                                                </select>
-                                            </div>
-                                            <div id="orientationDiv" class="form-group">
-                                                <label for="donationinput2">Active
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <select name="activeDevice" id="activeDevice" class="form-control square">
-                                                    <option value="true">true</option>
-                                                    <option value="false">false</option>
-                                                </select>
+                                            <div class="col-xl-6 col-lg-12">
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="donationinput2">Building
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="buildingDevice" id="buildingDevice" class="form-control square">
+                                                        <option value="" selected="" disabled="" hidden="">Select building</option>
+                                                    </select>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="donationinput2">Floor
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="floorDevice" id="floorDevice" class="form-control square">
+                                                        <option value="" selected="" disabled="" hidden="">Select floor</option>
+                                                    </select>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="donationinput2">Room
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="roomDevice" id="roomDevice" class="form-control square">
+                                                        <option value="" selected="" disabled="" hidden="">Select room</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="bio" class="cursor-pointer">Comment</label>
+                                                    <br>
+                                                    <textarea name="commentDevice" class="form-control" id="commentDevice" rows="1" placeholder="Comment" autocomplete="off"></textarea>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-xl-6 col-lg-12">
-                                            <div id="orientationDiv" class="form-group">
-                                                <label for="donationinput2">Building
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <select name="buildingDevice" id="buildingDevice" class="form-control square">
-                                                    <option value="" selected="" disabled="" hidden="">Select building</option>
-                                                </select>
-                                            </div>
-                                            <div id="orientationDiv" class="form-group">
-                                                <label for="donationinput2">Floor
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <select name="floorDevice" id="floorDevice" class="form-control square">
-                                                    <option value="" selected="" disabled="" hidden="">Select floor</option>
-                                                </select>
-                                            </div>
-                                            <div id="orientationDiv" class="form-group">
-                                                <label for="donationinput2">Room
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <select name="roomDevice" id="roomDevice" class="form-control square">
-                                                    <option value="" selected="" disabled="" hidden="">Select room</option>
-                                                </select>
-                                            </div>
+                                        <div class="form-actions right">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Send
+                                            </button>
                                         </div>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -172,6 +225,12 @@
 <script src="/js/scripts/forms/form-repeater.js" type="text/javascript"></script>
 <!-- ENG form repeter -->
 
+<!-- BEGIN datatable -->
+<script src="/vendors/js/tables/datatable/datatables.min.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-api.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-basic.js" type="text/javascript"></script>
+<!-- END datatable -->
+
 <!-- BEGIN toastr -->
 <script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
 <script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
@@ -182,6 +241,8 @@
     onLoad();
 
     function onLoad(){
+
+        genDeviceTable();
 
         // Fill in device load dependency select option
         $.ajax({
@@ -217,6 +278,46 @@
         });
     }
 
+    function genDeviceTable(){
+        $('#deviceTable').dataTable({
+            autoWidth: false,
+            destroy: true,
+            searching: true,
+            type: 'GET',
+            ajax: "/device/listall",
+            columns: [
+                { data: "name"},
+                { data: "address"},
+                { data: "dependency"},
+                { data: "parent"},
+                { data: "enable"},
+                { data: "comment"},
+                { data: "action"}
+            ], columnDefs: [{
+                targets: 6,
+                searching: false,
+                orderable: false,
+                data: null,
+                className: "text-center",
+                render: function (data, type, full, meta){
+                    return '<div class="btn-group mr-1 mb-1">\n' +
+                        '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                        '        Action\n' +
+                        '    </button>\n' +
+                        '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
+                        '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
+                        '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
+                        '    </div>\n' +
+                        '</div>';
+                }
+            },  {targets: 4, className: "text-center"},
+                {targets: 3, className: "text-center"},
+                {targets: 2, className: "text-center"},
+                {targets: 1, className: "text-center"},
+                {targets: 0, className: "text-center"},
+                {targets: 5, className: "text-center"}]
+        });
+    }
 
     // Fillin floor select option
     $('#buildingDevice').change(function() {
@@ -260,6 +361,41 @@
                 });
             }
         });
+    });
+
+    // Create new location (Building, Floor, Room)
+    $("#createDeviceSubmit").submit(function( event ) {
+        event.preventDefault();
+
+        // Select error if not selected
+        if($("#dependencyDevice option:selected").text() === "Select dependency") {
+            toastr.error("You must choose a dependency", "error", {closeButton: true});
+        }else if($("#buildingDevice option:selected").text() === "Select building") {
+            toastr.error("You must choose a building", "error", {closeButton: true});
+        }else if($("#floorDevice option:selected").text() === "Select floor") {
+            toastr.error("You must choose a floor", "error", {closeButton: true});
+        }else if($("#roomDevice option:selected").text() === "Select room") {
+            toastr.error("You must choose a room", "error", {closeButton: true});
+        }else{
+            $.ajax({
+                url: "/device/create",
+                type: "post",
+                dataType: "json",
+                data: $('#createDeviceSubmit').serialize(),
+                success: function (response) {
+
+                    // TODO reload dependency inventory
+                    $("#createDeviceSubmit").get(0).reset();
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }
     });
 
 </script>

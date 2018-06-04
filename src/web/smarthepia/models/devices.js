@@ -8,10 +8,15 @@ var DevicesSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    address: {
+        type: String,
+        default: ""},
     type: {
         type: String,
         required: true,
-    },value: {type: Number, default: 1},
+    },value: {
+        type: Number,
+        default: 1},
     itemStyle: {
         color: { type: String, default: "#34a046"}
     },
@@ -21,22 +26,28 @@ var DevicesSchema = new mongoose.Schema({
     },
     comment: {
         type: String,
-        default: "No comment"
+        default: ""
     },
     dependency:{
         type: String,
+        default: "-"
     },group: {
-        type: String
+        type: String,
+        default: "-"
     },rules: {
         type: String,
         default: "Default"
 
     },orientation: {
-        type: String
+        type: String,
+        default: "-"
     }
     ,enable: {
         type: Boolean,
         default: true,
+    },action: {
+        type: String,
+        default: "",
     }
 });
 

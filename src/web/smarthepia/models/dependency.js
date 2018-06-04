@@ -14,7 +14,11 @@ var DependencySchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
-    devices: [Device]
+    devices: [Device],
+    action: {
+        type: String,
+        default: "",
+    }
 });
 
 

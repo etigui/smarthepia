@@ -79,4 +79,37 @@ router.get('/list', function(req, res, next) {
     }
 });
 
+router.get('/listall', function(req, res, next) {
+    if(auth.checkAuth(req, auth.getManager())){
+        res.type('json');
+        let toRemove = {__v: false, _id: false};
+        Dependency.find({}, toRemove, function(err, dependency) {
+            if (err) {
+                return next(error);
+            }
+            return res.json({"data": createNewData(dependency)});
+        });
+
+    }else{
+        return res.redirect('/');
+    }
+});
+
+// To solve the sub dict
+function createNewData(data){
+    var newData = []
+    for (i = 0; i < data.length; i++) {
+        for (j = 0; j < data[i].devices.length; j++) {
+            newData.push({
+                depName: data[i].depname,
+                divName: data[i].devices[j].name,
+                ip: data[i].devices[j].ip,
+                port: data[i].devices[j].port,
+                comment: data[i].devices[j].comment
+            });
+        }
+    }
+    return newData;
+}
+
 module.exports = router;

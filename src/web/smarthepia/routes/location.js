@@ -18,25 +18,70 @@ router.get('/', function(req, res, next) {
 router.post('/create', function(req, res, next) {
     if(auth.checkAuth(req, auth.getManager())){
 
-        // Check if the dependency name already exist
-        //validation.checkUniqueLocation(locName, function (matchLocation) {
+        var locationType = req.body.locationCreate;
+        var comment = req.body.commentCreate;
+        var building = req.body.buildingCreate;
+        var floor = req.body.floorCreate;
+        var orientation = req.body.orientationCreate;
+        var rule = req.body.ruleCreate;
+        var room = req.body.roomCreate;
+        var newLocation = {};
 
-        //});
-
-
-        //{color:
-        // var newLocation = {name: "Building A", type: "Building", parent: 0, comment: "No comment", dependency: "KNX",group: "group", rules: "Default", orientation: "North", enable: true};
-        var newLocation = {name: "Room 1", type: "Room", parent: 4, enable: true};
-
-        Devices.create(newLocation, function (error, user) {
-            if (error) {
-                console.log(error);
-                return next(error);
+        // Check location type
+        if(locationType){
+            if(locationType === "Building"){
+                if(building){
+                    newLocation = {name: building, type: "Building", parent: 0, enable: true, comment: comment ? comment: ""};
+                    Devices.create(newLocation, function (error, user) {
+                        if (error) {
+                            console.log(error);
+                            return next(error);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Building has been successfully created"});
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else if(locationType === "Floor"){
+                if(floor && building){
+                    newLocation = {name: floor, type: "Floor", parent: parseInt(building, 10), enable: true, comment: comment ? comment: ""};
+                    Devices.create(newLocation, function (error, user) {
+                        if (error) {
+                            console.log(error);
+                            return next(error);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Floor has been successfully created"});
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else if(locationType === "Room"){
+                if(room && floor && building && rule && orientation){
+                    newLocation = {name: room, type: "Room", parent: parseInt(floor, 10), enable: true, orientation: orientation, comment: (comment ? comment : "")};
+                    Devices.create(newLocation, function (error, user) {
+                        if (error) {
+                            console.log(error);
+                            return next(error);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Romm has been successfully created"});
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else{
+                res.type('json');
+                return res.json({message: "Not a location type", status: "error" });
             }
-            return res.send("Hello");
-        });
-
-
+        }else{
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
     }else{
         return res.redirect('/');
     }
@@ -57,5 +102,22 @@ router.get('/list', function(req, res, next) {
         return res.redirect('/');
     }
 });
+
+// GET /device/listall
+router.get('/listall', function(req, res, next) {
+    if(auth.checkAuth(req, auth.getManager())){
+        res.type('json');
+        let toRemove = {__v: false, _id: false, id : false, value: false, itemStyle: false, group: false};
+        Devices.find({$or: [{type: "Building"},  {type: "Floor"}, {type: "Room"} ] }, toRemove, function(err, user) {
+            if (err) {
+                return next(error);
+            }
+            return res.json({"data": user});
+        });
+    }else{
+        return res.redirect('/');
+    }
+});
+
 
 module.exports = router;
