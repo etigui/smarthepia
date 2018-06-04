@@ -2,7 +2,7 @@
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
             <% if(permission>=0) {%>
-            <li class="navigation-header"><span>Gestion</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
+            <li class="navigation-header"><span>Management</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
             <% } %>
             <% if(permission>=0) {%>
                 <li class="nav-item <%= page=='home'?'active':'' %>"><a href="/manager"><i class="ft-home"></i><span class="menu-title" data-i18n="">Home</span></a></li>
@@ -20,13 +20,16 @@
             <li class="nav-item <%= page=='alarm'?'active':'' %>"><a href="/manager/alarm"><i class="ft-alert-triangle"></i><span class="menu-title" data-i18n="">Alarm</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="navigation-header"><span>Devices</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
+                <li class="navigation-header"><span>Inventory</span><i class=" ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='inventory'?'active':'' %>"><a href="/manager/inventory"><i class="ft-list"></i><span class="menu-title" data-i18n="">Inventory</span></a></li>
+                <li class="nav-item <%= page=='device'?'active':'' %>"><a href="/manager/device"><i class="ft-cpu"></i><span class="menu-title" data-i18n="">Device</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='register'?'active':'' %>"><a href="/manager/register"><i class="ft-plus-square"></i><span class="menu-title" data-i18n="">Register</span></a></li>
+                <li class="nav-item <%= page=='location'?'active':'' %>"><a href="/manager/location"><i class="ft-map-pin"></i><span class="menu-title" data-i18n="">Location</span></a></li>
+            <% } %>
+            <% if(permission>=1) {%>
+            <li class="nav-item <%= page=='dependency'?'active':'' %>"><a href="/manager/dependency"><i class="ft-layers"></i><span class="menu-title" data-i18n="">Dependency</span></a></li>
             <% } %>
         </ul>
     </div>

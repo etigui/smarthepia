@@ -10,7 +10,6 @@ var bcrypt = require('bcrypt');
 
 
 
-
 //<editor-fold desc="Register routes">
 // GET manager register => /manager/register
 router.get('/register', function(req, res, next) {
