@@ -59,7 +59,7 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-                                    <form id="createDependency" class="form">
+                                    <form id="createDependencySubmit" class="form">
                                         <div class="row">
                                             <div class="form-group col-sm-12 col-md-2" style="">
                                                 <label for="donationinput2">Dependency name
@@ -141,7 +141,7 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-                                    <form id="createLocation" class="form">
+                                    <form id="createLocationSubmit" class="form">
                                         <div class="form-body">
                                             <div class="form-group">
                                                 <label for="donationinput2">Location</label>
@@ -217,7 +217,7 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-                                    <form id="addDevice" class="form">
+                                    <form id="createDeviceSubmit" class="form">
                                         <div class="form-body">
                                             <div class="form-group">
                                                 <label for="donationinput2">Device name
@@ -375,7 +375,7 @@
     /////////////////////////////////////////////////
 
     // Create new dependency device
-    $("#createDependency").submit(function( event ) {
+    $("#createDependencySubmit").submit(function( event ) {
         event.preventDefault();
 
         // Check if all the IP are valid
@@ -394,9 +394,9 @@
                 url: "/manager/register/create/dependency",
                 type: "post",
                 dataType: "json",
-                data: $('#createDependency').serialize(),
+                data: $('#createDependencySubmit').serialize(),
                 success: function (response) {
-                    $("#createDependency").get(0).reset();
+                    $("#createDependencySubmit").get(0).reset();
                     if (response.status === "success") {
                         toastr.success(response.message, response.status, {closeButton: true})
                     } else if (response.status === "error") {
@@ -468,13 +468,13 @@
 
 
     // Create new location (Building, Floor, Room)
-    $("#createLocation").submit(function( event ) {
+    $("#createLocationSubmit").submit(function( event ) {
         event.preventDefault();
         /*$.ajax({
             url: "/manager/register/location/create",
             type: "post",
             dataType: "json",
-            data: "",//$('#createDependency').serialize(),
+            data: "",//$('#createDependencySubmit').serialize(),
             success: function (response) {
                 console.log(response);
             }
@@ -485,7 +485,6 @@
 
     $('#locationCreate').change(function(){
         if($(this).val() === "Building"){
-            //$.blockUI({ message: 'OK' });
             $("#buildingCreate").replaceWith('<input type="text" name="buildingCreate" id="buildingCreate" class="form-control square" placeholder="Building" autocomplete="off" required>');
             $('#buildingDiv').show();
             $('#floorDiv').hide();
@@ -493,27 +492,6 @@
             $('#orientationDiv').hide();
             $('#ruleDiv').hide();
 
-            /*var block_ele = $(this).closest('.card');
-            $(block_ele).block({
-                message: '<div class="ft-refresh-cw icon-spin font-medium-2"></div>',
-                //, timeout: 2000, //unblock after 2 seconds
-                overlayCSS: {
-                    backgroundColor: '#fff',
-                    opacity: 0.8,
-                    cursor: 'wait'
-                },
-                css: {
-                    border: 0,
-                    padding: 0,
-                    backgroundColor: 'transparent'
-                }
-            });
-
-            $(block_ele).unblock({
-                onUnblock: function(){
-                    message.removeClass('bg-success');
-                }
-            });*/
         }else if($(this).val() === "Floor"){
             $("#buildingCreate").replaceWith('<select id="buildingCreate" name="buildingCreate" class="form-control square"><option value="1">1</option></select>');
             $("#floorCreate").replaceWith('<input type="text" name="floorCreate" id="floorCreate" class="form-control square" placeholder="Floor" autocomplete="off" required>');
@@ -522,49 +500,6 @@
             $('#roomDiv').hide();
             $('#orientationDiv').hide();
             $('#ruleDiv').hide();
-
-            var block_ele = $(this).closest('.card');
-            jQuery.ajax({
-                type: 'get',
-                ///url: 'https://jsonplaceholder.typicode.com/photos',
-                url: 'http://mirrors.standaloneinstaller.com/video-sample/dolbycanyon.m4v',
-                dataType: 'json',
-                beforeSend : function() {
-
-                    $(block_ele).block({
-                        message: '<div class="semibold"><span class="ft-refresh-cw icon-spin text-left"></span>&nbsp; Loading ...</div>',
-                        overlayCSS: {
-                            backgroundColor: '#fff',
-                            opacity: 0.8,
-                            cursor: 'wait'
-                        },
-                        css: {
-                            border: 0,
-                            padding: '10px 15px',
-                            color: '#fff',
-                            width: 'auto',
-                            backgroundColor: '#333'
-                        }
-                    });
-                },
-                success: function(data) {
-
-                    $(block_ele).unblock();
-                    alert(data);
-                    //$.each(data, function(index) {
-                        //alert(data[index].TEST1);
-                        //alert(data[index].TEST2);
-                    //});
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    //alert("some error");
-                }
-            });
-
-
-            //$("#buildingCreate").empty();
-            //$("#buildingCreate").append("<option value='"+id+"'>"+name+"</option>");
-
 
         }else if($(this).val() === "Room"){
             $("#buildingCreate").replaceWith('<select id="buildingCreate" name="buildingCreate" class="form-control square"><option value="1">1</option></select>');
@@ -576,8 +511,6 @@
             $('#orientationDiv').show();
             $('#ruleDiv').show();
         }
-
-        //alert($(this).val());
     })
 
 

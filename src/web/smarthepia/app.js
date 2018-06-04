@@ -14,7 +14,7 @@ var MongoStore = require('connect-mongo')(session);
 var URL = require('url-parse');
 
 // MongoDB init and connection
-var mdbUrl = 'mongodb://192.168.1.111/smarthepia'; //192.168.1.111 10.10.5.110
+var mdbUrl = 'mongodb://10.10.5.110/smarthepia'; //192.168.1.111 10.10.5.110
 mongoose.connect(mdbUrl).then(() =>  console.log('connection succesful to: ' + mdbUrl)).catch((err) => console.error(err));
 var db = mongoose.connection;
 
@@ -34,7 +34,7 @@ var sessionParams = {
         mongooseConnection: db
     }),
     cookie: {}
-}
+};
 
 // Check server mode (dev, prod)
 // Use sessions for tracking logins
@@ -64,7 +64,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(favicon(path.join(__dirname, 'public', 'images/favicon.ico')))
+app.use(favicon(path.join(__dirname, 'public', 'images/favicon.ico')));
 
 // Set route path(url) to route file
 app.use('/', indexRouter);
