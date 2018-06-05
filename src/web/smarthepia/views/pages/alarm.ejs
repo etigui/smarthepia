@@ -157,12 +157,12 @@
 
     function onLoad(){
         genAlarmTable()
+        //$('#alarmTable').DataTable().order([3, "desc"]).draw();
     }
 
     function genAlarmTable(){
-
         $('#alarmTable').dataTable({
-            order: [[ 3, "desc" ],[ 2, "desc" ]],
+            order: [[2,'desc'], [3,'asc']],
             dom: 'lBfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
@@ -190,7 +190,7 @@
                 { data: "action"}
             ],
             aoColumnDefs: [{
-                //sType: "custom",
+                sType: "typeSort",
                 bSortable: true,
                 data: null,
                 className: "text-center align-middle",
@@ -205,7 +205,7 @@
                     }else if(data === "Error"){
                         color =  "danger";
                     }
-                    return '<div class="badge badge-'+color+'">'+data+'</div>';
+                    return '<div class="badge badge-'+color+'" style="line-height: 1.5; display: block;">'+data+'</div>';
                 },
                 targets: 3
 
@@ -231,6 +231,7 @@
                 //searching: false,
                 //orderable: false,
                 data: 0,
+
                 className: "text-center align-middle",
                 render: function (data, type, full, meta) {
 
@@ -264,12 +265,11 @@
 
     function customSort(type){
         var sortedType = 0;
-
-        if(type === "Error"){
+        if(type === '<div class="badge badge-danger" style="line-height: 1.5; display: block;">Error</div>'){
             sortedType = 0;
-        }else if(type === "Warning"){
+        }else if(type === '<div class="badge badge-warning" style="line-height: 1.5; display: block;">Warning</div>'){
             sortedType = 1;
-        }else if(type === "Info"){
+        }else if(type === '<div class="badge badge-info" style="line-height: 1.5; display: block;">Info</div>'){
             sortedType = 2;
         }else{
             sortedType = 3;
@@ -277,12 +277,10 @@
         return sortedType;
     }
 
-    jQuery.fn.dataTableExt.oSort["custom-desc"] = function (x, y) {
-
+    jQuery.fn.dataTableExt.oSort["typeSort-desc"] = function (x, y) {
         return customSort(x) < customSort(y);
     };
-
-    jQuery.fn.dataTableExt.oSort["custom-asc"] = function (x, y) {
+    jQuery.fn.dataTableExt.oSort["typeSort-asc"] = function (x, y) {
         return customSort(x) > customSort(y);
     }
 
