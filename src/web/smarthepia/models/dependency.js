@@ -4,6 +4,7 @@ var Device = new mongoose.Schema({
     name : {type: String, required: true},
     ip : {type: String, required: true},
     port : {type: Number, required: true},
+    method: {type: String, required: true},
     comment: {type: String, default: "No comment"}
 });
 

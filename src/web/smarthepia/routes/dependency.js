@@ -24,7 +24,7 @@ router.post('/create', function(req, res, next) {
         var depName = dictionary.depName;
         var max = Object.keys(dictionary).length -1;
 
-        if(depName && args >= 5 && ((max % 4) === 0)){
+        if(depName && args >= 6 && ((max % 5) === 0)){
 
             // Check if the dependency name already exist
             validation.checkUniqueDependency(depName, function (matchDependency) {
@@ -34,9 +34,9 @@ router.post('/create', function(req, res, next) {
                     var newDevice = [];
 
                     // Add dico data to list
-                    var length = max / 4;
+                    var length = max / 5;
                     for (var i = 0; i < length; i++){
-                        newDevice.push({name: dictionary['dependency['+i+'][depdName]'], ip: dictionary['dependency['+i+'][depdIp]'], port: dictionary['dependency['+i+'][depdPort]'], comment: dictionary['dependency['+i+'][depdComment]']});
+                        newDevice.push({name: dictionary['dependency['+i+'][depdName]'], ip: dictionary['dependency['+i+'][depdIp]'], port: dictionary['dependency['+i+'][depdPort]'], comment: dictionary['dependency['+i+'][depdComment]'], method: dictionary['dependency['+i+'][depdMethod]']});
                     }
                     var newDependency = {depname: depName, devices: newDevice};
 
@@ -105,6 +105,7 @@ function createNewData(data){
                 divName: data[i].devices[j].name,
                 ip: data[i].devices[j].ip,
                 port: data[i].devices[j].port,
+                method: data[i].devices[j].method,
                 comment: data[i].devices[j].comment
             });
         }

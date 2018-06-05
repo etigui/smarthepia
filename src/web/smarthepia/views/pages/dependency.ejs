@@ -75,6 +75,7 @@
                                                 <th>Div. name</th>
                                                 <th>IP</th>
                                                 <th>Port</th>
+                                                <th>Method</th>
                                                 <th>Comment</th>
                                                 <th>Action</th>
                                             </tr>
@@ -82,6 +83,8 @@
                                             <tbody></tbody>
                                             <tfoot>
                                             <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
                                                 <th rowspan="1" colspan="1">
                                                 </th>
                                                 <th rowspan="1" colspan="1">
@@ -155,7 +158,18 @@
                                                             <br>
                                                             <input name="depdPort" class="form-control" type="number" value="80" id="depdPort" placeholder="Port" autocomplete="off" required>
                                                         </div>
-                                                        <div class="form-group mb-1 col-sm-12 col-md-4">
+                                                        <div class="form-group mb-1 col-sm-12 col-md-2">
+                                                            <label for="donationinput2">Method
+                                                                <span class="danger">*</span>
+                                                            </label>
+                                                            <select name="depdMethod" id="depdMethod" class="form-control square">
+                                                                <option value="" selected="" disabled="" hidden="">Select method</option>
+                                                                <option value="HTTP">Http</option>
+                                                                <option value="Ping">Ping</option>
+                                                                <option value="Ping">Rest</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group mb-1 col-sm-12 col-md-2">
                                                             <label for="bio" class="cursor-pointer">Comment</label>
                                                             <br>
                                                             <textarea name="depdComment" class="form-control" id="bio" rows="1" placeholder="Comment" autocomplete="off" ></textarea>
@@ -250,10 +264,11 @@
                 { data: "divName"},
                 { data: "ip"},
                 { data: "port"},
+                { data: "method"},
                 { data: "comment"},
                 { data: "action"}
             ], columnDefs: [{
-                targets: 5,
+                targets: 6,
                 searching: false,
                 orderable: false,
                 data: null,
@@ -273,7 +288,8 @@
                 {targets: 1, className: "text-center"},
                 {targets: 2, className: "text-center"},
                 {targets: 3, className: "text-center"},
-                {targets: 4, className: "text-center"}]
+                {targets: 4, className: "text-center"},
+                {targets: 5, className: "text-center"}]
         });
     }
 
@@ -302,24 +318,31 @@
         if (!validIp) {
             toastr.error("IP must be in IPv4 or IPv6 format", "error", {closeButton: true});
         } else {
-            $.ajax({
-                url: "/dependency/create",
-                type: "post",
-                dataType: "json",
-                data: $('#createDependencySubmit').serialize(),
-                success: function (response) {
 
-                    // TODO reload dependency inventory
-                    $("#createDependencySubmit").get(0).reset();
-                    if (response.status === "success") {
-                        toastr.success(response.message, response.status, {closeButton: true})
-                    } else if (response.status === "error") {
-                        toastr.error(response.message, response.status, {closeButton: true})
-                    } else {
-                        toastr.error("Undefined", "error", {closeButton: true})
+            // Select error if not selected
+            if($("#depdMethod option:selected").text() === "Select method") {
+                toastr.error("You must choose a method", "error", {closeButton: true});
+            }else {
+
+                $.ajax({
+                    url: "/dependency/create",
+                    type: "post",
+                    dataType: "json",
+                    data: $('#createDependencySubmit').serialize(),
+                    success: function (response) {
+
+                        // TODO reload dependency inventory
+                        $("#createDependencySubmit").get(0).reset();
+                        if (response.status === "success") {
+                            toastr.success(response.message, response.status, {closeButton: true})
+                        } else if (response.status === "error") {
+                            toastr.error(response.message, response.status, {closeButton: true})
+                        } else {
+                            toastr.error("Undefined", "error", {closeButton: true})
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     });
 

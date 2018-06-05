@@ -26,8 +26,9 @@ router.post('/create', function(req, res, next) {
         var floor = req.body.floorDevice;
         var room = req.body.roomDevice;
         var comment = req.body.commentDevice;
-        if(name && address && dependency && active && building && floor && room){
-            var newLocation = {name: name, address: address, type: "Sensor", parent: parseInt(room, 10), enable: active, dependency: dependency, comment: (comment ? comment : "")};
+        var type = req.body.typeDevice;
+        if(name && address && dependency && active && building && floor && room && type){
+            var newLocation = {name: name, address: address, type: type, parent: parseInt(room, 10), enable: active, dependency: dependency, comment: (comment ? comment : "")};
             Devices.create(newLocation, function (error, user) {
                 if (error) {
                     console.log(error);
@@ -50,7 +51,7 @@ router.get('/listall', function(req, res, next) {
     if(auth.checkAuth(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, id : false, value: false, itemStyle: false, group: false, rules: false, orientation: false};
-        Devices.find({type:"Sensor"}, toRemove, function(err, user) {
+        Devices.find({$or: [{type: "Actuator"},  {type: "Sensor"} ]}, toRemove, function(err, user) {
             if (err) {
                 return next(error);
             }

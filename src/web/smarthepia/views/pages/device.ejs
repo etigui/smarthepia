@@ -72,6 +72,7 @@
                                             <thead>
                                             <tr>
                                                 <th>Name</th>
+                                                <th>Type</th>
                                                 <th>Address</th>
                                                 <th>Dpenedency</th>
                                                 <th>Parent</th>
@@ -83,6 +84,8 @@
                                             <tbody></tbody>
                                             <tfoot>
                                             <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
                                                 <th rowspan="1" colspan="1">
                                                 </th>
                                                 <th rowspan="1" colspan="1">
@@ -154,6 +157,16 @@
                                                     <select name="activeDevice" id="activeDevice" class="form-control square">
                                                         <option value="true">true</option>
                                                         <option value="false">false</option>
+                                                    </select>
+                                                </div>
+                                                <div id="" class="form-group">
+                                                    <label for="donationinput2">Type
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="typeDevice" id="typeDevice" class="form-control square">
+                                                        <option value="" selected="" disabled="" hidden="">Select type</option>
+                                                        <option value="Sensor">Sensor</option>
+                                                        <option value="Actuator">Actuator</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -287,6 +300,7 @@
             ajax: "/device/listall",
             columns: [
                 { data: "name"},
+                { data: "type"},
                 { data: "address"},
                 { data: "dependency"},
                 { data: "parent"},
@@ -294,7 +308,7 @@
                 { data: "comment"},
                 { data: "action"}
             ], columnDefs: [{
-                targets: 6,
+                targets: 7,
                 searching: false,
                 orderable: false,
                 data: null,
@@ -315,7 +329,8 @@
                 {targets: 2, className: "text-center"},
                 {targets: 1, className: "text-center"},
                 {targets: 0, className: "text-center"},
-                {targets: 5, className: "text-center"}]
+                {targets: 5, className: "text-center"},
+                {targets: 6, className: "text-center"}]
         });
     }
 
@@ -376,6 +391,8 @@
             toastr.error("You must choose a floor", "error", {closeButton: true});
         }else if($("#roomDevice option:selected").text() === "Select room") {
             toastr.error("You must choose a room", "error", {closeButton: true});
+        }else if($("#typeDevice option:selected").text() === "Select type") {
+            toastr.error("You must choose a type", "error", {closeButton: true});
         }else{
             $.ajax({
                 url: "/device/create",
