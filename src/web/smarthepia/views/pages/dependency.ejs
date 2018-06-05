@@ -68,7 +68,7 @@
                             <div class="card-content collapse show">
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="dependencyTable" class="table table-striped table-bordered text-inputs-searching dataTable">
+                                        <table id="dependencyTable" class="table table-striped table-bordered text-inputs-searching table-hover dataTable">
                                             <thead>
                                             <tr>
                                                 <th>Dep. name</th>
@@ -164,9 +164,8 @@
                                                             </label>
                                                             <select name="depdMethod" id="depdMethod" class="form-control square">
                                                                 <option value="" selected="" disabled="" hidden="">Select method</option>
-                                                                <option value="HTTP">Http</option>
                                                                 <option value="Ping">Ping</option>
-                                                                <option value="Ping">Rest</option>
+                                                                <option value="REST/HTTP">REST/HTTP</option>
                                                             </select>
                                                         </div>
                                                         <div class="form-group mb-1 col-sm-12 col-md-2">
@@ -240,20 +239,16 @@
     onLoad();
 
     function onLoad(){
-
         genDepenedencyTable();
-        $.ajax({
-            url: "/dependency/listall",
-            type: "get",
-            dataType: "json",
-            success: function (response) {
-                console.log(response);
-            }
-        });
     }
 
     function genDepenedencyTable(){
         $('#dependencyTable').dataTable({
+            dom: 'lBfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
             autoWidth: false,
             destroy: true,
             searching: true,
@@ -272,10 +267,10 @@
                 searching: false,
                 orderable: false,
                 data: null,
-                className: "text-center",
+                className: "text-center align-middle",
                 render: function (data, type, full, meta){
-                    return '<div class="btn-group mr-1 mb-1">\n' +
-                        '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                    return '<div class="btn-group" >\n' +
+                        '    <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
                         '        Action\n' +
                         '    </button>\n' +
                         '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
@@ -284,12 +279,12 @@
                         '    </div>\n' +
                         '</div>';
                 }
-            }, {targets: 0, className: "text-center"},
-                {targets: 1, className: "text-center"},
-                {targets: 2, className: "text-center"},
-                {targets: 3, className: "text-center"},
-                {targets: 4, className: "text-center"},
-                {targets: 5, className: "text-center"}]
+            }, {targets: 0, className: "text-center align-middle"},
+                {targets: 1, className: "text-center align-middle"},
+                {targets: 2, className: "text-center align-middle"},
+                {targets: 3, className: "text-center align-middle"},
+                {targets: 4, className: "text-center align-middle"},
+                {targets: 5, className: "text-center align-middle"}]
         });
     }
 
@@ -333,6 +328,7 @@
 
                         // TODO reload dependency inventory
                         $("#createDependencySubmit").get(0).reset();
+                        $('#dependencyTable').DataTable().ajax.reload();
                         if (response.status === "success") {
                             toastr.success(response.message, response.status, {closeButton: true})
                         } else if (response.status === "error") {

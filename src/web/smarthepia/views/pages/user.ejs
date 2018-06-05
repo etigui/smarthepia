@@ -38,7 +38,7 @@
     <!-- END toastr -->
 
 </head>
-<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 <% include ../partials/nav %>
 <% include ../partials/menu %>
 <div class="app-content content">
@@ -116,7 +116,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table id="userTable" class="table table-striped table-bordered text-inputs-searching dataTable">
+                            <table id="userTable" class="table table-striped table-bordered text-inputs-searching table-hover dataTable">
                                 <thead>
                                     <tr>
                                         <th>First name</th>
@@ -269,6 +269,11 @@
 
     function genUserTable(){
         $('#userTable').dataTable({
+            dom: 'lBfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
             autoWidth: false,
             destroy: true,
             searching: true,
@@ -286,9 +291,9 @@
                 searching: false,
                 orderable: false,
                 data: null,
-                className: "text-center",
+                className: "text-center align-middle",
                 render: function (data, type, full, meta){
-                    return '<div class="btn-group mr-1 mb-1">\n' +
+                    return '<div class="btn-group">\n' +
                         '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
                         '        Action\n' +
                         '    </button>\n' +
@@ -298,14 +303,14 @@
                         '    </div>\n' +
                         '</div>';
                 }
-            }, {targets: 4,className: "text-center", render: function (data, type, full, meta){
+            }, {targets: 4,className: "text-center align-middle", render: function (data, type, full, meta){
                     if(data === 0){return 'user';}
                     if(data === 1) {return 'manager';}
                     if(data === 2){return 'admin';}
-                }}, {targets: 3, className: "text-center"},
-                {targets: 2, className: "text-center"},
-                {targets: 1, className: "text-center"},
-                {targets: 0, className: "text-center"}]
+                }}, {targets: 3, className: "text-center align-middle"},
+                {targets: 2, className: "text-center align-middle"},
+                {targets: 1, className: "text-center align-middle"},
+                {targets: 0, className: "text-center align-middle"}]
         });
     }
 

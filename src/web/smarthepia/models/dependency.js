@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var Device = new mongoose.Schema({
+var DependencyDevice = new mongoose.Schema({
     name : {type: String, required: true},
     ip : {type: String, required: true},
     port : {type: Number, required: true},
@@ -15,7 +15,7 @@ var DependencySchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
-    devices: [Device],
+    devices: [DependencyDevice],
     action: {
         type: String,
         default: "",
