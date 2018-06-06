@@ -14,6 +14,11 @@
     <link rel="stylesheet" type="text/css" href="/css/vendors.css">
     <link rel="stylesheet" type="text/css" href="/vendors/css/ui/prism.min.css">
     <!-- END VENDOR CSS-->
+
+    <!-- BEGIN touchpin -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/forms/spinner/jquery.bootstrap-touchspin.css">
+    <!-- END touchspin -->
+
     <!-- BEGIN STACK CSS-->
     <link rel="stylesheet" type="text/css" href="/css/app.css">
     <!-- END STACK CSS-->
@@ -24,6 +29,17 @@
     <!-- BEGIN Custom CSS-->
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- END Custom CSS-->
+
+    <!-- BEGIN switch -->
+    <link rel="stylesheet" type="text/css" href="/css/plugins/forms/switch.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="/vendors/css/forms/toggle/switchery.min.css">-->
+    <!-- <link rel="stylesheet" type="text/css" href="/vendors/css/forms/toggle/switchery.min.css"> -->
+    <!-- END switch -->
+
+    <!-- BEGIN toastr -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
+    <!-- END toastr -->
+
 
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
@@ -39,10 +55,10 @@
         </div>
         <div class="content-body">
             <!-- advance charts section start -->
-            <section id="advance-charts">
+            <section id=""> <!-- advance-charts -->
                 <div class="row">
                     <div class="col-12">
-                        <div class="card">
+                        <div class="card border-top-primary">
                             <div class="card-header">
                                 <h4 class="card-title">Automation</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
@@ -51,13 +67,136 @@
                                         <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
                                         <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
                                         <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
+                                    <form id="automationSubmit" class="form form-horizontal">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class=" label-control" for="userinput1">Rules action</label>
+                                                    <select name="action" id="action" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select action</option>
+                                                        <option value="Add">Add</option>
+                                                        <option value="Edit">Edit</option>
+                                                        <option value="Edit">Delete</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div id="rulesDiv" class="form-group">
+                                                    <label class="label-control" for="userinput1">Rules name</label>
+                                                    <input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off">
+                                                </div>
+                                            </div>
+                                        </div>
 
+
+                                        <h4 class="form-section"><i class="ft-settings"></i> General</h4>
+
+                                        <div class="form-group pb-1">
+                                            <fieldset>
+                                                <div class="float-left sw">
+                                                    <label for="switchery" class="label-control">Automation&nbsp;</label>
+                                                    <input type="checkbox" name="active" id="active" data-off-active-cls="btn-danger" data-on-active-cls="btn-success" class="switch hidden" data-on-label="On" data-off-label="Off" data-toggle-key-codes="[32]" checked>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6 mb-2">
+                                                <label for="userinput1">Day time start</label>
+                                                <div class="position-relative has-icon-left">
+                                                    <input type="time" name="dayTimeFrom" id="dayTimeFrom" class="form-control square" value="08:00" required>
+                                                    <div class="form-control-position">
+                                                        <i class="ft-clock"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-6 mb-2">
+                                                <label for="userinput1">Night time start</label>
+                                                <div class="position-relative has-icon-left">
+                                                    <input type="time" name="nightTimeFrom" id="nightTimeFrom" class="form-control square" value="22:00" required>
+                                                    <div class="form-control-position">
+                                                        <i class="ft-clock"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6 mb-2">
+                                                <label for="userinput2">Temperature</label>
+                                                <div class="input-group bootstrap-touchspin">
+                                                    <input type="text" name="temp" id="temp" class="touchspin form-control" value="20" data-bts-postfix="°C" data-bts-min="18" data-bts-max="30" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-6 mb-2">
+                                                <label for="userinput2">Humidity</label>
+                                                <div class="input-group bootstrap-touchspin">
+                                                    <input type="text" name="humidity" id="humidity" class="touchspin form-control" value="45" data-bts-postfix="%" data-bts-min="0" data-bts-max="100" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h4 class="form-section"><i class="ft-thermometer"></i> Valve</h4>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6 mb-2">
+                                                <div class="form-group">
+                                                    <label class=" label-control" for="userinput1">Day and night rules</label>
+                                                    <select name="dnRulesValve" id="dnRulesValve" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                                        <option value="1">Off (valve auto)</option>
+                                                        <option value="2">On (auto)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <h4 class="form-section"><i class="ft-menu"></i> Blind</h4>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6 mb-2">
+                                                <div class="form-group">
+                                                    <label class=" label-control" for="userinput1">Day rules</label>
+                                                    <select name="dayRulesBlind" id="dayRulesBlind" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                                        <option value="1">Off (manual)</option>
+                                                        <option value="2">1 (sun & motion)</option>
+                                                        <option value="3">2 (sun & not motion)</option>
+                                                        <option value="4">3 (rain & not motion)</option>
+                                                        <option value="5">Full (1 & 2 & 3)</option>
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-6 mb-2">
+                                                <div class="form-group">
+                                                    <label class=" label-control" for="userinput1">Night rules</label>
+                                                    <select name="nightRulesBlind" id="nightRulesBlind" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                                        <option value="1">Off (manual)</option>
+                                                        <option value="2">On (close night time)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions right">
+                                            <button type="reset" class="btn btn-warning mr-1">
+                                                <i class="fa fa-refresh position-right"></i> Reset
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Send
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -72,6 +211,7 @@
 <!-- BEGIN VENDOR JS-->
 <script src="/vendors/js/vendors.min.js" type="text/javascript"></script>
 <!-- BEGIN VENDOR JS-->
+
 <!-- BEGIN PAGE VENDOR JS-->
 <script type="/text/javascript" src="vendors/js/ui/prism.min.js"></script>
 <!-- END PAGE VENDOR JS-->
@@ -82,6 +222,134 @@
 <!-- END STACK JS-->
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN touchpin -->
+<script src="/vendors/js/forms/spinner/jquery.bootstrap-touchspin.js" type="text/javascript"></script>
+<script src="/js/scripts/forms/input-groups.min.js" type="text/javascript"></script>
+<!-- END touchspin -->
+
+<!-- BEGIN switch -->
+<!-- <script src="/vendors/js/forms/toggle/switchery.min.js" type="text/javascript"></script> -->
+<script src="/vendors/js/forms/toggle/bootstrap-checkbox.min.js" type="text/javascript"></script>
+<script src="/js/scripts/forms/switch.min.js" type="text/javascript"></script>$
+<script src="/js/scripts/forms/input-groups.min.js" type="text/javascript"></script>
+<!-- END switch -->
+
+<!-- BEGIN toastr -->
+<script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
+<script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
+<!-- END toastr -->
+
+
+<script>
+
+    onLoad();
+
+    function onLoad(){
+        $('#rulesDiv').hide();
+    }
+
+    // Fill in automation name select option
+    function loadRulesName(){
+        $.ajax({
+            url: "/automation/listname",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $.each(response.data, function (i, item) {
+                        $('#rulesName').append($('<option>', {
+                            value: item.name,
+                            text : item.name
+                        }));
+                });
+            }
+        });
+    }
+
+    function loadRuleInfo(){
+
+        var data = $("#rulesName option:selected").text();
+        if(data){
+            $.ajax({
+                url: "/automation/list",
+                type: "get",
+                dataType: "json",
+                data: {name: data},
+                success: function (response) {
+                    $('dayTimeFrom').val(response.data.dt);
+                    $('nightTimeFrom').val(response.data.nt);
+                    $('temp').val(response.data.temp);
+                    $('humidity').val(response.data.humidity);
+                }
+            });
+        }else{
+            toastr.error("Error loading rule info", "Error", {closeButton: true})
+        }
+
+
+    }
+
+    function addEditeRules(action){
+        $.ajax({
+            url: "/automation/" + action,
+            type: "post",
+            dataType: "json",
+            data: $('#automationSubmit').serialize(),
+            success: function (response) {
+
+                // Reset to default
+                $("#automationSubmit").get(0).reset();
+                $('#action').prop('selectedIndex',0);
+                $('#rulesDiv').hide();
+                if (response.status === "success") {
+                    toastr.success(response.message, response.status, {closeButton: true})
+                } else if (response.status === "error") {
+                    toastr.error(response.message, response.status, {closeButton: true})
+                } else {
+                    toastr.error("Undefined", "error", {closeButton: true})
+                }
+            }
+        });
+    }
+
+    // Check action wanted (edit/add rules)
+    $("#action").change(function() {
+        if($("#action option:selected").text() === "Add"){
+            $('#rulesDiv').show();
+            $("#rulesName").replaceWith('<input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off" required>');
+        }else if($("#action option:selected").text() === "Edit"){
+            loadRulesName();
+            $('#rulesDiv').show();
+            $("#rulesName").replaceWith('<select name="rulesName" id="rulesName" class="form-control square" required><option value="" selected="" disabled="" hidden="">Select rule</option></select>');
+        }else if($("#action option:selected").text() === "Delete"){
+            loadRulesName();
+            $('#rulesDiv').show();
+            $("#rulesName").replaceWith('<select name="rulesName" id="rulesName" class="form-control square" required><option value="" selected="" disabled="" hidden="">Select rule</option></select>');
+        }
+    });
+
+
+    $(document).on('change', '#rulesName', function() {
+        loadRuleInfo();
+    });
+
+    // Submit data to add, edit or delete
+    $( "#automationSubmit" ).submit(function( event ) {
+        event.preventDefault();
+        if($("#action option:selected").text() === "Add"){
+            addEditeRules('create');
+        }else if($("#action option:selected").text() === "Edit"){
+            addEditeRules('edit');
+        }else if($("#action option:selected").text() === "Delete"){
+            addEditeRules('delete');
+        } else{
+            toastr.error("You must choose a rule action", "error", {closeButton: true});
+        }
+    });
+
+
+</script>
+
 
 </body>
 </html>

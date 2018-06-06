@@ -3,6 +3,7 @@ var router = express.Router();
 var User = require('../models/users');
 var Dependency = require('../models/dependency');
 var Devices = require('../models/devices');
+var Automation = require('../models/automation');
 var bcrypt = require('bcrypt');
 
 module.exports = {
@@ -58,6 +59,16 @@ module.exports = {
             if (err) {
                 return callback(err)
             } else if(dependency.length > 0){
+                return callback(false);
+            }else {
+                return callback(true);
+            }
+        });
+    },checkUniqueAutomation: function CheckUA(value, callback){
+        Automation.find({ name: value }).exec(function (err, automation) {
+            if (err) {
+                return callback(err)
+            } else if(automation.length > 0){
                 return callback(false);
             }else {
                 return callback(true);

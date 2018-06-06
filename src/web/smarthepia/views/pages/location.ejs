@@ -53,7 +53,7 @@
             <section id="advance-charts">
                 <div class="row">
                     <div class="col-12">
-                        <div class="card">
+                        <div class="card border-top-primary">
                             <div class="card-header">
                                 <h4 class="card-title">Inventory</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
@@ -113,7 +113,7 @@
             <section id="advance-charts">
                 <div class="row justify-content-md-center">
                     <div class="col-md-6">
-                        <div class="card">
+                        <div class="card border-top-primary">
                             <div class="card-header">
                                 <h4 class="card-title">Add location</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
@@ -131,7 +131,7 @@
                                         <div class="form-body">
                                             <div class="form-group">
                                                 <label for="donationinput2">Location</label>
-                                                <select name="locationCreate" id="locationCreate" class="form-control square">
+                                                <select name="locationCreate" id="locationCreate" class="form-control square" required>
                                                     <option value="" selected disabled hidden>Select location</option>
                                                     <option value="Building">Building</option>
                                                     <option value="Floor">Floor</option>
@@ -312,10 +312,7 @@
     // Create new location (Building, Floor, Room)
     $("#createLocationSubmit").submit(function( event ) {
         event.preventDefault();
-
         var noError = true;
-
-
         // Select error if not selected
         if($("#locationCreate option:selected").text() === "Select location") {
             toastr.error("You must choose a location", "error", {closeButton: true});
