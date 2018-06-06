@@ -14,40 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="alarm.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/routes/alarm.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="18" lean-forward="true" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="alarm.ejs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/pages/alarm.ejs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="714">
-              <caret line="57" column="41" selection-start-line="57" selection-start-column="41" selection-end-line="57" selection-end-column="59" />
-              <folding>
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="automation.ejs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/views/pages/automation.ejs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="279" column="61" lean-forward="true" selection-start-line="279" selection-start-column="61" selection-end-line="279" selection-end-column="61" />
-              <folding>
-                <element signature="e#5689#5695#0#HTML" expanded="true" />
-              </folding>
+            <state relative-caret-position="-474">
+              <caret line="284" column="44" selection-start-line="284" selection-start-column="44" selection-end-line="284" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -55,7 +26,7 @@
       <file leaf-file-name="automation.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/automation.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
+            <state relative-caret-position="390">
               <caret line="32" column="9" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="9" />
             </state>
           </provider>
@@ -64,26 +35,8 @@
       <file leaf-file-name="automation.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/automation.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="102" column="52" lean-forward="true" selection-start-line="102" selection-start-column="52" selection-end-line="102" selection-end-column="52" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="location.ejs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/pages/location.ejs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="314" column="27" lean-forward="true" selection-start-line="314" selection-start-column="27" selection-end-line="314" selection-end-column="27" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dependency.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/routes/dependency.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="83" column="8" lean-forward="true" selection-start-line="83" selection-start-column="8" selection-end-line="90" selection-end-column="11" />
+            <state relative-caret-position="869">
+              <caret line="109" selection-start-line="109" selection-end-line="109" />
             </state>
           </provider>
         </entry>
@@ -100,9 +53,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>checkDupArray</find>
-      <find>list</find>
-      <find>createLocation</find>
       <find>createDependency</find>
       <find>buildingCreate</find>
       <find>profile</find>
@@ -130,6 +80,9 @@
       <find>rules</find>
       <find>console</find>
       <find>find</find>
+      <find>delete</find>
+      <find>rulesName</find>
+      <find>addEditeRules</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -180,10 +133,10 @@
         <option value="$PROJECT_DIR$/views/pages/statistic.ejs" />
         <option value="$PROJECT_DIR$/views/pages/dependency.ejs" />
         <option value="$PROJECT_DIR$/views/pages/device.ejs" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/controllers/validation.js" />
         <option value="$PROJECT_DIR$/models/automation.js" />
         <option value="$PROJECT_DIR$/views/pages/location.ejs" />
+        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/routes/automation.js" />
         <option value="$PROJECT_DIR$/views/pages/automation.ejs" />
       </list>
@@ -348,11 +301,12 @@
       <workItem from="1528182313524" duration="21063000" />
       <workItem from="1528234681711" duration="2782000" />
       <workItem from="1528268950307" duration="35912000" />
+      <workItem from="1528318882696" duration="8292000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="392205000" />
+    <option name="totallyTimeSpent" value="400497000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -370,9 +324,9 @@
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2247191" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4976867" weight="0.32909605" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5181758" side_tool="true" visible="true" weight="0.32909605" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.51883674" side_tool="true" visible="true" weight="0.32909605" />
       <window_info anchor="bottom" id="Version Control" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4818242" weight="0.32909605" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.48116326" weight="0.32909605" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4976867" weight="0.32909605" />
@@ -531,13 +485,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/user.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="20" selection-start-line="20" selection-end-line="27" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/users.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -573,9 +520,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="47" column="20" lean-forward="true" selection-start-line="47" selection-start-column="20" selection-end-line="47" selection-end-column="20" />
-          <folding>
-            <element signature="n#style#0;n#table#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -611,20 +555,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="233">
           <caret line="328" column="59" lean-forward="true" selection-start-line="328" selection-start-column="59" selection-end-line="328" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="20" column="24" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/alarm.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="18" lean-forward="true" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -670,25 +600,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/dependency.js">
+    <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="83" column="8" lean-forward="true" selection-start-line="83" selection-start-column="8" selection-end-line="90" selection-end-column="11" />
+        <state relative-caret-position="221">
+          <caret line="16" column="37" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/user.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="108" selection-start-line="108" selection-end-line="115" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/views/pages/alarm.ejs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="714">
+        <state relative-caret-position="17">
           <caret line="57" column="41" selection-start-line="57" selection-start-column="41" selection-end-line="57" selection-end-column="59" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/alarm.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -699,27 +635,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/routes/dependency.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="77" column="33" lean-forward="true" selection-start-line="77" selection-start-column="33" selection-end-line="77" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/routes/automation.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="102" column="52" lean-forward="true" selection-start-line="102" selection-start-column="52" selection-end-line="102" selection-end-column="52" />
+        <state relative-caret-position="869">
+          <caret line="109" selection-start-line="109" selection-end-line="109" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/automation.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
+        <state relative-caret-position="390">
           <caret line="32" column="9" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/views/pages/automation.ejs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="279" column="61" lean-forward="true" selection-start-line="279" selection-start-column="61" selection-end-line="279" selection-end-column="61" />
-          <folding>
-            <element signature="e#5689#5695#0#HTML" expanded="true" />
-          </folding>
+        <state relative-caret-position="-474">
+          <caret line="284" column="44" selection-start-line="284" selection-start-column="44" selection-end-line="284" selection-end-column="44" />
         </state>
       </provider>
     </entry>

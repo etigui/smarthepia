@@ -89,13 +89,10 @@ router.get('/listname', function(req, res, next) {
 // GET /automation/list
 router.get('/list', function(req, res, next) {
     if(auth.checkAuth(req, auth.getManager())){
-
         var name = req.query.name;
-
         if(name){
-
             let toRemove = {__v: false, _id: false};
-            Automation.find({name: name}, toRemove, function(err, automation) {
+            Automation.findOne({name: name}, toRemove, function(err, automation) {
                 if (err) {
                     return next(error);
                 }
@@ -106,22 +103,51 @@ router.get('/list', function(req, res, next) {
             res.type('json');
             return res.json({status: "error", message: "All field must be filled"});
         }
-
-
-
-        /*res.type('json');
-        let toRemove = {__v: false, _id: false};
-        Automation.find({}, toRemove, function(err, automation) {
-            if (err) {
-                return next(error);
-            }
-            res.type('json');
-            return res.json({data: automation});
-        });*/
     }else{
         return res.redirect('/');
     }
 });
+
+// POST /automation/delete
+router.post('/delete', function(req, res, next) {
+    if(auth.checkAuth(req, auth.getManager())){
+
+        var ruleName = req.body.name;
+        console.log(ruleName);
+        if(ruleName) {
+
+            // Check if the automation rule name exists
+            validation.checkUniqueAutomation(ruleName, function (matchAutomation) {
+                if (!matchAutomation) {
+
+                    // Remove automation name entree
+                    Automation.remove({name: ruleName}, function (err, automation) {
+                        if (err) {
+                            return next(error);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Automation rule " + ruleName + " has been successfully deleted"});
+                    });
+
+                } else {
+                    res.type('json');
+                    return res.json({status: "error", message: "Automation name must exists"});
+                }
+            });
+        }else{
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
+    }else{
+        return res.redirect('/');
+    }
+});
+
+
+
+
+
+
 
 
 

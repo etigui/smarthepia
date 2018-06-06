@@ -88,7 +88,10 @@
                                             <div class="col-md-2">
                                                 <div id="rulesDiv" class="form-group">
                                                     <label class="label-control" for="userinput1">Rules name</label>
-                                                    <input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off">
+                                                    <!-- <input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off"> -->
+                                                    <select name="rulesName" id="rulesName" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -189,9 +192,6 @@
                                         </div>
 
                                         <div class="form-actions right">
-                                            <button type="reset" class="btn btn-warning mr-1">
-                                                <i class="fa fa-refresh position-right"></i> Reset
-                                            </button>
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="fa fa-check-square-o"></i> Send
                                             </button>
@@ -243,113 +243,134 @@
 
 <script>
 
-    onLoad();
+        onLoad();
 
-    function onLoad(){
-        $('#rulesDiv').hide();
-    }
+        function onLoad(){
+            $('#rulesDiv').hide();
+        }
 
-    // Fill in automation name select option
-    function loadRulesName(){
-        $.ajax({
-            url: "/automation/listname",
-            type: "get",
-            dataType: "json",
-            success: function (response) {
-                $.each(response.data, function (i, item) {
-                        $('#rulesName').append($('<option>', {
-                            value: item.name,
-                            text : item.name
-                        }));
-                });
+        // When we wanna load the rule info by name
+        $(document).on('change','#rulesName',function(){
+
+            // Check is select => prevent input change
+            if($(this).is("select")){
+                loadRuleInfo();
             }
         });
-    }
 
-    function loadRuleInfo(){
+        // Check action wanted (edit/add rules)
+        $("#action").change(function() {
+            var selected = $("#action option:selected").text();
+            var name = $("#rulesName");
+            if(selected === "Add"){
+                $('#rulesDiv').show();
+                name.replaceWith('<input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off" required>');
+            }else if(selected === "Edit" || selected === "Delete"){
+                $('#rulesDiv').show();
+                name.replaceWith('<select name="rulesName" id="rulesName" class="form-control square" required><option value="" selected="" disabled="" hidden="">Select rule</option></select>');
+                name.empty()
+                loadRulesName();
+            }
+        });
 
-        var data = $("#rulesName option:selected").text();
-        if(data){
+        // Submit data to add, edit or delete
+        $( "#automationSubmit" ).submit(function( event ) {
+            var data = $('#automationSubmit').serialize();
+            var selected = $("#action option:selected").text();
+            event.preventDefault();
+            if(selected === "Add"){
+                addEditeRules('create', data);
+            }else if(selected === "Edit"){
+                addEditeRules('edit', data);
+            }else if(selected === "Delete"){
+                removeRuleByName($("#rulesName option:selected").text());
+            } else{
+                toastr.error("You must choose a rule action", "error", {closeButton: true});
+            }
+        });
+
+        // Fill in automation name select option
+        function loadRulesName(){
+            $.ajax({
+                url: "/automation/listname",
+                type: "get",
+                dataType: "json",
+                success: function (response) {
+                    $('#rulesName').append($('<option>', {value: "", text : "Select rule", selected:"", disabled: "", hidden: ""}));
+                    $.each(response.data, function (i, item) {
+                            $('#rulesName').append($('<option>', {
+                                //value: item.name,
+                                text : item.name
+                            }));
+                    });
+                }
+            });
+        }
+
+        function loadRuleInfo(){
             $.ajax({
                 url: "/automation/list",
                 type: "get",
                 dataType: "json",
-                data: {name: data},
+                data: {name: $("#rulesName option:selected").text()},
                 success: function (response) {
-                    $('dayTimeFrom').val(response.data.dt);
-                    $('nightTimeFrom').val(response.data.nt);
-                    $('temp').val(response.data.temp);
-                    $('humidity').val(response.data.humidity);
+                    console.log(response.data);
+                    $('#dayTimeFrom').val(response.data.dt);
+                    $('#nightTimeFrom').val(response.data.nt);
+                    $('#temp').val(response.data.temp);
+                    $('#humidity').val(response.data.humidity);
+                    $('#dnRulesValve option:eq('+response.data.vdr+')').prop('selected', 'selected');
+                    $('#dayRulesBlind option:eq('+response.data.bdr+')').prop('selected', 'selected');
+                    $('#nightRulesBlind option:eq('+response.data.bnr+')').prop('selected', 'selected');
                 }
             });
-        }else{
-            toastr.error("Error loading rule info", "Error", {closeButton: true})
         }
 
+        function removeRuleByName(name){
+            $.ajax({
+                url: "/automation/delete",
+                type: "post",
+                dataType: "json",
+                data: {name: name},
+                success: function (response) {
 
-    }
-
-    function addEditeRules(action){
-        $.ajax({
-            url: "/automation/" + action,
-            type: "post",
-            dataType: "json",
-            data: $('#automationSubmit').serialize(),
-            success: function (response) {
-
-                // Reset to default
-                $("#automationSubmit").get(0).reset();
-                $('#action').prop('selectedIndex',0);
-                $('#rulesDiv').hide();
-                if (response.status === "success") {
-                    toastr.success(response.message, response.status, {closeButton: true})
-                } else if (response.status === "error") {
-                    toastr.error(response.message, response.status, {closeButton: true})
-                } else {
-                    toastr.error("Undefined", "error", {closeButton: true})
+                    // Reset to default
+                    $("#automationSubmit").get(0).reset();
+                    $('#action').prop('selectedIndex',0);
+                    $('#rulesDiv').hide();
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
                 }
-            }
-        });
-    }
-
-    // Check action wanted (edit/add rules)
-    $("#action").change(function() {
-        if($("#action option:selected").text() === "Add"){
-            $('#rulesDiv').show();
-            $("#rulesName").replaceWith('<input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off" required>');
-        }else if($("#action option:selected").text() === "Edit"){
-            loadRulesName();
-            $('#rulesDiv').show();
-            $("#rulesName").replaceWith('<select name="rulesName" id="rulesName" class="form-control square" required><option value="" selected="" disabled="" hidden="">Select rule</option></select>');
-        }else if($("#action option:selected").text() === "Delete"){
-            loadRulesName();
-            $('#rulesDiv').show();
-            $("#rulesName").replaceWith('<select name="rulesName" id="rulesName" class="form-control square" required><option value="" selected="" disabled="" hidden="">Select rule</option></select>');
+            });
         }
-    });
 
+        function addEditeRules(action, data){
+            $.ajax({
+                url: "/automation/" + action,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (response) {
 
-    $(document).on('change', '#rulesName', function() {
-        loadRuleInfo();
-    });
-
-    // Submit data to add, edit or delete
-    $( "#automationSubmit" ).submit(function( event ) {
-        event.preventDefault();
-        if($("#action option:selected").text() === "Add"){
-            addEditeRules('create');
-        }else if($("#action option:selected").text() === "Edit"){
-            addEditeRules('edit');
-        }else if($("#action option:selected").text() === "Delete"){
-            addEditeRules('delete');
-        } else{
-            toastr.error("You must choose a rule action", "error", {closeButton: true});
+                    // Reset to default
+                    $("#automationSubmit").get(0).reset();
+                    $('#action').prop('selectedIndex',0);
+                    $('#rulesDiv').hide();
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
         }
-    });
-
-
 </script>
-
-
 </body>
 </html>
