@@ -289,7 +289,7 @@
             }
         });
 
-        // Fill in automation name select option
+        // Fill in automation rule name select option
         function loadRulesName(){
             $.ajax({
                 url: "/automation/listname",
@@ -299,7 +299,7 @@
                     $('#rulesName').append($('<option>', {value: "", text : "Select rule", selected:"", disabled: "", hidden: ""}));
                     $.each(response.data, function (i, item) {
                             $('#rulesName').append($('<option>', {
-                                //value: item.name,
+                                value: item.name,
                                 text : item.name
                             }));
                     });
@@ -314,7 +314,6 @@
                 dataType: "json",
                 data: {name: $("#rulesName option:selected").text()},
                 success: function (response) {
-                    console.log(response.data);
                     $('#dayTimeFrom').val(response.data.dt);
                     $('#nightTimeFrom').val(response.data.nt);
                     $('#temp').val(response.data.temp);
@@ -322,6 +321,12 @@
                     $('#dnRulesValve option:eq('+response.data.vdr+')').prop('selected', 'selected');
                     $('#dayRulesBlind option:eq('+response.data.bdr+')').prop('selected', 'selected');
                     $('#nightRulesBlind option:eq('+response.data.bnr+')').prop('selected', 'selected');
+
+                    if(response.data.active){
+                        $('#active').prop('checked', true);
+                    }else{
+                        $('#active').prop('checked', false);
+                    }
                 }
             });
         }

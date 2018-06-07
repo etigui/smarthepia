@@ -61,7 +61,7 @@ router.post('/create', function(req, res, next) {
                 }
             }else if(locationType === "Room"){
                 if(room && floor && building && rule && orientation){
-                    newLocation = {name: room, type: "Room", parent: parseInt(floor, 10), enable: true, orientation: orientation, comment: (comment ? comment : "")};
+                    newLocation = {name: room, type: "Room", parent: parseInt(floor, 10), enable: true, orientation: orientation, comment: (comment ? comment : ""), rules: rule};
                     Devices.create(newLocation, function (error, user) {
                         if (error) {
                             console.log(error);

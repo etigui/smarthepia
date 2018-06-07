@@ -174,7 +174,6 @@
                                                 </label>
                                                 <select name="ruleCreate" id="ruleCreate" class="form-control square">
                                                     <option value="" selected disabled hidden>Select rule</option>
-                                                    <option value="Default">Default</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
@@ -261,6 +260,24 @@
         });
     }
 
+    // Fill in automation rule name select option
+    function loadRules(){
+        $.ajax({
+            url: "/automation/listname",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $('#ruleCreate').append($('<option>', {value: "", text : "Select rule", selected:"", disabled: "", hidden: ""}));
+                $.each(response.data, function (i, item) {
+                    $('#ruleCreate').append($('<option>', {
+                        value: item.name,
+                        text : item.name
+                    }));
+                });
+            }
+        });
+    }
+
     function genLocationTable(){
         $('#locationTable').dataTable({
             dom: 'lBfrtip',
@@ -313,19 +330,21 @@
     $("#createLocationSubmit").submit(function( event ) {
         event.preventDefault();
         var noError = true;
+        var selectedLocation = $("#locationCreate option:selected").text();
+        var selectedBuilding = $("#buildingCreate option:selected").text();
         // Select error if not selected
-        if($("#locationCreate option:selected").text() === "Select location") {
+        if(selectedLocation === "Select location") {
             toastr.error("You must choose a location", "error", {closeButton: true});
             noError = false;
         }
-        if($("#locationCreate option:selected").text() === "Floor") {
-            if($("#buildingCreate option:selected").text() === "Select building") {
+        if(selectedLocation === "Floor") {
+            if(selectedBuilding === "Select building") {
                 toastr.error("You must choose a building location", "error", {closeButton: true});
                 noError = false;
             }
         }
-        if($("#locationCreate option:selected").text() === "Room") {
-            if($("#buildingCreate option:selected").text() === "Select building" || $("#floorCreate option:selected").text() === "Select floor" || $("#ruleCreate option:selected").text() === "Select rule") {
+        if(selectedLocation === "Room") {
+            if(selectedBuilding === "Select building" || $("#floorCreate option:selected").text() === "Select floor" || $("#ruleCreate option:selected").text() === "Select rule") {
                 toastr.error("You must choose rule, building and floor location", "error", {closeButton: true});
                 noError = false;
             }
@@ -409,8 +428,10 @@
 
             // Reset building and floor select option
             $('#buildingCreate').empty().append('<option value="" selected disabled hidden>Select building</option>');
-            loadBuilding('#buildingCreate')
+            loadBuilding('#buildingCreate');
             $('#floorCreate').empty().append('<option value="" selected disabled hidden>Select floor</option>');
+            $('#ruleCreate').empty();
+            loadRules();
 
             $('#buildingDiv').show();
             $('#floorDiv').show();
