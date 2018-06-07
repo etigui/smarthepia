@@ -15,12 +15,11 @@ def main():
     # MongoDB connection
     ip = "10.10.0.51"
     port = 27017
-    timeout = 2
 
     # Class
-    c_alarm = alarm.Alarm(st_alarm)
-    c_automation = automation.Automation(st_automation)
-    c_sensor = sensor.Sensor(st_sensor, ip, port, timeout)
+    c_alarm = alarm.Alarm(st_alarm, ip, port)
+    c_automation = automation.Automation(st_automation, ip, port)
+    c_sensor = sensor.Sensor(st_sensor, ip, port)
 
     # Process
     p_alarm = multiprocessing.Process(target=c_alarm.run)

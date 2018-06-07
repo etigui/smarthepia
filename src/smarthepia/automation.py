@@ -4,8 +4,11 @@ import pymongo
 
 class Automation(object):
 
-    def __init__(self, sleep_time):
+    def __init__(self, sleep_time, ip, port):
         self.sleep_time = sleep_time
+        self.__client = None
+        self.ip = ip
+        self.port = port
 
     def run(self):
         while True :
