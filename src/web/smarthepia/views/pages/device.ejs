@@ -46,7 +46,7 @@
         <div class="content-header row">
             <div class="content-header-left col-md-6 col-12 mb-1">
                 <h3 class="content-header-title">Device</h3>
-                <span><%= dateTime %></span>
+                <span id="serverTime"></span>
             </div>
         </div>
         <div class="content-body">
@@ -421,6 +421,48 @@
             });
         }
     });
+
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    //Users time
+    var timeLocal = new Date();
+    //Servers time
+    var timeServer = new Date("<%= dateTime %>");
+
+    //Calculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    //initalize the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+
+    function formatDate(timeLocal){
+        var hour = timeLocal.getHours();
+        var min = timeLocal.getMinutes();
+        var sec = timeLocal.getSeconds();
+        var day = timeLocal.getDay();
+        var month = (timeLocal.getMonth() + 1);
+        var year = timeLocal.getFullYear();
+        hour = hour < 10 ? '0'+ hour : hour;
+        min= min < 10 ? '0'+ min : min;
+        sec = sec < 10 ? '0'+ sec : sec;
+        day = day < 10 ? '0'+ day : day;
+        month = month < 10 ? '0'+ month : month;
+        return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
+    }
+
+    //The ticking clock function
+    function timeTick(){
+        //grab updated time
+        timeLocal = new Date();
+        //add time difference
+        timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
+        //display the value
+
+        document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
+    }
+    // END Server time section /////////////////////////////////////////////////////////////
 
 </script>
 

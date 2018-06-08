@@ -2,6 +2,7 @@ import time
 import urllib3
 import json
 import pymongo
+import datetime
 from pymongo.errors import ConnectionFailure
 
 # Local import
@@ -20,13 +21,15 @@ class Sensor(object):
 
     def run(self):
         while True:
-            print("Sensor")
+
+            print(f"Sensor: {datetime.datetime.now()}")
 
             # Init MongoDB client
             status, self.__client = self.db_connect()
 
             # Check if mongodb has been well init
             if status:
+                print("DB connection ok")
 
                 # Get all dependency devices and device and add to db
                 self.add_db_measures(self.get_db_dependency_devices())
@@ -47,7 +50,7 @@ class Sensor(object):
 
                 # Check if http error or device address not available or wrong
                 if status:
-                    print(measures['humidity'])
+                    self.__client.smarthepia.statistics.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now()})
 
     # Get device measures
     def get_mesures(self, route):
@@ -59,8 +62,10 @@ class Sensor(object):
             data = response.data.decode("utf-8")
             if data != const.wrong_not_available_device:
                 return True, json.loads(data)
+            print(f"Sensor error wrong: {route}")
             return False, {}
         else:
+            print("Sensor error 200")
             return False, {}
 
 

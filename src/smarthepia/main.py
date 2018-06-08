@@ -10,12 +10,12 @@ def main():
 
     # Set time for each sleep
     factor = 60
-    st_alarm = 5 * factor
-    st_automation = 60 * factor
-    st_sensor = 5# * factor
+    st_alarm = 100 * factor
+    st_automation = 100 * factor
+    st_sensor = 10 * factor
 
     # MongoDB connection
-    ip = "10.10.0.51"
+    ip = "localhost"
     port = 27017
 
     # Class

@@ -39,7 +39,6 @@ router.post('/create', function(req, res, next) {
                         newDevice.push({name: dictionary['dependency['+i+'][depdName]'], ip: dictionary['dependency['+i+'][depdIp]'], port: dictionary['dependency['+i+'][depdPort]'], comment: dictionary['dependency['+i+'][depdComment]'], method: dictionary['dependency['+i+'][depdMethod]']});
                     }
                     var newDependency = {depname: depName, devices: newDevice};
-
                     Dependency.create(newDependency, function (error, user) {
                         if (error) {
                             console.log(error);

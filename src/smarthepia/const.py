@@ -9,8 +9,12 @@ wrong_not_available_device = "Node not ready or wrong sensor node type !"
 
 
 # Routes ZWAVE
-def route_device_list(ip, port):
+def route_node_list(ip, port):
     return f"http://{ip}:{port}/nodes/get_nodes_list"
+
+
+def route_sensors_list(ip, port):
+    return f"http://{ip}:{port}/sensors/get_sensors_list"
 
 
 def route_device_all_measures(ip, port, address):

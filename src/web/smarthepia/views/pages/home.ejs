@@ -36,7 +36,7 @@
         <div class="content-header row">
             <div class="content-header-left col-md-6 col-12 mb-1">
                 <h3 class="content-header-title">Home</h3>
-                <span><%= dateTime %></span>
+                <span id="serverTime"></span>
             </div>
         </div>
         <div class="content-body">
@@ -87,11 +87,20 @@
 <!-- END STACK JS-->
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->
-<script type="text/javascript" src="/test/echarts.min.js"></script>
 
+<!-- BEGIN libs for echarts -->
+<script type="text/javascript" src="/test/echarts.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.4.1/math.min.js"></script>
+<!-- END libs for echarts -->
+
 <script>
 
+    onLoad();
+
+
+    function onLoad() {
+
+    }
 
     var dom = document.getElementById("tree-map");
     var myChart = echarts.init(dom);
@@ -101,6 +110,8 @@
 
     // Get devices list (devices and location)
     $.get('/home/list').done(function (data) {
+
+
         function getNestedChildren(arr, parent) {
             var out = []
             for(var i in arr) {
@@ -173,6 +184,8 @@
     });
 
 
+
+
     /*var dbData = [
         {id: 1, type: 0, name: 'building A', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
         {id: 2, type: 0,name: 'building B', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
@@ -205,6 +218,47 @@
         }
     });
 
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    //Users time
+    var timeLocal = new Date();
+    //Servers time
+    var timeServer = new Date("<%= dateTime %>");
+
+    //Calculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    //initalize the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+
+    function formatDate(timeLocal){
+        var hour = timeLocal.getHours();
+        var min = timeLocal.getMinutes();
+        var sec = timeLocal.getSeconds();
+        var day = timeLocal.getDay();
+        var month = (timeLocal.getMonth() + 1);
+        var year = timeLocal.getFullYear();
+        hour = hour < 10 ? '0'+ hour : hour;
+        min= min < 10 ? '0'+ min : min;
+        sec = sec < 10 ? '0'+ sec : sec;
+        day = day < 10 ? '0'+ day : day;
+        month = month < 10 ? '0'+ month : month;
+        return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
+    }
+
+    //The ticking clock function
+    function timeTick(){
+        //grab updated time
+        timeLocal = new Date();
+        //add time difference
+        timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
+        //display the value
+
+        document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
+    }
+    // END Server time section /////////////////////////////////////////////////////////////
 
 </script>
 

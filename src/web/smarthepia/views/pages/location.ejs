@@ -46,7 +46,7 @@
         <div class="content-header row">
             <div class="content-header-left col-md-6 col-12 mb-1">
                 <h3 class="content-header-title">Location</h3>
-                <span><%= dateTime %></span>
+                <span id="serverTime"></span>
             </div>
         </div>
         <div class="content-body">
@@ -142,19 +142,19 @@
                                                 <label for="donationinput2">Building
                                                     <span class="danger">*</span>
                                                 </label>
-                                                <input type="text" id="buildingCreate" class="form-control square" placeholder="Building" name="" autocomplete="off"  disabled>
+                                                <input type="text" id="buildingCreate" class="form-control square" placeholder="Building" name="" autocomplete="off">
                                             </div>
                                             <div id="floorDiv" class="form-group">
                                                 <label for="donationinput2">Floor
                                                     <span class="danger">*</span>
                                                 </label>
-                                                <input type="text" id="floorCreate" class="form-control square" placeholder="Floor" name="" autocomplete="off"  disabled>
+                                                <input type="text" id="floorCreate" class="form-control square" placeholder="Floor" name="" autocomplete="off">
                                             </div>
                                             <div id="roomDiv" class="form-group">
                                                 <label for="donationinput2">Room
                                                     <span class="danger">*</span>
                                                 </label>
-                                                <input type="text" id="roomCreate" class="form-control square" placeholder="Room" name="" autocomplete="off"  disabled>
+                                                <input type="text" id="roomCreate" class="form-control square" placeholder="Room" name="" autocomplete="off">
                                             </div>
                                             <div id="orientationDiv" class="form-group">
                                                 <label for="donationinput2">Orientation
@@ -166,6 +166,8 @@
                                                     <option value="South">South</option>
                                                     <option value="East">East</option>
                                                     <option value="West">West</option>
+                                                    <option value="Corridor">Corridor</option>
+
                                                 </select>
                                             </div>
                                             <div id="ruleDiv" class="form-group">
@@ -400,7 +402,7 @@
     // Location select change
     $('#locationCreate').change(function(){
         if($(this).val() === "Building"){
-            $("#buildingCreate").replaceWith('<input type="text" name="buildingCreate" id="buildingCreate" class="form-control square" placeholder="Building" autocomplete="off" required>');
+            $("#buildingCreate").replaceWith('<input type="text" name="buildingCreate" id="buildingCreate" class="form-control square" placeholder="Building" autocomplete="off">');
             $('#buildingDiv').show();
             $('#floorDiv').hide();
             $('#roomDiv').hide();
@@ -409,7 +411,7 @@
 
         }else if($(this).val() === "Floor"){
             $("#buildingCreate").replaceWith('<select id="buildingCreate" name="buildingCreate" class="form-control square"></select>');
-            $("#floorCreate").replaceWith('<input type="text" name="floorCreate" id="floorCreate" class="form-control square" placeholder="Floor" autocomplete="off" required>');
+            $("#floorCreate").replaceWith('<input type="text" name="floorCreate" id="floorCreate" class="form-control square" placeholder="Floor" autocomplete="off">');
 
             // Reset building select option
             $('#buildingCreate').empty().append('<option value="" selected disabled hidden>Select building</option>');
@@ -424,7 +426,7 @@
         }else if($(this).val() === "Room"){
             $("#buildingCreate").replaceWith('<select id="buildingCreate" name="buildingCreate" class="form-control square"></select>');
             $("#floorCreate").replaceWith('<select id="floorCreate" name="floorCreate" class="form-control square"></select>');
-            $("#roomCreate").replaceWith('<input type="text" name="roomCreate" id="roomCreate" class="form-control square" placeholder="Room" autocomplete="off" required>');
+            $("#roomCreate").replaceWith('<input type="text" name="roomCreate" id="roomCreate" class="form-control square" placeholder="Room" autocomplete="off">');
 
             // Reset building and floor select option
             $('#buildingCreate').empty().append('<option value="" selected disabled hidden>Select building</option>');
@@ -440,6 +442,48 @@
             $('#ruleDiv').show();
         }
     });
+
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    //Users time
+    var timeLocal = new Date();
+    //Servers time
+    var timeServer = new Date("<%= dateTime %>");
+
+    //Calculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    //initalize the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+
+    function formatDate(timeLocal){
+        var hour = timeLocal.getHours();
+        var min = timeLocal.getMinutes();
+        var sec = timeLocal.getSeconds();
+        var day = timeLocal.getDay();
+        var month = (timeLocal.getMonth() + 1);
+        var year = timeLocal.getFullYear();
+        hour = hour < 10 ? '0'+ hour : hour;
+        min= min < 10 ? '0'+ min : min;
+        sec = sec < 10 ? '0'+ sec : sec;
+        day = day < 10 ? '0'+ day : day;
+        month = month < 10 ? '0'+ month : month;
+        return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
+    }
+
+    //The ticking clock function
+    function timeTick(){
+        //grab updated time
+        timeLocal = new Date();
+        //add time difference
+        timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
+        //display the value
+
+        document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
+    }
+    // END Server time section /////////////////////////////////////////////////////////////
 
 </script>
 
