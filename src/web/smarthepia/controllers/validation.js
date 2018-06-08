@@ -54,7 +54,7 @@ module.exports = {
                 return callback(true);
             }
         });
-    }, checkUniqueLocation: function CheckCL(value, callback){
+    }, /*checkUniqueLocation: function CheckCL(value, callback){
         Devices.find({ name: value }).exec(function (err, dependency) {
             if (err) {
                 return callback(err)
@@ -64,7 +64,7 @@ module.exports = {
                 return callback(true);
             }
         });
-    },checkUniqueAutomation: function CheckUA(value, callback){
+    },*/checkUniqueAutomation: function CheckUA(value, callback){
         Automation.find({ name: value }).exec(function (err, automation) {
             if (err) {
                 return callback(err)
@@ -74,5 +74,25 @@ module.exports = {
                 return callback(true);
             }
         });
-    }
+    },checkUniqueLocation : function CheckUR(name, parent, callback){
+        Devices.find({$and: [{name: name},  {parent: parent}]}).exec(function (err, devices) {
+            if (err) {
+                return callback(err)
+            } else if(devices.length > 0){
+                return callback(false);
+            }else {
+                return callback(true);
+            }
+        });
+    },checkUniqueDevice : function CheckUR(parent, name, address,dependency, callback){
+    Devices.find({ $or: [{$and: [{address: address}, {dependency: dependency}]},{$and: [{name: name}, {parent: parent}]}]}).exec(function (err, devices) {
+        if (err) {
+            return callback(err)
+        } else if(devices.length > 0){
+            return callback(false);
+        }else {
+            return callback(true);
+        }
+    });
+}
 };

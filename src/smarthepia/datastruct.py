@@ -1,6 +1,6 @@
-class StructDependency():
-    def __init__(self, rpi, ip, port, sensors):
-        self.rpi = rpi
+class StructSensors():
+    def __init__(self, dependency, ip, port, devices):
+        self.dependency = dependency
         self.ip = ip
         self.port = port
-        self.sensors = sensors
+        self.devices = devices

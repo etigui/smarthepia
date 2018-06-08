@@ -1,4 +1,6 @@
 import multiprocessing
+
+# Local import
 import automation
 import alarm
 import sensor

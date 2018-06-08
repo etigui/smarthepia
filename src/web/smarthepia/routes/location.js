@@ -31,14 +31,23 @@ router.post('/create', function(req, res, next) {
         if(locationType){
             if(locationType === "Building"){
                 if(building){
-                    newLocation = {name: building, type: "Building", parent: 0, enable: true, comment: comment ? comment: ""};
-                    Devices.create(newLocation, function (error, user) {
-                        if (error) {
-                            console.log(error);
-                            return next(error);
+
+                    // Check if building name already exists
+                    validation.checkUniqueLocation(building, 0, function (uniqueLocation) {
+                        if(uniqueLocation){
+                            newLocation = {name: building, type: "Building", parent: 0, enable: true, comment: comment ? comment: ""};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    console.log(error);
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Building has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Building name already exists"});
                         }
-                        res.type('json');
-                        return res.json({status: "success", message: "Building has been successfully created"});
                     });
                 }else{
                     res.type('json');
@@ -46,14 +55,23 @@ router.post('/create', function(req, res, next) {
                 }
             }else if(locationType === "Floor"){
                 if(floor && building){
-                    newLocation = {name: floor, type: "Floor", parent: parseInt(building, 10), enable: true, comment: comment ? comment: ""};
-                    Devices.create(newLocation, function (error, user) {
-                        if (error) {
-                            console.log(error);
-                            return next(error);
+
+                    // Check if floor already exists for that building
+                    validation.checkUniqueLocation(floor, parseInt(building), function (uniqueLocation) {
+                        if(uniqueLocation){
+                            newLocation = {name: floor, type: "Floor", parent: parseInt(building), enable: true, comment: comment ? comment: ""};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    console.log(error);
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Floor has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Floor name already exists for that building"});
                         }
-                        res.type('json');
-                        return res.json({status: "success", message: "Floor has been successfully created"});
                     });
                 }else{
                     res.type('json');
@@ -61,14 +79,23 @@ router.post('/create', function(req, res, next) {
                 }
             }else if(locationType === "Room"){
                 if(room && floor && building && rule && orientation){
-                    newLocation = {name: room, type: "Room", parent: parseInt(floor, 10), enable: true, orientation: orientation, comment: (comment ? comment : ""), rules: rule};
-                    Devices.create(newLocation, function (error, user) {
-                        if (error) {
-                            console.log(error);
-                            return next(error);
+
+                    // Check if room already exists for that floor
+                    validation.checkUniqueLocation(room, parseInt(floor), function (uniqueLocation) {
+                        if(uniqueLocation){
+                            newLocation = {name: room, type: "Room", parent: parseInt(floor), enable: true, orientation: orientation, comment: (comment ? comment : ""), rules: rule};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    console.log(error);
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Romm has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Room name already exists for that floor"});
                         }
-                        res.type('json');
-                        return res.json({status: "success", message: "Romm has been successfully created"});
                     });
                 }else{
                     res.type('json');
