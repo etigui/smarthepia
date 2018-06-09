@@ -6,7 +6,14 @@ var dateFormat = require('dateformat');
 // GET /alarm
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getUser())){
-        return res.render('pages/alarm', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "alarm" });
+
+        // Require package.json like a regular module
+        var packageInfo = require('../package.json');
+
+        // Do something with the version
+        console.log('VERSION: ' + packageInfo.dependencies.ejs);
+
+        return res.render('pages/alarm', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "alarm" });
     }else{
         return res.redirect('/');
     }

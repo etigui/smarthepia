@@ -13,7 +13,7 @@ def route_node_list(ip, port):
     return f"http://{ip}:{port}/nodes/get_nodes_list"
 
 
-def route_sensors_list(ip, port):
+def route_device_list(ip, port):
     return f"http://{ip}:{port}/sensors/get_sensors_list"
 
 

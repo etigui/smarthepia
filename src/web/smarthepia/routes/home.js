@@ -7,7 +7,7 @@ var dateFormat = require('dateformat');
 // GET /home
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getUser())){
-        return res.render('pages/home', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "home" });
+        return res.render('pages/home', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "home" });
     }else{
         return res.redirect('/');
     }

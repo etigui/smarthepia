@@ -45,9 +45,6 @@ var DevicesSchema = new mongoose.Schema({
     ,enable: {
         type: Boolean,
         default: true,
-    },action: {
-        type: String,
-        default: "",
     }
 });
 

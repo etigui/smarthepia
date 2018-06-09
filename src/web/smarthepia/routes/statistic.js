@@ -8,7 +8,7 @@ var Statistic = require('../models/statistic');
 // GET /statistic
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getUser())){
-        return res.render('pages/statistic', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "statistic" });
+        return res.render('pages/statistic', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "statistic" });
     }else{
         return res.redirect('/');
     }

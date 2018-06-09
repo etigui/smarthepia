@@ -9,7 +9,7 @@ var Automation = require('../models/automation');
 // GET /automation
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getManager())){
-        return res.render('pages/automation', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "automation" });
+        return res.render('pages/automation', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "automation" });
     }else{
         return res.redirect('/');
     }

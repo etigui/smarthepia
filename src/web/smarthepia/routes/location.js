@@ -8,7 +8,7 @@ var validation = require('../controllers/validation');
 // GET /location
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getManager())){
-        return res.render('pages/location', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "location" });
+        return res.render('pages/location', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "location" });
     }else{
         return res.redirect('/');
     }

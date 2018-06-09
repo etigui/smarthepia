@@ -9,7 +9,7 @@ var validation = require('../controllers/validation');
 // GET /dependency
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getUser())){
-        return res.render('pages/dependency', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "dependency" });
+        return res.render('pages/dependency', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "dependency" });
     }else{
         return res.redirect('/');
     }

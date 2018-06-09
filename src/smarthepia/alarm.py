@@ -3,7 +3,6 @@ import pymongo
 
 # Local import
 
-
 class Alarm(object):
 
     def __init__(self, sleep_time, ip, port):

@@ -10,9 +10,10 @@ def main():
 
     # Set time for each sleep
     factor = 60
-    st_alarm = 100 * factor
+    st_alarm = 5 * factor
     st_automation = 100 * factor
-    st_sensor = 10 * factor
+    st_sensor = 100 * factor
+    st_start = 100 * factor
 
     # MongoDB connection
     ip = "localhost"
@@ -20,8 +21,8 @@ def main():
 
     # Class
     c_alarm = alarm.Alarm(st_alarm, ip, port)
-    c_automation = automation.Automation(st_automation, ip, port)
-    c_sensor = sensor.Sensor(st_sensor, ip, port)
+    c_automation = automation.Automation(st_automation, ip, port, st_start)
+    c_sensor = sensor.Sensor(st_sensor, ip, port, st_start)
 
     # Process
     p_alarm = multiprocessing.Process(target=c_alarm.run)

@@ -8,7 +8,7 @@ var Devices = require('../models/devices');
 // GET /device
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getManager())){
-        return res.render('pages/device', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "device" });
+        return res.render('pages/device', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "device" });
     }else{
         return res.redirect('/');
     }

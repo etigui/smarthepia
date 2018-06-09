@@ -261,7 +261,7 @@
                 { data: "port"},
                 { data: "method"},
                 { data: "comment"},
-                { data: "action"}
+                {}
             ], columnDefs: [{
                 targets: 6,
                 searching: false,
@@ -361,7 +361,7 @@
         var hour = timeLocal.getHours();
         var min = timeLocal.getMinutes();
         var sec = timeLocal.getSeconds();
-        var day = timeLocal.getDay();
+        var day = timeLocal.getDate();
         var month = (timeLocal.getMonth() + 1);
         var year = timeLocal.getFullYear();
         hour = hour < 10 ? '0'+ hour : hour;

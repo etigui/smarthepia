@@ -9,7 +9,7 @@ var bcrypt = require('bcrypt');
 // GET /profile
 router.get('/', function(req, res, next) {
     if(auth.checkAuth(req, auth.getUser())){
-        return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "hh:MM:ss dd-mm-yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email});
+        return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email});
     }else{
         return res.redirect('/');
     }
@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 router.get('/load', function(req, res, next) {
     if(auth.checkAuth(req, auth.getUser())){
         res.type('json');
-        let toRemove = {__v: false, _id: false, password : false, lastConnection: false, enable: false, permissions: false, action: false};
+        let toRemove = {__v: false, _id: false, password : false, lastConnection: false, enable: false, permissions: false};
         User.findOne({_id: req.session.userId}, toRemove, function(err, user) {
             if (err) {
                 return next(error);

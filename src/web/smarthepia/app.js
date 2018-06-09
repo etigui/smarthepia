@@ -2,6 +2,10 @@
 var express = require('express');
 var app = express();
 
+// Import app modules security
+var helmet = require('helmet');
+var xssFilter = require('x-xss-protection');
+
 // Import app modules
 var mongoose = require('mongoose');
 var createError = require('http-errors');
@@ -10,8 +14,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var favicon = require('serve-favicon');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
-var URL = require('url-parse');
+var mongoStore = require('connect-mongo')(session);
+//var url = require('url-parse');
+
+// Helmet secure express apps by setting various HTTP headers
+app.use(helmet());
+
+//
+// X-XSS-Protection HTTP header is a basic protection against XSS
+app.use(xssFilter({ setOnOldIE: true }));
 
 // MongoDB init and connection
 var mdbUrl = 'mongodb://localhost/smarthepia'; //192.168.1.111 10.10.5.110 10.10.0.51
@@ -30,7 +41,7 @@ var sessionParams = {
     secret: 'PoKhqJR0uCPnvp0Q1x9jnIAFsBTmNo5i',
     resave: true,
     saveUninitialized: false,
-    store: new MongoStore({
+    store: new mongoStore({
         mongooseConnection: db
     }),
     cookie: {}

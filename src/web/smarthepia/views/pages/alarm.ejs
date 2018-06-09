@@ -70,46 +70,46 @@
                             <div class="card-content collapse show">
                                 <div class="card-body">
                                     <div class="table-responsive">
-
                                         <table id="alarmTable" class="table table-striped table-bordered text-inputs-searching dataTable">
                                             <thead>
-                                            <tr>
-                                                <th>Div. name</th>
-                                                <th>Div. type</th>
-                                                <th>Severity</th>
-                                                <th>Type</th>
-                                                <th>Count</th>
-                                                <th>Last</th>
-                                                <th>Start</th>
-                                                <th>End</th>
-                                                <th>comment</th>
-                                                <th>Action</th>
-                                            </tr>
+                                                <tr>
+                                                    <th>Div. name</th>
+                                                    <th>Div. type</th>
+                                                    <th>Severity</th>
+                                                    <th>Type</th>
+                                                    <th>Count</th>
+                                                    <th>Last</th>
+                                                    <th>Start</th>
+                                                    <th>End</th>
+                                                    <th>comment</th>
+                                                    <th>Action</th>
+                                                </tr>
                                             </thead>
-                                            <tbody></tbody>
+                                            <tbody id="appendHere">
+                                            </tbody>
                                             <tfoot>
-                                            <tr>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                                <th rowspan="1" colspan="1">
-                                                </th>
-                                            </tr>
+                                                <tr>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                </tr>
                                             </tfoot>
                                         </table>
                                     </div>
@@ -152,115 +152,117 @@
 
 <script>
 
+
+
     onLoad();
 
+
+
     function onLoad(){
-        genAlarmTable()
+        //genAlarmTable()
         //$('#alarmTable').DataTable().order([3, "desc"]).draw();
     }
 
-    function genAlarmTable(){
-        $('#alarmTable').dataTable({
-            order: [[2,'desc'], [3,'asc']],
-            dom: 'lBfrtip',
-            buttons: [
-                'colvis','copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            autoWidth: false,
-            destroy: true,
-            searching: true,
-            //type: 'get',
-            //ajax: "",
-            data: [{divname: "Multisensor 1", divtype: "Sensor",severity: "2",type: "Warning",count: "1",last: "15.10.1992 13:14:23",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""},
-                {divname: "Multisensor 2", divtype: "Sensor",severity: "3",type: "Error",count: "2",last: "15.10.2018 13:14:23",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""},
-                {divname: "Multisensor 2", divtype: "Sensor",severity: "0",type: "Info",count: "2",last: "15.10.2018 13:14:25",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""},
-                   {divname: "Multisensor 2", divtype: "Sensor",severity: "1",type: "Error",count: "2",last: "15.10.1992 13:14:23",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""}],
-            columns: [
-                { data: "divname"},
-                { data: "divtype"},
-                { data: "severity"},
-                { data: "type"},
-                { data: "count"},
-                { data: "last"},
-                { data: "start"},
-                { data: "end"},
-                { data: "comment"},
-                { data: "action"}
-            ],
-            aoColumnDefs: [{
-                sType: "typeSort",
-                bSortable: true,
-                data: null,
-                className: "text-center align-middle",
+    $('#alarmTable').dataTable({
+        order: [[2,'desc'], [3,'asc']],
+        dom: 'lBfrtip',
+        buttons: [
+            'colvis','copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        autoWidth: false,
+        destroy: true,
+        searching: true,
+        //type: 'get',
+        //ajax: "",
+        data: [{divname: "Multisensor 1", divtype: "Sensor",severity: "2",type: "Warning",count: "1",last: "15.10.1992 13:14:23",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""},
+            {divname: "Multisensor 2", divtype: "Sensor",severity: "3",type: "Error",count: "2",last: "15.10.2018 13:14:23",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""},
+            {divname: "Multisensor 2", divtype: "Sensor",severity: "0",type: "Info",count: "2",last: "15.10.2018 13:14:25",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""},
+               {divname: "Multisensor 2", divtype: "Sensor",severity: "1",type: "Error",count: "2",last: "15.10.1992 13:14:23",start: "15.10.1992 13:14:23",end: "15.10.1992 13:14:23",comment: "Super comment",action: ""}],
+        columns: [
+            { data: "divname"},
+            { data: "divtype"},
+            { data: "severity"},
+            { data: "type"},
+            { data: "count"},
+            { data: "last"},
+            { data: "start"},
+            { data: "end"},
+            { data: "comment"},
+            {}
+        ],
+        aoColumnDefs: [{
+            sType: "typeSort",
+            bSortable: true,
+            data: null,
+            className: "text-center align-middle",
 
-                render: function (data, type, full, meta){
+            render: function (data, type, full, meta){
 
-                    var color = "error";
-                    if(data === "Info"){
-                        color =  "info";
-                    }else if(data === "Warning"){
-                        color =  "warning";
-                    }else if(data === "Error"){
-                        color =  "danger";
-                    }
-                    return '<div class="badge badge-'+color+'" style="line-height: 1.5; display: block;">'+data+'</div>';
-                },
-                targets: 3
-
-            }, {
-                targets: 9,
-                searching: false,
-                orderable: false,
-                data: null,
-                className: "text-center align-middle",
-                render: function (data, type, full, meta) {
-                    return '<div class="btn-group">\n' +
-                        '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
-                        '        Action\n' +
-                        '    </button>\n' +
-                        '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                        '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
-                        '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
-                        '    </div>\n' +
-                        '</div>';
+                var color = "error";
+                if(data === "Info"){
+                    color =  "info";
+                }else if(data === "Warning"){
+                    color =  "warning";
+                }else if(data === "Error"){
+                    color =  "danger";
                 }
-            },{
-                targets: 2,
-                //searching: false,
-                //orderable: false,
-                data: 0,
+                return '<div class="badge badge-'+color+'" style="line-height: 1.5; display: block;">'+data+'</div>';
+            },
+            targets: 3
 
-                className: "text-center align-middle",
-                render: function (data, type, full, meta) {
+        }, {
+            targets: 9,
+            searching: false,
+            orderable: false,
+            data: null,
+            className: "text-center align-middle",
+            render: function (data, type, full, meta) {
+                return '<div class="btn-group">\n' +
+                    '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                    '        Action\n' +
+                    '    </button>\n' +
+                    '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
+                    '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
+                    '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
+                    '    </div>\n' +
+                    '</div>';
+            }
+        },{
+            targets: 2,
+            //searching: false,
+            //orderable: false,
+            data: null,
 
-                    var percent = 0;
-                    if (data === "3") {
-                        percent = 100;
-                    } else if (data === "1") {
-                        percent = 33;
-                    } else if (data === "2") {
-                        percent = 66;
-                    } else {
-                        data = "";
-                    }
-                    return '<div class="progress" style="margin-top: auto; margin-bottom:auto; ">\n' +
-                        '<div class="progress-bar" role="progressbar" aria-valuemax="100" style="width:' + percent + '%" aria-describedby="example-caption-2">' + data + '</div>\n' +
-                        ' </div>';
+            className: "text-center align-middle",
+            render: function (data, type, full, meta) {
+
+                var percent = 0;
+                if (data === "3") {
+                    percent = 100;
+                } else if (data === "1") {
+                    percent = 33;
+                } else if (data === "2") {
+                    percent = 66;
+                } else {
+                    data = "";
                 }
-            }, {targets: 0, className: "text-center align-middle"},
-                {targets: 1, className: "text-center align-middle"},
-                {targets: 4, className: "text-center align-middle"},
-                {targets: 5, className: "text-center align-middle"},
-                {targets: 6, className: "text-center align-middle"},
-                {targets: 7, className: "text-center align-middle"},
-                {targets: 8, className: "text-center align-middle"}
+                return '<div class="progress" style="margin-top: auto; margin-bottom:auto; ">\n' +
+                    '<div class="progress-bar" role="progressbar" aria-valuemax="100" style="width:' + percent + '%" aria-describedby="example-caption-2">' + data + '</div>\n' +
+                    ' </div>';
+            }
+        }, {targets: 0, className: "text-center align-middle"},
+            {targets: 1, className: "text-center align-middle"},
+            {targets: 4, className: "text-center align-middle"},
+            {targets: 5, className: "text-center align-middle"},
+            {targets: 6, className: "text-center align-middle"},
+            {targets: 7, className: "text-center align-middle"},
+            {targets: 8, className: "text-center align-middle"}
 
 
-            ]
+        ]
 
-        });
-    }
+    });
 
     function customSort(type){
         var sortedType = 0;
@@ -302,8 +304,8 @@
         var hour = timeLocal.getHours();
         var min = timeLocal.getMinutes();
         var sec = timeLocal.getSeconds();
-        var day = (timeLocal.getMonth() + 1);
-        var month = timeLocal.getDate();
+        var day = timeLocal.getDate();
+        var month = (timeLocal.getMonth() + 1);
         var year = timeLocal.getFullYear();
         hour = hour < 10 ? '0'+ hour : hour;
         min= min < 10 ? '0'+ min : min;
@@ -324,6 +326,7 @@
         document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
     }
     // END Server time section /////////////////////////////////////////////////////////////
+
 
 
 </script>
