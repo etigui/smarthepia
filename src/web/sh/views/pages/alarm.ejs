@@ -340,7 +340,8 @@
         });
 
         function doSomething() {
-            var json = '{ "name": "John Doe", "age": 42 }';
+
+            var json = '{ "name": <%= typeof lastname!="undefined" ? lastname : "undefined" %>, "age": 42 }';
             socket.emit('message', json);
         }
     // END alarm section /////////////////////////////////////////////////////////////////
