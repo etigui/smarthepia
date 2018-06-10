@@ -29,14 +29,26 @@ io.on('connection', function (socket) {
             throw(err);
         }
         userPermission = user.permissions;
-        return socket.emit('welcom', "coucou");
+        return socket.emit('alarm', "coucou");
     });
 
     // Client disconnected
     socket.on('disconnect', function () {
         delete userSockets[ID];
-        return console.log('The client has disconnected');
+        console.log('Client has disconnected');
     });
+
+
+    // Received from client (message)
+    socket.on('alarmAck', function (data) {
+
+        // Only admin, manager can send message
+        if(userPermission > 0) {
+            console.log('Receive alarmAck from: ' + data);
+            socket.broadcast.emit('alarmAck', data);
+        }
+    });
+
 
     // Received from client (message)
     socket.on('message', function (data) {

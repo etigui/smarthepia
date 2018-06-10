@@ -227,7 +227,7 @@
                     '        Action\n' +
                     '    </button>\n' +
                     '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                    '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
+                    '        <button id="editUser" class="dropdown-item ack" type="button" data-toggle="modal" data-target="#modalEditUser" >Ack</button>\n' +
                     '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
                     '    </div>\n' +
                     '</div>';
@@ -261,11 +261,7 @@
             {targets: 5, className: "text-center align-middle"},
             {targets: 6, className: "text-center align-middle"},
             {targets: 7, className: "text-center align-middle"},
-            {targets: 8, className: "text-center align-middle"}
-
-
-        ]
-
+            {targets: 8, className: "text-center align-middle"}]
     });
 
     function customSort(type){
@@ -333,20 +329,28 @@
 
     <% if((typeof permission !== 'undefined') && permission > 0) {%>
     // BEGIN alarm section ////////////////////////////////////////////////////////////////
-        setInterval(doSomething, 5000);
+        //setInterval(doSomething, 5000);
         var socket = io.connect();
         socket.on('connect', function () {
-            return console.log('Now connected to socket');
+            console.log('Now connected to socket');
+        });
+
+        socket.on('alarmAck', function (data) {
+            console.log('Receive alarmAck from: ' + data);
+        });
+
+        $(".ack").on( "click", function() {
+            socket.emit('alarmAck', "<%= typeof lastname!='undefined' ? lastname : 'undefined' %>");
         });
 
         function doSomething() {
-
             var json = '{ "name": <%= typeof lastname!="undefined" ? lastname : "undefined" %>, "age": 42 }';
             socket.emit('message', json);
         }
+
+
     // END alarm section /////////////////////////////////////////////////////////////////
     <%}%>
-
 
 </script>
 

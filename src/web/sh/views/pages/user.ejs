@@ -277,8 +277,13 @@
             autoWidth: false,
             destroy: true,
             searching: true,
-            type: 'GET',
-            ajax: "/user/list",
+            ajax: {
+                type: 'get',
+                url: '/user/list',
+                data: {
+                    email: "<%= typeof email!='undefined' ? email : '' %>"
+                },
+            },
             columns: [
                 { data: "firstName"},
                 { data: "lastName"},

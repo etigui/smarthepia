@@ -3,7 +3,7 @@ import multiprocessing
 # Local import
 import automation
 import alarm
-import sensor
+import measure
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     # Class
     c_alarm = alarm.Alarm(st_alarm, ip, port)
     c_automation = automation.Automation(st_automation, ip, port, st_start)
-    c_sensor = sensor.Sensor(st_sensor, ip, port, st_start)
+    c_sensor = measure.Sensor(st_sensor, ip, port, st_start)
 
     # Process
     p_alarm = multiprocessing.Process(target=c_alarm.run)

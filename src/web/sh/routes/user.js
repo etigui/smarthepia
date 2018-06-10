@@ -17,7 +17,7 @@ router.use(passport.session());
 // GET /user
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getAdmin())){
-        return res.render('pages/user', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "user", type:  req.query.type, message:  req.query.message});
+        return res.render('pages/user', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "user", type:  req.query.type, message:  req.query.message, email: req.session.email});
     }else{
         return res.redirect('/');
     }
@@ -26,9 +26,11 @@ router.get('/', isAuth, function(req, res, next) {
 // GET users list => /users/list
 router.get('/list', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getAdmin())){
+
+        var email = req.query.email;
         res.type('json');
         let toRemove = {__v: false, _id: false, password : false, lastConnection: false};
-        User.find({}, toRemove, function(err, user) {
+        User.find({email: {$ne: email}}, toRemove, function(err, user) {
             if (err) {
                 return next(error);
             }
