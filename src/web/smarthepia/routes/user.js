@@ -129,7 +129,7 @@ router.post('/delete', function(req, res, next) {
 
 // POST users edit => /manager/users/edit
 router.post('/edit', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getAdmin())){
+    if(auth.checkAuth(req, auth.gtAdmin())){
 
         let reqMail = req.body.email;
         let reqPermission = req.body.permissions;

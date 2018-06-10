@@ -23,7 +23,7 @@ class Sensor(object):
     def run(self):
 
         # For first start tempo
-        time.sleep(self.st_start)
+        #time.sleep(self.st_start)
         while True:
 
             print(f"Sensor: {datetime.datetime.now()}")
