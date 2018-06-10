@@ -5,10 +5,12 @@ var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
 var Automation = require('../models/automation');
 
+// Module variables
+var isAuth = require('../controllers/isAuth');
 
 // GET /automation
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         return res.render('pages/automation', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "automation" });
     }else{
         return res.redirect('/');
@@ -18,8 +20,8 @@ router.get('/', function(req, res, next) {
 
 
 // POST /automation/create
-router.post('/create', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.post('/create', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
 
         var ruleName = req.body.rulesName;
         var active = req.body.active;
@@ -70,8 +72,8 @@ router.post('/create', function(req, res, next) {
 
 
 // GET /automation/listname
-router.get('/listname', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/listname', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, active: false, dt: false, nt: false, temp: false, humidity: false, vdr: false, vnr: false, bdr: false, bnr: false};
         Automation.find({}, toRemove, function(err, automation) {
@@ -87,8 +89,8 @@ router.get('/listname', function(req, res, next) {
 });
 
 // GET /automation/list
-router.get('/list', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/list', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         var name = req.query.name;
         if(name){
             let toRemove = {__v: false, _id: false};
@@ -109,8 +111,8 @@ router.get('/list', function(req, res, next) {
 });
 
 // POST /automation/delete
-router.post('/delete', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.post('/delete', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
 
         var ruleName = req.body.name;
         console.log(ruleName);

@@ -17,8 +17,6 @@
 
     setInterval(doSomething, 3000);
 
-
-
     var socket = io.connect('http://192.168.1.122:3000');
     socket.on('message', function(message) {
         alert('The server has a message for you: ' + message);

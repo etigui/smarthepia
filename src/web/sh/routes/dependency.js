@@ -5,10 +5,12 @@ var Dependency = require('../models/dependency');
 var auth = require('../controllers/auth');
 var validation = require('../controllers/validation');
 
+// Module variables
+var isAuth = require('../controllers/isAuth');
 
 // GET /dependency
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.get('/', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
         return res.render('pages/dependency', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "dependency" });
     }else{
         return res.redirect('/');
@@ -16,8 +18,8 @@ router.get('/', function(req, res, next) {
 });
 
 // POST /dependency/create
-router.post('/create', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.post('/create', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
 
         var dictionary = req.body;
         var args = Object.keys(dictionary).length;
@@ -62,8 +64,8 @@ router.post('/create', function(req, res, next) {
     }
 });
 
-router.get('/list', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/list', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, devices: false};
         Dependency.find({}, toRemove, function(err, dependency) {
@@ -78,8 +80,8 @@ router.get('/list', function(req, res, next) {
     }
 });
 
-router.get('/listall', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/listall', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false};
         Dependency.find({}, toRemove, function(err, dependency) {

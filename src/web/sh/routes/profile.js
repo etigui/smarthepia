@@ -4,11 +4,14 @@ var auth = require('../controllers/auth');
 var validation = require('../controllers/validation');
 var User = require('../models/user');
 var dateFormat = require('dateformat');
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
+
+// Module variables
+var isAuth = require('../controllers/isAuth');
 
 // GET /profile
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.get('/', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
         return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email});
     }else{
         return res.redirect('/');
@@ -16,8 +19,8 @@ router.get('/', function(req, res, next) {
 });
 
 // GET profile load => /profile/load
-router.get('/load', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.get('/load', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
         res.type('json');
         let toRemove = {__v: false, _id: false, password : false, lastConnection: false, enable: false, permissions: false};
         User.findOne({_id: req.session.userId}, toRemove, function(err, user) {
@@ -39,8 +42,8 @@ router.get('/load', function(req, res, next) {
 });
 
 // POST profile edit password => /profile/edit/password
-router.post('/edit/password', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.post('/edit/password', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
 
         let cpass = req.body.cpass;
         let npass = req.body.npass;
@@ -49,7 +52,12 @@ router.post('/edit/password', function(req, res, next) {
         if(cpass && npass && cnpass && req.session.userId){
 
             // Check if current password match with the one on the db
-            validation.checkCurrentPassword(req.session.userId, cpass, function (matchCurrentPass) {
+            validation.checkCurrentPassword(req.session.userId, cpass, function (err, matchCurrentPass) {
+
+                if(err){
+                    return next(err);
+                    // TODO error 500
+                }
                 if(matchCurrentPass){
 
                     // Check if the new and confirm new password match
@@ -91,8 +99,8 @@ router.post('/edit/password', function(req, res, next) {
 });
 
 // POST profile edit user => /profile/edit/user
-router.post('/edit/user', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.post('/edit/user', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
 
         let mailUser = req.body.email;
         let firstnameUser = req.body.firstname;
@@ -108,7 +116,7 @@ router.post('/edit/user', function(req, res, next) {
                     if(emailUnique){
 
                         // Update user info
-                        User.findOneAndUpdate({_id: req.session.userId}, {$set: {email: mailUser, firstname: firstnameUser, lastname: lastnameUser}}, function (err, user) {
+                        User.findOneAndUpdate({_id: req.session.userId}, {$set: {email: mailUser, firstName: firstnameUser, lastName: lastnameUser}}, function (err, user) {
                             if (err) {
                                 console.log("FE3 " + mailUser);
                                 return next(error);
@@ -127,7 +135,7 @@ router.post('/edit/user', function(req, res, next) {
                 });
             }else{
                 // Update user info
-                User.findOneAndUpdate({_id: req.session.userId}, {$set: { firstname: firstnameUser, lastname: lastnameUser}}, function (err, user) {
+                User.findOneAndUpdate({_id: req.session.userId}, {$set: { firstName: firstnameUser, lastName: lastnameUser}}, function (err, user) {
                     if (err) {
                         console.log("FE3 " + mailUser);
                         return next(error);

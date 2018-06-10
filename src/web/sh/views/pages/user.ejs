@@ -280,8 +280,8 @@
             type: 'GET',
             ajax: "/user/list",
             columns: [
-                { data: "firstname"},
-                { data: "lastname"},
+                { data: "firstName"},
+                { data: "lastName"},
                 { data: "email"},
                 { data: "enable"},
                 { data: "permissions"},
@@ -323,8 +323,8 @@
             data: $("#createUserSubmit").serialize(),
             success: function (response) {
                 $('#userTable').DataTable().ajax.reload();
-                $("#createUserSubmit").get(0).reset();
                 if(response.status === "success"){
+                    $("#createUserSubmit").get(0).reset();
                     toastr.success(response.message , response.status, {closeButton: true})
                 }else if(response.status === "error"){
                     toastr.error(response.message, response.status, {closeButton: true})

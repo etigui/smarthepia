@@ -1,60 +1,58 @@
+// Module Dependencies
 var express = require('express');
-var router = express.Router();
-var User = require('../models/user');
+var passport = require('../controllers/passport');
 var auth = require('../controllers/auth');
-var validation = require('../controllers/validation');
+var config = require('../configs/config');
+var UserModel = require('../models/user');
+var router = express.Router();
+
+// Module variables
+var isAuth = require('../controllers/isAuth');
+
+// Middleware
+router.use(passport.initialize());
+router.use(passport.session());
+
 
 // GET home page
 router.get('/', function(req, res, next) {
-    if( auth.checkAuth(req, auth.getUser())){
-        return res.redirect('/home');
+    if( auth.checkPermission(req, auth.getUser())){
+        return res.status(200).redirect('/home');
     }
     return res.render('pages/index');
 });
 
 // POST home page
 router.post('/', function(req, res, next) {
-
-    // Check if user and pass are defined and not null
-    if (validation.checkLoginInput(req.body.email) && validation.checkLoginInput(req.body.password)){
-
-        // Check user login
-        User.authenticate(req.body.email, req.body.password, function (error, user) {
-
-            // Check if no error and if user and pass match
-            if (!error && user) {
-                req.session.userId = user._id;
-                req.session.email = user.email;
-                req.session.lastname = user.lastname;
-                req.session.firstname = user.firstname;
-                req.session.permissions = user.permissions;
-                return res.redirect('/home');
-            }else {
-                var err = new Error('Wrong email or password.');
-                err.status = 401;
+    passport.authenticate('local-login', function(err, user, info) {
+        if(err) {
+            console.error(err);
+            return next(err); // will generate a 500 error
+        }
+        if(!user) {
+            return res.status(409).render('pages/index', {status: "error", message: info.message});
+        }
+        req.login(user, function(err){
+            if(err){
+                console.error(err);
                 return next(err);
             }
+            req.session.userId = user._id;
+            req.session.email = user.email;
+            req.session.lastname = user.lastName;
+            req.session.firstname = user.firstName;
+            req.session.permissions = user.permissions;
+            return res.status(302).redirect('/home');
         });
-    }else{
-        var err = new Error('Username, password error');
-        err.status = 400;
-        return next(err);
-    }
+    })(req, res, next);
 });
 
 
 // GET for logout logout
 router.get('/logout', function (req, res, next) {
-    if (req.session) {
-
-        // Delete session object
-        req.session.destroy(function (err) {
-
-            // Redirect to index
-            if (err) return next(err);
-            return res.redirect('/');
-        });
-    }
+    req.logout();
+    req.session.destroy();
+    return res.redirect('/');
 });
 
 module.exports = router;

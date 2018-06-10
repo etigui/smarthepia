@@ -64,15 +64,15 @@
                                         <div class="form-body">
                                             <div class="form-group">
                                                 <label for="donationinput2">Email</label>
-                                                <input type="email" id="email" class="form-control square" placeholder="email" name="email" required>
+                                                <input type="email" id="email" class="form-control square" placeholder="email" name="email" autocomplete="off" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="donationinput2">First name</label>
-                                                <input type="text" id="fname" class="form-control square" placeholder="First name" name="fname" required>
+                                                <input type="text" id="fname" class="form-control square" placeholder="First name" name="fname" autocomplete="off" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="donationinput2">Last name</label>
-                                                <input type="text" id="lname" class="form-control square" placeholder="Last name" name="lname" required>
+                                                <input type="text" id="lname" class="form-control square" placeholder="Last name" name="lname" autocomplete="off" required>
                                             </div>
                                         </div>
                                         <div class="form-actions right">
@@ -180,11 +180,11 @@
             type: "get",
             dataType: "json",
             success: function (response) {
-                if(response.email && response.firstname && response.lastname){
+                if(response.email && response.firstName && response.lastName){
                     $("#email").val(response.email);
-                    $("#fname").val(response.firstname);
-                    $("#lname").val(response.lastname);
-                    $("#superLastname").text(response.lastname);
+                    $("#fname").val(response.firstName);
+                    $("#lname").val(response.lastName);
+                    $("#superLastname").text(response.lastName);
                 }
             }
         });

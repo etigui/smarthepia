@@ -5,9 +5,12 @@ var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
 var Statistic = require('../models/statistic');
 
+// Module variables
+var isAuth = require('../controllers/isAuth');
+
 // GET /statistic
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.get('/', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
         return res.render('pages/statistic', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "statistic" });
     }else{
         return res.redirect('/');
@@ -15,8 +18,8 @@ router.get('/', function(req, res, next) {
 });
 
 // GET /statistic
-router.get('/list', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getUser())){
+router.get('/list', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getUser())){
 
         let newStatistic = {address: "1", dependency: "FAKE", parent: 0, battery: 100, temp: 20, humidity: 45, luminance: 70, motion: false};
         Statistic.create(newStatistic, function (error, statistic) {

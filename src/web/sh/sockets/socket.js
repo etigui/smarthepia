@@ -14,10 +14,11 @@ io.on('connection', function (socket) {
     console.log('the actual serialized user from passport', socket.request.session.passport.user);
     //store '_id' of connected user in order to access it easily
     var ID = socket.request.session.passport.user;
+    var userPermission = -1;
     //store actual socket of connected user in order to access it easily
     //from other modules e.g. from router
     userSockets[ID] = socket;
-    var firstn = "";
+
     UserModel.findOne({_id: ID}, function (err, user) {
         if(err) {
             console.error(err);
@@ -27,7 +28,7 @@ io.on('connection', function (socket) {
             firstName: user.firstName,
             lastName: user.lastName
         };
-        firstn = user.username;
+        userPermission = user.permissions;
         console.log('sending additional data to dashboard', data);
         return socket.emit('welcome', data);
     });
@@ -37,15 +38,12 @@ io.on('connection', function (socket) {
         return console.log('The client has disconnected');
     });
 
-    //on
-    socket.on('coucou', function (data) {
-        console.log(firstn);
+    socket.on('message', function (data) {
 
-        if(firstn === "ee")
-        {
-            socket.broadcast.emit('coucou', data);
+        // Only admin cas send message
+        if(userPermission > 0) {
+            socket.broadcast.emit('alarmModified', data);
         }
-
     });
 });
 

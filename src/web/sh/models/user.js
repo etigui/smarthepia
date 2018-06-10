@@ -2,7 +2,7 @@
 
 // Module dependencies
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 
 
 // Define user schema
@@ -43,6 +43,10 @@ var UserSchema = new mongoose.Schema({
     permissions:{
         type: Number,
         required: true,
+        default: 0,
+    },
+    try:{
+        type: Number,
         default: 0,
     }
 });

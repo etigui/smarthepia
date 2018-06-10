@@ -5,9 +5,12 @@ var dateFormat = require('dateformat');
 var Devices = require('../models/devices');
 var validation = require('../controllers/validation');
 
+// Module variables
+var isAuth = require('../controllers/isAuth');
+
 // GET /location
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         return res.render('pages/location', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "location" });
     }else{
         return res.redirect('/');
@@ -15,8 +18,8 @@ router.get('/', function(req, res, next) {
 });
 
 // GET manager register => /manager/register
-router.post('/create', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.post('/create', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
 
         var locationType = req.body.locationCreate;
         var comment = req.body.commentCreate;
@@ -114,8 +117,8 @@ router.post('/create', function(req, res, next) {
     }
 });
 
-router.get('/list', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/list', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, value: false, itemStyle: false, comment: false, dependency: false, group: false, rules: false, orientation: false, enable: false};
         Devices.find({}, toRemove, function(err, location) {
@@ -131,8 +134,8 @@ router.get('/list', function(req, res, next) {
 });
 
 // GET /device/listall
-router.get('/listall', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/listall', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, id : false, value: false, itemStyle: false, group: false};
         Devices.find({$or: [{type: "Building"},  {type: "Floor"}, {type: "Room"} ] }, toRemove, function(err, user) {

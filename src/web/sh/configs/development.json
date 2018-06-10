@@ -3,5 +3,6 @@
   "devUrl": "http://localhost:3000",
   "env": "development",
   "dbUrl": "mongodb://localhost/sh",
-  "sessionSecret": "PoKhqJR0uCPnvp0Q1x9jnIAFsBTmNo5i"
+  "sessionSecret": "PoKhqJR0uCPnvp0Q1x9jnIAFsBTmNo5i",
+  "wsUrl": "192.168.1.122:3000"
 }

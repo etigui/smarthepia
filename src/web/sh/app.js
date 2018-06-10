@@ -12,6 +12,11 @@ var compression = require('compression');
 var mongoose = require('mongoose');
 var mongoStore = require('connect-mongo')(session);
 
+// Import app modules security
+var helmet = require('helmet');
+var xssFilter = require('x-xss-protection');
+
+
 // Internal require
 var io = require('./sockets/socket').io;
 
@@ -28,24 +33,18 @@ var sessionStore;
 var db;
 app.locals.errMsg = app.locals.errMsg || null;
 
-// Define routes file
-var indexRouter = require('./routes/index');
-var homeRouter = require('./routes/home');
-var statisticRouter = require('./routes/statistic');
-var automationRouter = require('./routes/automation');
-var userRouter = require('./routes/user');
-var alarmRouter = require('./routes/alarm');
-var deviceRouter = require('./routes/device');
-var locationRouter = require('./routes/location');
-var dependencyRouter = require('./routes/dependency');
-var profileRouter = require('./routes/profile');
-
 // App config and settings
 require('clarify');
 app.disable('x-powered-by');
 app.set('port', port);
 app.set('env', env);
 app.set('host', host);
+
+// Helmet secure express apps by setting various HTTP headers
+//app.use(helmet());
+
+// X-XSS-Protection HTTP header is a basic protection against XSS
+//app.use(xssFilter({ setOnOldIE: true }));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -88,7 +87,7 @@ session and consequently, 'io' can access that user by querying the
 dBase
 */
 var sharedMWSesssion =  session({
-    name: 'express.sess',
+    name: 'socialify.sess',
     store: sessionStore,
     secret: sessionSecret,
     resave: false,
@@ -104,6 +103,19 @@ app.use(sharedMWSesssion);
 io.use(function (socket, next) {
     sharedMWSesssion(socket.request, socket.request.res, next);
 });
+
+
+// Define routes file
+var indexRouter = require('./routes/index');
+var homeRouter = require('./routes/home');
+var statisticRouter = require('./routes/statistic');
+var automationRouter = require('./routes/automation');
+var userRouter = require('./routes/user');
+var alarmRouter = require('./routes/alarm');
+var deviceRouter = require('./routes/device');
+var locationRouter = require('./routes/location');
+var dependencyRouter = require('./routes/dependency');
+var profileRouter = require('./routes/profile');
 
 // app.use(ejsLayout);
 app.use(compression());
@@ -135,7 +147,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('pages/error');
 });
 
 // Export Module

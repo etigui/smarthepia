@@ -5,19 +5,21 @@ var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
 var Devices = require('../models/devices');
 
+// Module variables
+var isAuth = require('../controllers/isAuth');
+
 // GET /device
-router.get('/', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         return res.render('pages/device', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "device" });
     }else{
         return res.redirect('/');
     }
 });
 
-
 // GET /device/create
-router.post('/create', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.post('/create', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
 
         var name = req.body.nameDevice;
         var address = req.body.idDevice;
@@ -59,8 +61,8 @@ router.post('/create', function(req, res, next) {
 });
 
 // GET /device/listall
-router.get('/listall', function(req, res, next) {
-    if(auth.checkAuth(req, auth.getManager())){
+router.get('/listall', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, id : false, value: false, itemStyle: false, group: false, rules: false, orientation: false};
         Devices.find({$or: [{type: "Actuator"},  {type: "Sensor"} ]}, toRemove, function(err, user) {

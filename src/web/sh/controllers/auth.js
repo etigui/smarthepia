@@ -6,7 +6,7 @@ var _manager = 1;
 var _admin = 2;
 
 module.exports = {
-    checkAuth: function (req, permission) {
+    checkPermission: function (req, permission) {
 
         // Check if session id is setted
         if (req.session.userId) {

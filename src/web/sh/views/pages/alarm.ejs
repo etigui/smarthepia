@@ -149,6 +149,10 @@
 <script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
 <!-- END toastr -->
 
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
 
 <script>
 
@@ -327,6 +331,20 @@
     }
     // END Server time section /////////////////////////////////////////////////////////////
 
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+    // BEGIN alarm section ////////////////////////////////////////////////////////////////
+        setInterval(doSomething, 5000);
+        var socket = io.connect();
+        socket.on('connect', function () {
+            return console.log('Now connected to socket');
+        });
+
+        function doSomething() {
+            var json = '{ "name": "John Doe", "age": 42 }';
+            socket.emit('message', json);
+        }
+    // END alarm section /////////////////////////////////////////////////////////////////
+    <%}%>
 
 
 </script>
