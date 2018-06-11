@@ -335,12 +335,12 @@
             console.log('Now connected to socket');
         });
 
-        socket.on('alarmAck', function (data) {
-            console.log('Receive alarmAck from: ' + data);
+        socket.on('alarmNotify', function (data) {
+            console.log('Receive alarmNotify from: ' + data);
         });
 
         $(".ack").on( "click", function() {
-            socket.emit('alarmAck', "<%= typeof lastname!='undefined' ? lastname : 'undefined' %>");
+            socket.emit('alarmNotify', "<%= typeof lastname!='undefined' ? lastname : 'undefined' %>");
         });
 
         function doSomething() {

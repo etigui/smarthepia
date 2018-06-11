@@ -8,21 +8,10 @@ import measure
 
 def main():
 
-    # Set time for each sleep
-    factor = 60
-    st_alarm = 0.5 * factor
-    st_automation = 100 * factor
-    st_sensor = 100 * factor
-    st_start = 100 * factor
-
-    # MongoDB connection
-    ip = "localhost"
-    port = 27017
-
     # Class
-    c_alarm = alarm.Alarm(st_alarm, ip, port)
-    c_automation = automation.Automation(st_automation, ip, port, st_start)
-    c_sensor = measure.Sensor(st_sensor, ip, port, st_start)
+    c_alarm = alarm.Alarm()
+    c_automation = automation.Automation()
+    c_sensor = measure.Sensor()
 
     # Process
     p_alarm = multiprocessing.Process(target=c_alarm.run)

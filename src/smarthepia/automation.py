@@ -2,21 +2,19 @@ import time
 import pymongo
 
 # Local import
+import const
 
 
 class Automation(object):
-
-    def __init__(self, sleep_time, ip, port, st_start):
-        self.sleep_time = sleep_time
+    def __init__(self):
         self.__client = None
-        self.ip = ip
-        self.port = port
-        self.st_start = st_start
 
     def run(self):
 
         # For first start tempo
-        time.sleep(self.st_start)
+        time.sleep(const.st_start)
+
+        # Process automation
         while True :
             print("Automation")
-            time.sleep(self.sleep_time)
+            time.sleep(const.st_automation)

@@ -12,18 +12,13 @@ import datastruct
 
 
 class Sensor(object):
-
-    def __init__(self, sleep_time, ip, port, st_start):
-        self.sleep_time = sleep_time
+    def __init__(self):
         self.__client = None
-        self.ip = ip
-        self.port = port
-        self.st_start = st_start
 
     def run(self):
 
         # For first start tempo
-        time.sleep(self.st_start)
+        time.sleep(const.st_start)
         while True:
 
             print(f"Sensor: {datetime.datetime.now()}")
@@ -42,7 +37,7 @@ class Sensor(object):
 
             # Close connection and wait
             self.__client.close()
-            time.sleep(self.sleep_time)
+            time.sleep(const.st_measure)
 
     # Add measures from devices to db
     def add_db_measures(self, db_sensors):
@@ -119,6 +114,6 @@ class Sensor(object):
     # Connect to the database
     def db_connect(self):
         try:
-            return True, pymongo.MongoClient(self.ip, self.port)
+            return True, pymongo.MongoClient(const.db_host, const.db_port)
         except pymongo.errors.ConnectionFailure as e:
             return False, None

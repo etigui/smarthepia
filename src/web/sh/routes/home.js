@@ -8,6 +8,8 @@ var Devices = require('../models/devices');
 var dateFormat = require('dateformat');
 var router = express.Router();
 
+var io = require('../sockets/socket').io;
+
 // Module variables
 var isAuth = require('../controllers/isAuth');
 
@@ -36,6 +38,22 @@ router.get('/list', isAuth, function(req, res, next) {
             return res.json({data: devices});
         });
 
+    }else{
+        return res.redirect('/');
+    }
+});
+
+// GET /home
+router.get('/alarmnotfy', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+
+        // Send to all client connected the new
+        // alarm notify change
+        io.emit('alarmNotify', "coucou");
+
+        // Response to the automation client
+        res.type('json');
+        return res.json({data: "alarmNotify"});
     }else{
         return res.redirect('/');
     }

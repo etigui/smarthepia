@@ -40,12 +40,12 @@ io.on('connection', function (socket) {
 
 
     // Received from client (message)
-    socket.on('alarmAck', function (data) {
+    socket.on('alarmNotify', function (data) {
 
         // Only admin, manager can send message
         if(userPermission > 0) {
-            console.log('Receive alarmAck from: ' + data);
-            socket.broadcast.emit('alarmAck', data);
+            console.log('Receive alarmNotify from: ' + data);
+            socket.broadcast.emit('alarmNotify', data);
         }
     });
 

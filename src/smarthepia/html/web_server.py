@@ -1,7 +1,10 @@
 import datetime
 
+# Local import
+import const
 
-def email_html_web_server(host, username):
+
+def email_html_web_server(username):
     return '''
     <html lang="en">
 
@@ -108,7 +111,7 @@ def email_html_web_server(host, username):
                                                                         <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;padding: 4px 0;">Today the ''' + datetime.datetime.now().strftime("%d.%m.%Y") + ''' at  ''' + datetime.datetime.now().strftime("%H:%M:%S") + ''' the connection to the Smarthepia web server failed. As a result the whole system is not working properly.
                                                                             <br>
                                                                             <br><b>Don&#39;t recognize this activity?</b>
-                                                                            <br>You may want to change <a  href="https://''' + host + '''/profile" style="text-decoration: none; color: #4285F4;" target="_blank">to change</a> your password now.
+                                                                            <br>You may want to change <a  href="''' + const.ws_profile + '''" style="text-decoration: none; color: #4285F4;" target="_blank">to change</a> your password now.
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -120,7 +123,7 @@ def email_html_web_server(host, username):
                                                                             <table style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 12px; co=lor: #B9B9B9; line-height: 1.5;">
                                                                                 <tbody>
                                                                                     <tr>
-                                                                                        <td>This html can't receive replies. For more information, visit the <a href="https://''' + host + '''/help" style="text-decoration: none; color: #4285F4;" target="_blank">Smartehepia Accounts Help Center</a>.</td>
+                                                                                        <td>This html can't receive replies. For more information, visit the <a href="''' + const.ws_help + '''" style="text-decoration: none; color: #4285F4;" target="_blank">Smartehepia Accounts Help Center</a>.</td>
                                                                                     </tr>
                                                                                 </tbody>
                                                                             </table>
