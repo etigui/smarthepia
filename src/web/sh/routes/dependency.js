@@ -22,11 +22,14 @@ router.post('/create', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
 
         var dictionary = req.body;
-        var args = Object.keys(dictionary).length;
+        var length = Object.keys(dictionary.dependency).length -2 ;
         var depName = dictionary.depName;
-        var max = Object.keys(dictionary).length -1;
+        //var max = Object.keys(dictionary.dependency).length -1;
+        //console.log(args);
+        //console.log(max);
+        //console.log(dictionary);
 
-        if(depName && args >= 6 && ((max % 5) === 0)){
+        if(depName && length){
 
             // Check if the dependency name already exist
             validation.checkUniqueDependency(depName, function (matchDependency) {
@@ -36,10 +39,17 @@ router.post('/create', isAuth, function(req, res, next) {
                     var newDevice = [];
 
                     // Add dico data to list
-                    var length = max / 5;
-                    for (var i = 0; i < length; i++){
+                    //var length = max / 5;
+
+                    dictionary.dependency.forEach(function(dep) {
+                        console.log(dep.depdName);
+                        newDevice.push({name: dep.depdName, ip: dep.depdIp, port: dep.depdPort, comment: dep.depdComment ? dep.depdComment : "", method: dep.depdMethod});
+                    });
+
+                    /*for (var i = 0; i < length; i++){
+                        //console.log();
                         newDevice.push({name: dictionary['dependency['+i+'][depdName]'], ip: dictionary['dependency['+i+'][depdIp]'], port: dictionary['dependency['+i+'][depdPort]'], comment: dictionary['dependency['+i+'][depdComment]'], method: dictionary['dependency['+i+'][depdMethod]']});
-                    }
+                    }*/
                     var newDependency = {depname: depName, devices: newDevice};
                     Dependency.create(newDependency, function (error, user) {
                         if (error) {

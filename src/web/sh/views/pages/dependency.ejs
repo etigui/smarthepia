@@ -327,9 +327,9 @@
                     success: function (response) {
 
                         // TODO reload dependency inventory
-                        $("#createDependencySubmit").get(0).reset();
                         $('#dependencyTable').DataTable().ajax.reload();
                         if (response.status === "success") {
+                            $("#createDependencySubmit").get(0).reset();
                             toastr.success(response.message, response.status, {closeButton: true})
                         } else if (response.status === "error") {
                             toastr.error(response.message, response.status, {closeButton: true})

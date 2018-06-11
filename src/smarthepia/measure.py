@@ -37,7 +37,6 @@ class Sensor(object):
 
                 # Get all dependency devices and device and add to db
                 self.add_db_measures(self.get_db_dependency_devices())
-
             else:
                 raise NotImplementedError("Error to implemented (mongodb init error)")
 

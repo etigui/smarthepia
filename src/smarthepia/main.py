@@ -10,7 +10,7 @@ def main():
 
     # Set time for each sleep
     factor = 60
-    st_alarm = 5 * factor
+    st_alarm = 0.5 * factor
     st_automation = 100 * factor
     st_sensor = 100 * factor
     st_start = 100 * factor

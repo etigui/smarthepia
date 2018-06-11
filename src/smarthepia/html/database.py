@@ -1,4 +1,5 @@
-def email_html_database():
+import datetime
+def email_html_database(host, username):
     return '''
     <html lang="en">
     
@@ -75,7 +76,7 @@ def email_html_database():
                                                 </tr>
                                                 <tr>
                                                     <td width="32px"></td>
-                                                    <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;">You received this message because your html is listed as the default or designate person to receive critical error from the Smarthepia network.</td>
+                                                    <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;">You received this message because your email is listed as the default or designate person to receive critical error from the Smarthepia network.</td>
                                                     <td width="10px"></td>
                                                 </tr>
                                                 <tr>
@@ -99,13 +100,13 @@ def email_html_database():
                                                             <table border="0" cellpadding="0" cellspacing="0" style="min-width: 300px;">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;padding-bottom: 4px;">Hi Admin,</td>
+                                                                        <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;padding-bottom: 4px;">Hi ''' + username + ''',</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;padding: 4px 0;">Today the 06.06.2018 at 18:32 connection to the Smarthepia database failed. As a resule the whole system is not working propely.
+                                                                        <td style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 13px; color: #202020; line-height: 1.5;padding: 4px 0;">Today the ''' + datetime.datetime.now().strftime("%d.%m.%Y") + ''' at  ''' + datetime.datetime.now().strftime("%H:%M:%S") + ''' the connection to the Smarthepia database failed. As a result the whole system is not working properly.
                                                                             <br>
                                                                             <br><b>Don&#39;t recognize this activity?</b>
-                                                                            <br>You may want to change <a  href="https://localhost:3000/profile" style="text-decoration: none; color: #4285F4;" target="_blank">to change</a> your password now.
+                                                                            <br>You may want to change <a  href="https://''' + host + '''/profile" style="text-decoration: none; color: #4285F4;" target="_blank">to change</a> your password now.
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -117,7 +118,7 @@ def email_html_database():
                                                                             <table style="font-family: Roboto-Regular,Helvetica,Arial,sans-serif; font-size: 12px; co=lor: #B9B9B9; line-height: 1.5;">
                                                                                 <tbody>
                                                                                     <tr>
-                                                                                        <td>This html can't receive replies. For more information, visit the <a href="https://localhost:3000/help" style="text-decoration: none; color: #4285F4;" target="_blank">Smartehepia Accounts Help Center</a>.</td>
+                                                                                        <td>This html can't receive replies. For more information, visit the <a href="https://''' + host + '''/help" style="text-decoration: none; color: #4285F4;" target="_blank">Smartehepia Accounts Help Center</a>.</td>
                                                                                     </tr>
                                                                                 </tbody>
                                                                             </table>
