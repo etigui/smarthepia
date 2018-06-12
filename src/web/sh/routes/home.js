@@ -49,7 +49,7 @@ router.get('/alarmnotfy', isAuth, function(req, res, next) {
 
         // Send to all client connected the new
         // alarm notify change
-        io.emit('alarmNotify', "coucou");
+        io.emit('alarmNotify', "alarmNotify");
 
         // Response to the automation client
         res.type('json');

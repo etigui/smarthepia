@@ -60,10 +60,13 @@ class Alarm(object):
     # Get all device (sensor, actuator) in the inventory (active, with dependency)
     def get_db_devices(self):
         devices = []
-        query = {'$and': [{'type': 'Sensor'}, {'type': 'Actuator'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}]}
+        #query = {'$and': ['$or': [{'type': 'Sensor'}, {'type': 'Actuator'}], {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}]}
+
+
+        # TODO request !!!!!
+        #query = {'$or': ['$and': []]}
         avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
         datas = self.__client.sh.devices.find(query, avoid)
-
         # Get all devices
         for device in datas:
             print(device)

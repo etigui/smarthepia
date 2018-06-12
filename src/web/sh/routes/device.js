@@ -65,7 +65,7 @@ router.get('/listall', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, id : false, value: false, itemStyle: false, group: false, rules: false, orientation: false};
-        Devices.find({$or: [{type: "Actuator"},  {type: "Sensor"} ]}, toRemove, function(err, user) {
+        Devices.find({$or: [{type: "Actuator"},  {type: "Sensor"}]}, toRemove, function(err, user) {
             if (err) {
                 return next(error);
             }
