@@ -30,7 +30,7 @@ router.get('/', isAuth, function(req, res, next) {
 router.get('/list', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getUser())){
         res.type('json');
-        let toRemove = {__v: false, _id: false};
+        let toRemove = {__v: false, _id: false, address: false};
         Devices.find({}, toRemove, function(err, devices) {
             if (err) {
                 return next(error);

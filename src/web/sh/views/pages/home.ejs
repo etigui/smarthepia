@@ -25,6 +25,10 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- END Custom CSS-->
 
+    <!-- BEGIN Custom CSS for echarts-->
+    <link rel="stylesheet" type="text/css" href="/test/test.css">
+    <!-- END Custom CSS for echarts-->
+
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 <% include ../partials/nav %>
@@ -99,7 +103,6 @@
 
     onLoad();
 
-
     function onLoad() {
 
     }
@@ -110,11 +113,11 @@
     var app = {};
     option = null;
 
+
     // Get devices list (devices and location)
     $.get('/home/list').done(function (data) {
-
-
         function getNestedChildren(arr, parent) {
+
             var out = []
             for(var i in arr) {
                 if(arr[i].parent === parent) {
@@ -185,27 +188,7 @@
         myChart.hideLoading();
     });
 
-
-
-
-    /*var dbData = [
-        {id: 1, type: 0, name: 'building A', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
-        {id: 2, type: 0,name: 'building B', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
-        {id: 3, type: 1,name: 'floor 1', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 1},
-        {id: 4, type: 2,name: 'room 1', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 3},
-        {id: 5, type: 3,name: 'sensor 1', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,0,0,0], parent: 4},
-        {id: 6, type: 3,name: 'sensor 2', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,0,0,0], parent: 4},
-        {id: 7, type: 2,name: 'room 2', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 3},
-        {id: 8, type: 1,name: 'floor 1', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 9},
-        {id: 9, type: 0,name: 'building C', value: 1, itemStyle: {color: '#34a046'}, h: [0,0,0,0,0], parent: 0},
-        {id: 9, type: 3,name: 'sensor 3', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,1,1,1], parent: 4},
-        {id: 10, type: 3,name: 'sensor 4', value: 1, itemStyle: {color: '#34a046'}, h: [1,1,1,1,1], parent: 4},
-    ];*/
-
-    //console.log(math.dot([0,1,1], [1,1,1]));
-
     $(function () {
-
         // Resize chart on menu width change and window resize
         $(window).on('resize', resize);
         $(".menu-toggle").on('click', resize);
@@ -278,6 +261,5 @@
     <%}%>
 
 </script>
-
 </body>
 </html>
