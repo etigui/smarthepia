@@ -16,6 +16,7 @@ from html import database
 from html import web_server
 import utils
 import const
+import datastruct
 
 
 class Alarm(object):
@@ -24,6 +25,7 @@ class Alarm(object):
         self.__client = None
         self.ws_status = True
         self.db_status = True
+        self.net_status = True
 
     def run(self):
 
@@ -40,7 +42,7 @@ class Alarm(object):
             # Check if mongodb has been well init
             if status:
                 print(f"DB connection ok: {datetime.datetime.now()}")
-                self.get_db_devices()
+                self.process_network()
                 self.__client.close()
                 self.db_status = True
             else:
@@ -61,13 +63,69 @@ class Alarm(object):
     def get_db_devices(self):
         devices = []
         query = {'$and': [{'$or': [{'type': 'Sensor'}, {'type': 'Actuator'}]}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}]}
-        avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
+        avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'enable': False}
         datas = self.__client.sh.devices.find(query, avoid)
         # Get all devices
         for device in datas:
-            print(device)
             devices.append(device)
         return devices
+
+    # Get all device dependency and device by dependency
+    # Put them together in a struct to check them after
+    def get_db_device_and_dependencies(self):
+        db_devices = []
+
+        # All device actives
+        devices = self.get_db_devices()
+
+        # Get and merge dependency for all active devices
+        dependencies = self.append_dependency_to_list(devices)
+
+        # Merge device by dependency
+        devices_by_dependency = {}
+        for device in devices:
+            devices_by_dependency.setdefault(device['dependency'], []).append(device)
+
+        # Get used dependencies devices info by device
+        query = {'$and': [{'depname': {'$in': dependencies}}]}
+        avoid = {'_id': False, '__v': False, 'devices._id': False, 'action': False, 'devices.comment': False}  # , 'depname': False, , 'devices._id': False ,'devices.name': False
+        datas = self.__client.sh.dependencies.find(query, avoid)
+
+        # Build struct with ip, dependency port by device (sensor)
+        for data in datas:
+            db_devices.append(datastruct.StructDevices(data['devices'], devices_by_dependency[data['depname']], data['depname']))
+        return db_devices
+
+    # Process all the device attached to Smarthepia network
+    def process_network(self):
+
+        # All dependency and devices
+        db_devices = self.get_db_device_and_dependencies()
+        for datas in db_devices:
+
+            # Return if error => return false and the devices dependency '_id'
+            dependencies_status, devices_error = self.check_network_dependency(datas.dependencies)
+
+            # Check devices only if no error
+            if dependencies_status:
+                #for device in datas.devices:
+                pass
+            else:
+
+                # Set to error
+                self.set_dependencies_error(datas.dependency_name)
+            i = 0
+
+    # Append dict item in list if not exist
+    def append_dependency_to_list(self, cursor):
+        dependencies = []
+        dependencies_set = set()
+        for item in cursor:
+            if item['dependency'] not in dependencies_set:
+                dependencies.append(item['dependency'])
+                dependencies_set.add(item['dependency'])
+        return dependencies
+
 
     # Connect to the database
     def db_connect(self):
@@ -89,6 +147,7 @@ class Alarm(object):
                 self.ws_status = False
                 self.send_web_server_status(email_from, email_to, password, subject)
         else:
+            print(f"Web server connection ok: {datetime.datetime.now()}")
             self.ws_status = True
 
     # Send mail if the database is down
@@ -132,7 +191,7 @@ class Alarm(object):
         try:
             s = requests.Session()
             data = {"email": const.ws_notify_email, "password": const.ws_notify_password}
-            response = s.post(const.ws_notify_url_post, data=data)
+            s.post(const.ws_notify_url_post, data=data)
             response = s.get(const.ws_notify_url_get)
 
             if response.json() != const.ws_notify_response:
@@ -149,9 +208,108 @@ class Alarm(object):
             print("OOps: Something Else", err)
 
     # Check device with the label type => sensor
-    def check_sensor(self):
+    def check_network_sensor(self):
         pass
 
     # Check device with the label type => actuator
-    def check_actuator(self):
+    def check_network_actuator(self):
         pass
+
+    # Check all dependencies
+    def check_network_dependency(self, dependencies):
+
+        status = []
+
+        # Walk through all dependency and
+        for dependency in dependencies:
+
+            # Do ping or http get => method
+            if dependency['method'] == const.dependency_method_ping:
+                if not utils.send_ping(dependency['ip']):
+                    status.append(dependency['name'])
+            elif dependency['method'] == const.dependency_method_http:
+
+                # Check if port
+                # 0 => no port
+                # > 0 => get port
+                url = "http://"
+                if dependency['port'] != 0:
+                    url += f"{dependency['ip']}:{dependency['port']}"
+                else:
+                    url += dependency['ip']
+
+                # Http get with ip
+                if not utils.get_http(url):
+                    status.append(dependency['name'])
+            else:
+                print(f"Dependency method ({dependency['method']}) not implemented")
+                status.append("")
+                #raise NotImplementedError(f"Dependency method ({dependency['method']}) not implemented")
+
+        if status:
+            return False, status
+        return True, []
+
+    # Find all devices attached to that dependecy and make them as error
+    # Must also set building((associate to floor)), floor(associate to room), room(associate to device) as error
+    def set_dependencies_error(self, dependency_name):
+
+        self.set_all_devices_to_green()
+
+        query = {'dependency': dependency_name}
+        unique_device_id = []
+        datas = self.__client.sh.devices.find(query)
+        devices = []
+        for data in datas:
+            devices.append(data)
+            unique_device_id.append(data['id'])
+
+        # Get the parent (room) for each device
+        # We add it as unique value
+        unique_room_id = utils.add_one_time_value_in_list(devices, "parent")
+
+        unique_floor_id = self.get_floor_id(unique_room_id)
+
+        unique_building_id = self.get_building_id(unique_floor_id)
+
+        ids_to_change = unique_room_id + unique_floor_id +  unique_building_id + unique_device_id
+
+        for id in ids_to_change:
+            query = {'id': id}
+            set = {'$set': {"itemStyle.color": const.device_color_error}}
+            self.__client.sh.devices.update(query, set)
+
+        i = 0
+
+
+    def get_floor_id(self, unique_room_id):
+        floors = []
+        query = {'id': {'$in': unique_room_id}}
+        datas = self.__client.sh.devices.find(query)
+        for data in datas:
+            floors.append(data)
+        unique_floor_id = utils.add_one_time_value_in_list(floors, "parent")
+        return unique_floor_id
+
+
+    def get_building_id(self, unique_floor_id):
+        buildings = []
+        query = {'id': {'$in': unique_floor_id}}
+        datas = self.__client.sh.devices.find(query)
+        for data in datas:
+            buildings.append(data)
+        unique_building_id = utils.add_one_time_value_in_list(buildings, "parent")
+        return unique_building_id
+
+
+    def set_all_devices_to_green(self):
+        datas = self.__client.sh.devices.find({})
+        dd = []
+        for d in datas:
+            dd.append(d)
+
+        for data in dd:
+            print(data['id'])
+            query = {'id': data['id']}
+            set = {'$set': {"itemStyle.color": const.device_color_no_error}}
+            self.__client.sh.devices.update(query, set)

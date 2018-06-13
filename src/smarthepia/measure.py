@@ -80,12 +80,12 @@ class Sensor(object):
         devices = self.get_db_devices()
 
         # Get and merge dependency for all active devices
-        dependencies = utils.append_dependency_to_list(devices)
+        dependencies = self.append_dependency_to_list(devices)
 
         # Merge device by dependencies
-        dependencies_devices = {}
+        devices_by_dependency = {}
         for device in devices:
-            dependencies_devices.setdefault(device['dependency'], []).append(device)
+            devices_by_dependency.setdefault(device['dependency'], []).append(device)
 
         # Get used dependencies devices info by device
         query = {'$and': [{'depname': {'$in': dependencies}}, {'devices.method': {'$eq': 'REST/HTTP'}}]}
@@ -96,13 +96,13 @@ class Sensor(object):
         for data in datas:
             for dep_device in data['devices']:
                 if dep_device['method'] == "REST/HTTP":
-                    db_sensors.append(datastruct.StructSensors(data['depname'], dep_device['ip'], dep_device['port'], dependencies_devices[data['depname']]))
+                    db_sensors.append(datastruct.StructSensors(data['depname'], dep_device['ip'], dep_device['port'], devices_by_dependency[data['depname']]))
         return db_sensors
 
     # Get all device active and not in error or warning
     def get_db_devices(self):
         devices = []
-        query = {'$and': [{'type': 'Sensor'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}, {'itemStyle.color': {'$eq': const.device_no_error}}]}
+        query = {'$and': [{'type': 'Sensor'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}, {'itemStyle.color': {'$eq': const.device_color_no_error}}]}
         avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
         datas = self.__client.sh.devices.find(query, avoid)
 
@@ -110,6 +110,16 @@ class Sensor(object):
         for device in datas:
             devices.append(device)
         return devices
+
+    # Append dict item in list if not exist
+    def append_dependency_to_list(self, cursor):
+        dependencies = []
+        dependencies_set = set()
+        for item in cursor:
+            if item['dependency'] not in dependencies_set:
+                dependencies.append(item['dependency'])
+                dependencies_set.add(item['dependency'])
+        return dependencies
 
     # Connect to the database
     def db_connect(self):

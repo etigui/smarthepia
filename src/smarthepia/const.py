@@ -31,10 +31,13 @@ st_measure = 100 * factor
 st_start = 100 * factor
 
 # Device status
-device_error = '#ff'
-device_warning = '#ff'
-device_no_error = '#34a046'
+device_color_error = '#FF0000'
+device_color_warning = '#FFA500'
+device_color_no_error = '#34a046'
 
+# Dependency devices method
+dependency_method_ping = "Ping"
+dependency_method_http = "REST/HTTP"
 # Routes ZWAVE return
 wrong_not_available_device = "Node not ready or wrong sensor node type !"
 
