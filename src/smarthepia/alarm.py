@@ -2,6 +2,7 @@
 import time
 import datetime
 import requests
+import re
 
 # MongoDB driver
 import pymongo
@@ -63,7 +64,7 @@ class Alarm(object):
     def get_db_devices(self):
         devices = []
         query = {'$and': [{'$or': [{'type': 'Sensor'}, {'type': 'Actuator'}]}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}]}
-        avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'enable': False}
+        avoid = {'name': False, 'itemStyle': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'enable': False} #,'id': False,
         datas = self.__client.sh.devices.find(query, avoid)
         # Get all devices
         for device in datas:
@@ -99,22 +100,29 @@ class Alarm(object):
     # Process all the device attached to Smarthepia network
     def process_network(self):
 
+        devices_error = []
+        dependency_devices_error = []
+
+
         # All dependency and devices
         db_devices = self.get_db_device_and_dependencies()
+
         for datas in db_devices:
 
             # Return if error => return false and the devices dependency '_id'
-            dependencies_status, devices_error = self.check_network_dependency(datas.dependencies)
+            dependencies_status, dependency_devices_error = self.check_network_dependency(datas.dependencies)
 
             # Check devices only if no error
             if dependencies_status:
-                #for device in datas.devices:
-                pass
+                devices_status, devices_error = self.check_network_devices(datas.devices, datas.dependencies)
             else:
 
                 # Set to error
                 self.set_dependencies_error(datas.dependency_name)
-            i = 0
+
+        # TODO check here when device error
+        status = devices_error + dependency_devices_error
+        i = 0
 
     # Append dict item in list if not exist
     def append_dependency_to_list(self, cursor):
@@ -208,12 +216,110 @@ class Alarm(object):
             print("OOps: Something Else", err)
 
     # Check device with the label type => sensor
-    def check_network_sensor(self):
-        pass
+    def check_network_sensor(self, device, ip, port):
+
+        print(device)
+
+        r = requests.get(const.route_zwave_device_all_measures(ip, port, device['address']))
+        header = r.headers['content-type']
+
+        # Error are not displayed as json.... => Node not ready or wrong sensor node type !
+        # So we must check the header to convert to json or not
+        if 'text/html' in header:
+            r.encoding = "utf-8"
+            result = r.text
+            if r.status_code == 200 and result == "Node not ready or wrong sensor node type !":
+                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Sensor not exists"}
+            else:
+                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Wrong sensor id"}
+        else:
+            result = r.json()
+
+            # We sub 2h to now
+            # if last updateTime < (now -2h) => means that the sensor is not giving the right value
+            diff = datetime.datetime.now() + datetime.timedelta(hours=(-2))
+            device_update_time = datetime.datetime.fromtimestamp(int(result['updateTime']))
+            if device_update_time < diff:
+                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Device value are not updated"}
+
+            if int(result['battery']) < const.battery_min_warning:
+                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Battery less than 10%"}
+
+            if int(result['battery']) < const.battery_min_info:
+                return False, {"id": device['id'], "type": 3, "severity": 3, "message": "Battery less than 20%"}
+        return True, {}
 
     # Check device with the label type => actuator
-    def check_network_actuator(self):
-        pass
+    def check_network_actuator(self, device, ip, port):
+
+        # Get id and type to read the value => type/floor/id
+        # type => (radiator/store)
+        # id => 1->x
+        type = device['address'].split("/")[0]
+        id = device['address'].split("/")[2]
+
+        # Check what kind of type (radiator/store)
+        r = None
+        if type == "0":
+            r = requests.get(const.route_knx_device_value_read(ip, port, id, "radiator"))
+        elif type == "4":
+            r = requests.get(const.route_knx_device_value_read(ip, port, id, "store"))
+        else:
+            return False, {"id": device['id'], "type": 1, "severity": 3, "message": "Actuator type"}
+
+        # Error are not displayed as json.... => Node not ready or wrong sensor node type !
+        # So we must check the header to convert to json or not
+        header = r.headers['content-type']
+        if 'text/html' in header:
+            r.encoding = "utf-8"
+            result = r.text
+            if r.status_code != 200:
+                return False, {"id": device['id'], "type": 1, "severity": 3, "message": "Actuator id malformed"}
+        else:
+            result = r.json()
+            if result['result'] == "Wrong Radiator ID" or result['result'] == "Wrong Store ID":
+                return False, {"id": device['id'], "type": 1, "severity": 3, "message": "Wrong actuator id"}
+        return True, {}
+
+    def check_network_devices(self, devices, dependencies):
+
+        # Search ip and port for REST dependency
+        dependency_ip = ""
+        dependency_port = ""
+        for dependency in dependencies:
+            if dependency['method'] == "REST/HTTP":
+                dependency_ip = dependency['ip']
+                dependency_port = dependency['port']
+
+        status = []
+
+        # Process all device
+        for device in devices:
+            if device['type'] == "Sensor":
+
+                # If we get sensor info, warning or error => add it to the list to process after
+                alarm, infos = self.check_network_sensor(device, dependency_ip, dependency_port)
+                if alarm:
+                    status.append(infos)
+            elif device['type'] == "Actuator":
+
+                # Check if actuator with KNX address
+                # It could also be actuator but not KNX. In this case GOTO => else
+                find = re.findall(r"[\d]{1,2}/[\d]{1,2}/[\d]", device['address'])
+                if find:
+
+                    # If we get actuator info, warning or error => add it to the list to process after
+                    alarm, infos = self.check_network_actuator(device, dependency_ip, dependency_port)
+                    if alarm:
+                        status.append(infos)
+                else:
+                    print(f"Address ({device['address']}) not implemented")
+            else:
+                print(f"Device type ({device['type']}) not implemented")
+
+        if status:
+            return False, status
+        return True, []
 
     # Check all dependencies
     def check_network_dependency(self, dependencies):
@@ -272,14 +378,12 @@ class Alarm(object):
 
         unique_building_id = self.get_building_id(unique_floor_id)
 
-        ids_to_change = unique_room_id + unique_floor_id +  unique_building_id + unique_device_id
+        ids_to_change = unique_room_id + unique_floor_id + unique_building_id + unique_device_id
 
         for id in ids_to_change:
             query = {'id': id}
             set = {'$set': {"itemStyle.color": const.device_color_error}}
             self.__client.sh.devices.update(query, set)
-
-        i = 0
 
 
     def get_floor_id(self, unique_room_id):

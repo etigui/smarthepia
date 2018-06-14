@@ -38,24 +38,33 @@ device_color_no_error = '#34a046'
 # Dependency devices method
 dependency_method_ping = "Ping"
 dependency_method_http = "REST/HTTP"
+
+
 # Routes ZWAVE return
 wrong_not_available_device = "Node not ready or wrong sensor node type !"
 
 
 # Routes ZWAVE
-def route_node_list(ip, port):
+def route_zwave_node_list(ip, port):
     return f"http://{ip}:{port}/nodes/get_nodes_list"
 
 
-def route_device_list(ip, port):
+def route_zwave_device_list(ip, port):
     return f"http://{ip}:{port}/sensors/get_sensors_list"
 
 
-def route_device_all_measures(ip, port, address):
+def route_zwave_device_all_measures(ip, port, address):
     return f"http://{ip}:{port}/sensors/{address}/get_all_measures"
 
 
 #Routes KNX
+def route_knx_device_value_read(ip, port, id, type):
+    return f"http://{ip}:{port}/v0/{type}/read/{id}"
+
+
+# Battery min max value
+battery_min_info = 20
+battery_min_warning = 10
 
 
 
