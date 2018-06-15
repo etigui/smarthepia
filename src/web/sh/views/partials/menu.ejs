@@ -17,9 +17,6 @@
                 <li class="nav-item <%= page=='user'?'active':'' %>"><a href="/user"><i class="ft-user"></i><span class="menu-title" data-i18n="">Users</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-            <li class="nav-item <%= page=='alarm'?'active':'' %>"><a href="/alarm"><i class="ft-alert-triangle"></i><span class="menu-title" data-i18n="">Alarm</span></a></li>
-            <% } %>
-            <% if(permission>=1) {%>
                 <li class="navigation-header"><span>Inventory</span><i class="ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
             <% } %>
             <% if(permission>=1) {%>
@@ -30,6 +27,15 @@
             <% } %>
             <% if(permission>=1) {%>
             <li class="nav-item <%= page=='dependency'?'active':'' %>"><a href="/dependency"><i class="ft-layers"></i><span class="menu-title" data-i18n="">Dependency</span></a></li>
+            <% } %>
+            <% if(permission>=1) {%>
+            <li class="navigation-header"><span>Alarm</span><i class="ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
+            <% } %>
+            <% if(permission>=1) {%>
+            <li class="nav-item <%= page=='alarm'?'active':'' %>"><a href="/alarm"><i class="ft-alert-triangle"></i><span class="menu-title" data-i18n="">Alarm</span></a></li>
+            <% } %>
+            <% if(permission>=1) {%>
+            <li class="nav-item <%= page=='log'?'active':'' %>"><a href="/log"><i class="ft-menu"></i><span class="menu-title" data-i18n="">Log</span></a></li>
             <% } %>
         </ul>
     </div>

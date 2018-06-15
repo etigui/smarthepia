@@ -26,7 +26,7 @@ class Alarm(object):
         self.__client = None
         self.ws_status = True
         self.db_status = True
-        self.net_status = True
+        self.net_status = False
 
     def run(self):
 
@@ -64,7 +64,7 @@ class Alarm(object):
     def get_db_devices(self):
         devices = []
         query = {'$and': [{'$or': [{'type': 'Sensor'}, {'type': 'Actuator'}]}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}]}
-        avoid = {'name': False, 'itemStyle': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'enable': False} #,'id': False,
+        avoid = {'itemStyle': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'enable': False} #,'id': False, 'name': False,
         datas = self.__client.sh.devices.find(query, avoid)
         # Get all devices
         for device in datas:
@@ -99,29 +99,59 @@ class Alarm(object):
 
     # Process all the device attached to Smarthepia network
     def process_network(self):
-
-        devices_error = []
-        dependency_devices_error = []
-
+        d_status = []
+        dd_status = []
+        error = False
 
         # All dependency and devices
         db_devices = self.get_db_device_and_dependencies()
-
         for datas in db_devices:
 
             # Return if error => return false and the devices dependency '_id'
-            dependencies_status, dependency_devices_error = self.check_network_dependency(datas.dependencies)
+            dependencies_status, dependency_devices_error = self.check_network_dependency(datas.dependencies, datas.dependency_name)
 
-            # Check devices only if no error
+            # If error add to the list
+            if not dependencies_status:
+                dd_status.append(dependency_devices_error)
+
+            # If error add to the status list
             if dependencies_status:
                 devices_status, devices_error = self.check_network_devices(datas.devices, datas.dependencies)
+
+                # If error add to the status list
+                if not devices_status:
+                    d_status.append(devices_error)
             else:
 
-                # Set to error
-                self.set_dependencies_error(datas.dependency_name)
+                # Set dependencies (building, floor, room, devices) graph to error
+                self.set_dependencies_graph_error(datas.dependency_name)
 
-        # TODO check here when device error
-        status = devices_error + dependency_devices_error
+        # Set device graph error and send alarm
+        if d_status:
+            error = True
+            self.set_device_alarm_and_graph(d_status)
+            pass
+
+        # Send dependency alarm
+        if dd_status:
+            self.set_dependency_alarm(dd_status)
+            error = True
+
+        # last status (net_status) = false => no error
+        # error = false => no error
+        # If last status = false & error = false => We dont need to notify cause nothing change between th last time and now
+        if not self.net_status and not error:
+            self.net_status = False
+        elif not self.net_status and error: # If last status = false & error = true => notify change
+            self.net_status = True
+            #self.notify_alarm_change()
+        elif self.net_status and not error: # If last status = true & error = false => notify change cause now no error => all green
+            self.net_status = False
+            #self.notify_alarm_change()
+        else:
+            self.net_status = True
+            #self.notify_alarm_change()
+
         i = 0
 
     # Append dict item in list if not exist
@@ -218,8 +248,6 @@ class Alarm(object):
     # Check device with the label type => sensor
     def check_network_sensor(self, device, ip, port):
 
-        print(device)
-
         r = requests.get(const.route_zwave_device_all_measures(ip, port, device['address']))
         header = r.headers['content-type']
 
@@ -228,10 +256,10 @@ class Alarm(object):
         if 'text/html' in header:
             r.encoding = "utf-8"
             result = r.text
-            if r.status_code == 200 and result == "Node not ready or wrong sensor node type !":
-                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Sensor not exists"}
+            if r.status_code == 200 and result == const.wrong_not_available_device:
+                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Sensor not exists"}
             else:
-                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Wrong sensor id"}
+                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'],"type": const.warning_alarm, "severity": const.severity_high, "message": "Wrong sensor id"}
         else:
             result = r.json()
 
@@ -240,14 +268,14 @@ class Alarm(object):
             diff = datetime.datetime.now() + datetime.timedelta(hours=(-2))
             device_update_time = datetime.datetime.fromtimestamp(int(result['updateTime']))
             if device_update_time < diff:
-                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Device value are not updated"}
+                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Device value are not updated"}
 
             if int(result['battery']) < const.battery_min_warning:
-                return False, {"id": device['id'], "type": 2, "severity": 3, "message": "Battery less than 10%"}
+                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Battery less than 10%"}
 
             if int(result['battery']) < const.battery_min_info:
-                return False, {"id": device['id'], "type": 3, "severity": 3, "message": "Battery less than 20%"}
-        return True, {}
+                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.info_alarm, "severity": const.severity_high, "message": "Battery less than 20%"}
+        return True, None
 
     # Check device with the label type => actuator
     def check_network_actuator(self, device, ip, port):
@@ -259,13 +287,15 @@ class Alarm(object):
         id = device['address'].split("/")[2]
 
         # Check what kind of type (radiator/store)
-        r = None
-        if type == "0":
-            r = requests.get(const.route_knx_device_value_read(ip, port, id, "radiator"))
-        elif type == "4":
-            r = requests.get(const.route_knx_device_value_read(ip, port, id, "store"))
+        if type == "1":
+            type = "radiator"
+        elif type == "2":
+            type = "store"
         else:
-            return False, {"id": device['id'], "type": 1, "severity": 3, "message": "Actuator type"}
+            return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator type"}
+
+        route = const.route_knx_device_value_read(ip, port, id, type)
+        r = requests.get(route)
 
         # Error are not displayed as json.... => Node not ready or wrong sensor node type !
         # So we must check the header to convert to json or not
@@ -273,14 +303,20 @@ class Alarm(object):
         if 'text/html' in header:
             r.encoding = "utf-8"
             result = r.text
+
+            # If return != 200 means that server internal error (5xx)
             if r.status_code != 200:
-                return False, {"id": device['id'], "type": 1, "severity": 3, "message": "Actuator id malformed"}
+                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator id malformed"}
         else:
             result = r.json()
-            if result['result'] == "Wrong Radiator ID" or result['result'] == "Wrong Store ID":
-                return False, {"id": device['id'], "type": 1, "severity": 3, "message": "Wrong actuator id"}
-        return True, {}
+            if result.get('result'):
 
+                # Check if the sensor id is wrong
+                if result['result'] == const.wrong_radiator_id or result['result'] == const.wrong_store_id:
+                    return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong actuator id"}
+        return True, None
+
+    # Check device available (sensor/actuator)
     def check_network_devices(self, devices, dependencies):
 
         # Search ip and port for REST dependency
@@ -291,15 +327,16 @@ class Alarm(object):
                 dependency_ip = dependency['ip']
                 dependency_port = dependency['port']
 
-        status = []
-
         # Process all device
+        status = []
         for device in devices:
             if device['type'] == "Sensor":
 
                 # If we get sensor info, warning or error => add it to the list to process after
                 alarm, infos = self.check_network_sensor(device, dependency_ip, dependency_port)
-                if alarm:
+
+                # If error add to the status list
+                if not alarm:
                     status.append(infos)
             elif device['type'] == "Actuator":
 
@@ -310,20 +347,22 @@ class Alarm(object):
 
                     # If we get actuator info, warning or error => add it to the list to process after
                     alarm, infos = self.check_network_actuator(device, dependency_ip, dependency_port)
-                    if alarm:
+
+                    # If error add to the status list
+                    if not alarm:
                         status.append(infos)
                 else:
                     print(f"Address ({device['address']}) not implemented")
             else:
                 print(f"Device type ({device['type']}) not implemented")
 
+        # Check if we have error like warning/info/error
         if status:
             return False, status
-        return True, []
+        return True, None
 
     # Check all dependencies
-    def check_network_dependency(self, dependencies):
-
+    def check_network_dependency(self, dependencies, dependency_name):
         status = []
 
         # Walk through all dependency and
@@ -332,7 +371,7 @@ class Alarm(object):
             # Do ping or http get => method
             if dependency['method'] == const.dependency_method_ping:
                 if not utils.send_ping(dependency['ip']):
-                    status.append(dependency['name'])
+                    status.append({"dname": dependency_name, "ddname": dependency['name'], "type": const.error_alarm, "severity": const.severity_high, "message": "No response"})
             elif dependency['method'] == const.dependency_method_http:
 
                 # Check if port
@@ -346,19 +385,18 @@ class Alarm(object):
 
                 # Http get with ip
                 if not utils.get_http(url):
-                    status.append(dependency['name'])
+                    status.append({"dname": dependency_name, "ddname": dependency['name'], "type": const.error_alarm, "severity": const.severity_high, "message": "No response"})
             else:
                 print(f"Dependency method ({dependency['method']}) not implemented")
-                status.append("")
-                #raise NotImplementedError(f"Dependency method ({dependency['method']}) not implemented")
 
+        # Check if dependency error
         if status:
             return False, status
-        return True, []
+        return True, None
 
     # Find all devices attached to that dependecy and make them as error
     # Must also set building((associate to floor)), floor(associate to room), room(associate to device) as error
-    def set_dependencies_error(self, dependency_name):
+    def set_dependencies_graph_error(self, dependency_name):
 
         self.set_all_devices_to_green()
 
@@ -413,7 +451,44 @@ class Alarm(object):
             dd.append(d)
 
         for data in dd:
-            print(data['id'])
             query = {'id': data['id']}
             set = {'$set': {"itemStyle.color": const.device_color_no_error}}
             self.__client.sh.devices.update(query, set)
+
+    # Set alarm
+    def set_dependency_alarm(self, status):
+
+        for stat in status:
+            for device in stat:
+                print(device)
+
+                # Check if device name and ack
+                # If length > 1 => we have already an alarm not ack, so we can update
+                # Else we create a new alarm entree
+                query = {'$and': [{"name": device['ddname']}, {"ack": 0}]}
+                datas = self.__client.sh.alarm.find(query)
+                if datas.count() == 0:
+                    query = {"name": device['ddname'], "dtype": device['dname'], "atype": device['type'],
+                             "aseverity": device['severity'], "amessage": device['message'], "comment": "", "count": 1,
+                             "dstart": datetime.datetime.now(), "dlast": datetime.datetime.now(),
+                             "dend": datetime.datetime.now(), "ack": 0, "postpone": datetime.datetime.now(),
+                             "assign": ["anyone"], "date": [datetime.datetime.now()]}
+                    datas = self.__client.sh.alarm.insert(query)
+                else:
+                    pass
+
+    # Set alarm and color graph
+    def set_device_alarm_and_graph(self, status):
+        for stat in status:
+            for device in stat:
+
+                # Check if device name and ack
+                # If length > 1 => we have already an alarm not ack, so we can update
+                # Else we create a new alarm entree
+                query = {'$and': [{"name": device['name']}, {"ack": 0}]}
+                datas = self.__client.sh.alarm.find(query)
+                if datas.count() == 0:
+                    query = {"name": device['name'], "dtype": device['dtype'], "atype": device['type'], "aseverity": device['severity'], "amessage": device['message'], "comment": "", "count": 1, "dstart":datetime.datetime.now(), "dlast": datetime.datetime.now(), "dend": datetime.datetime.now(), "ack": 0, "postpone": datetime.datetime.now(), "assign": ["anyone"], "date": [datetime.datetime.now()]}
+                    datas = self.__client.sh.alarm.insert(query)
+                else:
+                    pass

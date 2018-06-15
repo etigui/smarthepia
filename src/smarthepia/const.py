@@ -43,6 +43,9 @@ dependency_method_http = "REST/HTTP"
 # Routes ZWAVE return
 wrong_not_available_device = "Node not ready or wrong sensor node type !"
 
+# Route KNX return
+wrong_store_id = "Wrong Store ID"
+wrong_radiator_id = "Wrong Radiator ID"
 
 # Routes ZWAVE
 def route_zwave_node_list(ip, port):
@@ -66,5 +69,18 @@ def route_knx_device_value_read(ip, port, id, type):
 battery_min_info = 20
 battery_min_warning = 10
 
+# Temp after each request (KNX, ZWAVE)
+knx_tempo = 0.5
+zwave_tempo = 0.5
+
+# Alarm type
+error_alarm = 1
+warning_alarm = 2
+info_alarm = 3
+
+# Severity graduation
+severity_low = 1
+severity_medium = 2
+severity_high = 3
 
 
