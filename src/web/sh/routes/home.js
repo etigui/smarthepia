@@ -35,7 +35,7 @@ router.get('/list', isAuth, function(req, res, next) {
             if (err) {
                 return next(error);
             }
-            return res.json({data: devices});
+            return res.json({devices});
         });
 
     }else{

@@ -1,6 +1,7 @@
 # email: https://code.tutsplus.com/tutorials/sending-emails-in-python-with-smtp--cms-29975
 import time
 import datetime
+from dateutil.tz import gettz
 import requests
 import re
 
@@ -29,6 +30,16 @@ class Alarm(object):
         self.net_status = False
 
     def run(self):
+
+        # Init MongoDB client, check connection
+        status, self.__client = self.db_connect()
+
+        d_status = [[{"parent": 7, "name": "MS 2", "dtype": "Sensor", "type": 2, "severity": 1, "message": "Wrong actuator id"}],[{"parent": 7, "name": "MS 2", "dtype": "Sensor", "type": 3, "severity": 3, "message": "Wrong actuator id"}]]
+        self.set_device_alarm_and_graph(d_status)
+       # self.set_dependency_alarm(dd_status)
+        i  = 0
+
+        '''
 
         # Process alarm
         while True :
@@ -59,6 +70,7 @@ class Alarm(object):
 
             # Close connection and wait
             time.sleep(const.st_alarm)
+        '''
 
     # Get all device (sensor, actuator) in the inventory (active, with dependency)
     def get_db_devices(self):
@@ -460,35 +472,55 @@ class Alarm(object):
 
         for stat in status:
             for device in stat:
-                print(device)
+
+                # Add local date time otherwise mongodb add +02:00
+                date_now = datetime.datetime.now(gettz('Europe/Berlin'))
 
                 # Check if device name and ack
                 # If length > 1 => we have already an alarm not ack, so we can update
                 # Else we create a new alarm entree
                 query = {'$and': [{"name": device['ddname']}, {"ack": 0}]}
-                datas = self.__client.sh.alarm.find(query)
+                # TODO change here
+                #'$and': [{"name": device['ddname']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['type']}]
+                datas = self.__client.sh.alarms.find(query)
                 if datas.count() == 0:
                     query = {"name": device['ddname'], "dtype": device['dname'], "atype": device['type'],
                              "aseverity": device['severity'], "amessage": device['message'], "comment": "", "count": 1,
-                             "dstart": datetime.datetime.now(), "dlast": datetime.datetime.now(),
-                             "dend": datetime.datetime.now(), "ack": 0, "postpone": datetime.datetime.now(),
-                             "assign": ["anyone"], "date": [datetime.datetime.now()]}
-                    datas = self.__client.sh.alarm.insert(query)
+                             "dstart": date_now, "dlast": date_now,
+                             "dend": date_now, "ack": 0, "postpone": date_now,
+                             "assign": "anyone", "detail": [date_now]}
+                    self.__client.sh.alarms.insert(query)
                 else:
-                    pass
+                    # Update device dependency not ack
+                    # => add new date (new same alarm) fro details
+                    # => add count + 1
+                    # => add time last
+                    query = {'$and': [{"name": device['name']}, {"ack": 0}]}
+                    value = {'$inc': {'count': 1}, '$set': {"dlast": date_now}, '$push': {"detail": date_now}}
+                    self.__client.sh.alarms.update(query, value)
 
     # Set alarm and color graph
     def set_device_alarm_and_graph(self, status):
         for stat in status:
             for device in stat:
 
+                # Add local date time otherwise mongodb add +02:00
+                date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+
                 # Check if device name and ack
                 # If length > 1 => we have already an alarm not ack, so we can update
                 # Else we create a new alarm entree
-                query = {'$and': [{"name": device['name']}, {"ack": 0}]}
-                datas = self.__client.sh.alarm.find(query)
+                query = {'$and': [{"name": device['name']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['type']}]}
+                datas = self.__client.sh.alarms.find(query)
                 if datas.count() == 0:
-                    query = {"name": device['name'], "dtype": device['dtype'], "atype": device['type'], "aseverity": device['severity'], "amessage": device['message'], "comment": "", "count": 1, "dstart":datetime.datetime.now(), "dlast": datetime.datetime.now(), "dend": datetime.datetime.now(), "ack": 0, "postpone": datetime.datetime.now(), "assign": ["anyone"], "date": [datetime.datetime.now()]}
-                    datas = self.__client.sh.alarm.insert(query)
+                    query = {"name": device['name'], "dtype": device['dtype'], "atype": device['type'], "aseverity": device['severity'], "amessage": device['message'], "comment": "", "count": 1, "dstart": date_now, "dlast": date_now, "dend": date_now, "ack": 0, "postpone": date_now, "assign": "anyone", "detail": [date_now]}
+                    self.__client.sh.alarms.insert(query)
                 else:
-                    pass
+
+                    # Update device not ack
+                    # => add new date (new same alarm) fro details
+                    # => add count + 1
+                    # => add time last
+                    query = {'$and': [{"name": device['name']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['type']}]}
+                    value = {'$inc': {'count': 1}, '$set': {"dlast": date_now}, '$push': {"detail": date_now}}
+                    self.__client.sh.alarms.update(query, value)
