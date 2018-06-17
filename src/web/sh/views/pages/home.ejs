@@ -99,13 +99,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 <!-- END websocket -->
 
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
 <script>
 
     onLoad();
-
-    function onLoad() {
-
-    }
 
     var dom = document.getElementById("tree-map");
     var myChart = echarts.init(dom);
@@ -113,80 +113,88 @@
     var app = {};
     option = null;
 
+    function onLoad() {
+        loadGraph();
+    }
 
-    // Get devices list (devices and location)
-    $.get('/home/list').done(function (data) {
-        function getNestedChildren(arr, parent) {
+    function loadGraph(){
 
-            var out = []
-            for(var i in arr) {
-                if(arr[i].parent === parent) {
-                    var children = getNestedChildren(arr, arr[i].id)
-                    if(children.length) {
-                        arr[i].children = children
+        // Get devices list (devices and location)
+        $.get('/home/list').done(function (data) {
+
+            // Function to link id and parent
+            function getNestedChildren(arr, parent) {
+
+                var out = []
+                for(var i in arr) {
+                    if(arr[i].parent === parent) {
+                        var children = getNestedChildren(arr, arr[i].id)
+                        if(children.length) {
+                            arr[i].children = children
+                        }
+                        out.push(arr[i])
                     }
-                    out.push(arr[i])
                 }
+                return out
             }
-            return out
-        }
 
-        myChart.setOption(option = {
-            animation: false,
-            title: {
-                text: '',
-                subtext: '',
-                left: 'leafDepth'
-            },
-            //hoverable : true,
-            calculable: true,
-            tooltip : {
-                trigger: 'item',
-                formatter: function (info) {
-                    var color = "undefined";
-                    if ('itemStyle' in info.data) {
-                        color = info.data.itemStyle.color;
+            myChart.setOption(option = {
+                animation: false,
+                title: {
+                    text: '',
+                    subtext: '',
+                    left: 'leafDepth'
+                },
+                //hoverable : true,
+                calculable: true,
+                tooltip : {
+                    trigger: 'item',
+                    formatter: function (info) {
+                        var color = "undefined";
+                        if ('itemStyle' in info.data) {
+                            color = info.data.itemStyle.color;
+                        }
+                        return [
+                            "Name: " + info.data.name + "</br>",
+                            "Value: " + info.data.value + "</br>",
+                            "Type: " + info.data.type+ "</br>",
+                            "Color: " + color + "</br>",
+                        ].join('');
                     }
-                    return [
-                        "Name: " + info.data.name + "</br>",
-                        "Value: " + info.data.value + "</br>",
-                        "Type: " + info.data.type+ "</br>",
-                        "Color: " + color + "</br>",
-                    ].join('');
-                }
-            },
-            toolbox: {
-                show : true,
-                feature : {
-                    mark : {show: true},
-                    saveAsImage : {show: true, title : 'Save', type : 'png'
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        saveAsImage : {show: true, title : 'Save', type : 'png'
+                        }
                     }
-                }
-            },
-            grid: {
-                borderWidth: 0,
-            },
-            series: [{
-                name: 'hepia',
-                type: 'treemap',
-                roam: false,
-                selectedMode: false,
-                data: getNestedChildren(data.data, 0),
-                breadcrumb: {show: true, textStyle: {fontSize: 100}},
-                leafDepth: 1,
-                levels: [
-                    {itemStyle: {normal: {borderColor: '#FFF', borderWidth: 4, gapWidth: 4}}},
-                    {itemStyle: {normal: {gapWidth: 4}}},
-                ],
-            }]
-        })
+                },
+                grid: {
+                    borderWidth: 0,
+                },
+                series: [{
+                    name: 'hepia',
+                    type: 'treemap',
+                    roam: false,
+                    selectedMode: false,
+                    data: getNestedChildren(data.data, 0),
+                    breadcrumb: {show: true, textStyle: {fontSize: 100}},
+                    leafDepth: 1,
+                    levels: [
+                        {itemStyle: {normal: {borderColor: '#FFF', borderWidth: 4, gapWidth: 4}}},
+                        {itemStyle: {normal: {gapWidth: 4}}},
+                    ],
+                }]
+            })
 
 
-        if (option && typeof option === "object") {
-            myChart.setOption(option, true);
-        }
-        myChart.hideLoading();
-    });
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+            myChart.hideLoading();
+        });
+    }
 
     $(function () {
         // Resize chart on menu width change and window resize
@@ -202,63 +210,56 @@
             }, 200);
         }
     });
-
     // BEGIN Server time section /////////////////////////////////////////////////////////////
-    //Users time
+    // Local and servers time
     var timeLocal = new Date();
-    //Servers time
     var timeServer = new Date("<%= dateTime %>");
 
-    //Calculate the difference (returns milliseconds)
+    //C alculate the difference (returns milliseconds)
     var millDiff = timeLocal - timeServer;
 
-    //initalize the clock on loading of page
+    // Init the clock on loading of page
     window.onload = function () {
         //set the interval so clock ticks
         var timeClock = setInterval("timeTick()", 10);
     };
-
-    function formatDate(timeLocal){
-        var hour = timeLocal.getHours();
-        var min = timeLocal.getMinutes();
-        var sec = timeLocal.getSeconds();
-        var day = timeLocal.getDate();
-        var month = (timeLocal.getMonth() + 1);
-        var year = timeLocal.getFullYear();
-        hour = hour < 10 ? '0'+ hour : hour;
-        min= min < 10 ? '0'+ min : min;
-        sec = sec < 10 ? '0'+ sec : sec;
-        day = day < 10 ? '0'+ day : day;
-        month = month < 10 ? '0'+ month : month;
-        return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
-    }
-
-    //The ticking clock function
-    function timeTick(){
-        //grab updated time
-        timeLocal = new Date();
-        //add time difference
-        timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
-        //display the value
-
-        document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
-    }
     // END Server time section /////////////////////////////////////////////////////////////
 
-    <% if((typeof permission !== 'undefined') && permission > 0) {%>
     // BEGIN alarm section ////////////////////////////////////////////////////////////////
-    //setInterval(doSomething, 5000);
     var socket = io.connect();
     socket.on('connect', function () {
-        return console.log('Now connected to socket');
+        console.log('Socket connected');
     });
 
-    function doSomething() {
-        var json = '{ "name": <%= typeof lastname!="undefined" ? lastname : "undefined" %>, "age": 42 }';
-        socket.emit('message', json);
-    }
-    // END alarm section /////////////////////////////////////////////////////////////////
+    // All user receive notif when graph change
+    <% if((typeof permission !== 'undefined') && permission >= 0) {%>
+
+    socket.on('graphChange',function(data){
+        console.log("Receive graphChange");
+        loadGraph();
+    });
+
     <%}%>
+    // Manager, admin receive notif when graph change
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+
+    socket.on('welcome',function(data){
+        console.log("Receive welcome");
+        console.log(data);
+        var span = $('#alarmBadge');
+        updateBadge(span, data.atype, data.count);
+    });
+
+    socket.on('alarmNotify',function(data){
+        console.log("Receive alarmNotify");
+        console.log(data);
+        var span = $('#alarmBadge');
+        updateBadge(span, data.atype, data.count);
+    });
+
+    <%}%>
+    // END alarm section /////////////////////////////////////////////////////////////////
+
 
 </script>
 </body>

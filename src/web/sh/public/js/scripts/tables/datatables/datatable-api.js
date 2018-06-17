@@ -40,17 +40,16 @@ $('#addRow').trigger('click');
 *       js of Individual column searching (text inputs)        *
 ***************************************************************/
 
-var inputCount = 0;
-// Setup - add a text input to each footer cell
+// Add a text input to each footer cell
 $('.text-inputs-searching tfoot th').each( function () {
+    var className = $(this)[0].className;
 
-    // If last value we disabled the input
-    inputCount += 1;
-    if (inputCount != ($('.text-inputs-searching tfoot th').length )){
-        var title = $(this).text();
-        $(this).html( '<input type="text" class="form-control square" placeholder="Search '+title+'" />' );
+    // If details-control or last class set, we dont show the search input
+    // Reduce col size if not input
+    if(className === "details-control" || className === "text-center align-middle last"){
+        $(this).html( '<input type="text" class="form-control square" hidden />' );
     }else{
-        $(this).html( '<input type="text" class="form-control square" disabled />' );
+        $(this).html( '<input type="text" class="form-control square" placeholder="Search" />' );
     }
 } );
 

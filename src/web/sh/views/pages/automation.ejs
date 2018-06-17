@@ -240,6 +240,14 @@
 <script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
 <!-- END toastr -->
 
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
 
 <script>
 
@@ -378,46 +386,43 @@
         }
 
         // BEGIN Server time section /////////////////////////////////////////////////////////////
-        //Users time
+        // Local and servers time
         var timeLocal = new Date();
-        //Servers time
         var timeServer = new Date("<%= dateTime %>");
 
-        //Calculate the difference (returns milliseconds)
+        //C alculate the difference (returns milliseconds)
         var millDiff = timeLocal - timeServer;
 
-        //initalize the clock on loading of page
+        // Init the clock on loading of page
         window.onload = function () {
             //set the interval so clock ticks
             var timeClock = setInterval("timeTick()", 10);
         };
-
-        function formatDate(timeLocal){
-            var hour = timeLocal.getHours();
-            var min = timeLocal.getMinutes();
-            var sec = timeLocal.getSeconds();
-            var day = timeLocal.getDate();
-            var month = (timeLocal.getMonth() + 1);
-            var year = timeLocal.getFullYear();
-            hour = hour < 10 ? '0'+ hour : hour;
-            min= min < 10 ? '0'+ min : min;
-            sec = sec < 10 ? '0'+ sec : sec;
-            day = day < 10 ? '0'+ day : day;
-            month = month < 10 ? '0'+ month : month;
-            return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
-        }
-
-        //The ticking clock function
-        function timeTick(){
-            //grab updated time
-            timeLocal = new Date();
-            //add time difference
-            timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
-            //display the value
-
-            document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
-        }
         // END Server time section /////////////////////////////////////////////////////////////
+
+        <% if((typeof permission !== 'undefined') && permission > 0) {%>
+        // BEGIN alarm section ////////////////////////////////////////////////////////////////
+        var socket = io.connect();
+        socket.on('connect', function () {
+            console.log('Socket connected');
+        });
+
+        socket.on('welcome',function(data){
+            console.log("Receive welcome");
+            console.log(data);
+            var span = $('#alarmBadge');
+            updateBadge(span, data.atype, data.count);
+        });
+
+        // Manager, admin receive notif when graph change
+        socket.on('alarmNotify',function(data){
+            console.log("Receive alarmNotify");
+            console.log(data);
+            var span = $('#alarmBadge');
+            updateBadge(span, data.atype, data.count);
+        });
+        // END alarm section /////////////////////////////////////////////////////////////////
+        <%}%>
 </script>
 </body>
 </html>

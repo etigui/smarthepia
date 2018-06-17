@@ -18,7 +18,7 @@ module.exports = {
     checkUniqueEmail: function (value, callback){
         User.find({email: value}, function(err, user) {
             if (err) {
-                return callback(error);
+                return callback(err);
             }
             if(user.length > 0){
                 callback(false);

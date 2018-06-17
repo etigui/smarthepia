@@ -80,6 +80,7 @@
                                                     <th>Severity</th>
                                                     <th>Count</th>
                                                     <th>Last</th>
+                                                    <th>Message</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
@@ -87,6 +88,8 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
                                                     <th rowspan="1" colspan="1">
                                                     </th>
                                                     <th rowspan="1" colspan="1">
@@ -149,6 +152,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 <!-- END websocket -->
 
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
 
 <script>
 
@@ -188,6 +199,7 @@
             { data: "aseverity"},
             { data: "count"},
             { data: "dlast"},
+            { data: "amessage"},
             {},
             {data: "_id"}
         ],
@@ -213,11 +225,11 @@
             return '<div class="badge badge-'+color+'" style="line-height: 1.5; display: block;">'+data+'</div>';
         }
         }, {
-            targets: 7,
+            targets: 8,
             searching: false,
             orderable: false,
             data: null,
-            className: "text-center align-middle",
+            className: "text-center align-middle last",
             render: function (data, type, full, meta) {
                 return '<div class="btn-group">\n' +
                     '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
@@ -251,8 +263,6 @@
                     ' </div>';
             }
         },
-
-
             {targets: 0, className: "text-center align-middle"},
             {targets: 2, className: "text-center align-middle"},
             {targets: 1, className: "text-center align-middle"},
@@ -265,8 +275,9 @@
                     return formatDate(date);
                 }
             },
+            {targets: 7, className: "text-center align-middle"},
             {
-                "targets": 8,
+                "targets": 9,
                 "visible": false,
                 "searchable": false
             }]
@@ -292,7 +303,6 @@
     jQuery.fn.dataTableExt.oSort["typeSort-asc"] = function (x, y) {
         return customSort(x) > customSort(y);
     }
-
 
     // Formatting function for row details
     function format (d) {
@@ -324,85 +334,83 @@
         }
     });
 
+    // END Server time section /////////////////////////////////////////////////////////////
 
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+    // BEGIN alarm section ////////////////////////////////////////////////////////////////
+    var socket = io.connect();
+    socket.on('connect', function () {
+        console.log('Socket connected');
+    });
 
+    socket.on('welcome',function(data){
+        console.log("Receive welcome");
+        console.log(data);
+        var span = $('#alarmBadge');
+        $('#alarmTable').DataTable().ajax.reload();
+        updateBadge(span, data.atype, data.count);
+    });
 
+    // Manager, admin receive notif when graph change
+    socket.on('alarmNotify',function(data){
+        console.log("Receive alarmNotify");
+        console.log(data);
+        var span = $('#alarmBadge');
+        $('#alarmTable').DataTable().ajax.reload();
+        updateBadge(span, data.atype, data.count);
+    });
+    // END alarm section /////////////////////////////////////////////////////////////////
+    <%}%>
 
 
     $("#alarmTable tbody").on("click","#ackSumbit", function () {
         var nRow = $(this).parents('tr')[0];
         var oTable = $('#alarmTable').dataTable();
-        var aData = oTable.fnGetData(nRow); //works
-        console.log(aData._id);
+        var aData = oTable.fnGetData(nRow);
+        var id =  aData._id;
+
+        // Check if the alarm is exist
+        if(id) {
+            $.ajax({
+                url: "/alarm/ack",
+                type: "get",
+                data: {
+                    id: id,
+                },
+                dataType: "json",
+                success: function (response) {
+
+                    if (response.status === "success") {
+
+                        socket.emit("alarmNotify", "")
+                        $('#alarmTable').DataTable().ajax.reload();
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }else{
+            toastr.error("Alarm id error", "error", {closeButton: true})
+        }
     });
 
-
     // BEGIN Server time section /////////////////////////////////////////////////////////////
-    //Users time
+    // Local and servers time
     var timeLocal = new Date();
-    //Servers time
     var timeServer = new Date("<%= dateTime %>");
 
-    //Calculate the difference (returns milliseconds)
+    //C alculate the difference (returns milliseconds)
     var millDiff = timeLocal - timeServer;
 
-    //initalize the clock on loading of page
+    // Init the clock on loading of page
     window.onload = function () {
         //set the interval so clock ticks
         var timeClock = setInterval("timeTick()", 10);
     };
 
-    function formatDate(timeLocal){
-        var hour = timeLocal.getHours();
-        var min = timeLocal.getMinutes();
-        var sec = timeLocal.getSeconds();
-        var day = timeLocal.getDate();
-        var month = (timeLocal.getMonth() + 1);
-        var year = timeLocal.getFullYear();
-        hour = hour < 10 ? '0'+ hour : hour;
-        min= min < 10 ? '0'+ min : min;
-        sec = sec < 10 ? '0'+ sec : sec;
-        day = day < 10 ? '0'+ day : day;
-        month = month < 10 ? '0'+ month : month;
-        return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
-    }
-
-    //The ticking clock function
-    function timeTick(){
-        //grab updated time
-        timeLocal = new Date();
-        //add time difference
-        timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
-        //display the value
-
-        document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
-    }
-    // END Server time section /////////////////////////////////////////////////////////////
-
-    <% if((typeof permission !== 'undefined') && permission > 0) {%>
-    // BEGIN alarm section ////////////////////////////////////////////////////////////////
-        //setInterval(doSomething, 5000);
-        var socket = io.connect();
-        socket.on('connect', function () {
-            console.log('Now connected to socket');
-        });
-
-        socket.on('alarmNotify', function (data) {
-            console.log('Receive alarmNotify from: ' + data);
-        });
-
-        $(".ack").on( "click", function() {
-            socket.emit('alarmNotify', "<%= typeof lastname!='undefined' ? lastname : 'undefined' %>");
-        });
-
-        function doSomething() {
-            var json = '{ "name": <%= typeof lastname!="undefined" ? lastname : "undefined" %>, "age": 42 }';
-            socket.emit('message', json);
-        }
-
-
-    // END alarm section /////////////////////////////////////////////////////////////////
-    <%}%>
 
 </script>
 

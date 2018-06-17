@@ -34,7 +34,9 @@ class Alarm(object):
         # Init MongoDB client, check connection
         status, self.__client = self.db_connect()
 
-        d_status = [[{"parent": 7, "name": "MS 2", "dtype": "Sensor", "type": 2, "severity": 1, "message": "Wrong actuator id"}],[{"parent": 7, "name": "MS 2", "dtype": "Sensor", "type": 3, "severity": 3, "message": "Wrong actuator id"}]]
+        self.set_all_devices_to_green()
+
+        d_status = [[{"parent": 7, "name": "MS 523", "dtype": "Sensor", "type": 2, "severity": 1, "message": "Wrong actuator id"}],[{"parent": 7, "name": "MS 2", "dtype": "Sensor", "type": 3, "severity": 3, "message": "Wrong actuator id"}]]
         self.set_device_alarm_and_graph(d_status)
        # self.set_dependency_alarm(dd_status)
         i  = 0
