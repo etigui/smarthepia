@@ -266,6 +266,18 @@
             }
         });
 
+        function loadBadge(){
+            $.ajax({
+                url: "/alarm/badge",
+                type: "get",
+                dataType: "json",
+                success: function (response) {
+                    var span = $('#alarmBadge');
+                    updateBadge(span, response.atype, response.count);
+                }
+            });
+        }
+
         // Check action wanted (edit/add rules)
         $("#action").change(function() {
             var selected = $("#action option:selected").text();
@@ -409,17 +421,13 @@
 
         socket.on('welcome',function(data){
             console.log("Receive welcome");
-            console.log(data);
-            var span = $('#alarmBadge');
-            updateBadge(span, data.atype, data.count);
+            loadBadge();
         });
 
         // Manager, admin receive notif when graph change
         socket.on('alarmNotify',function(data){
             console.log("Receive alarmNotify");
-            console.log(data);
-            var span = $('#alarmBadge');
-            updateBadge(span, data.atype, data.count);
+            loadBadge();
         });
         // END alarm section /////////////////////////////////////////////////////////////////
         <%}%>

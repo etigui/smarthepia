@@ -36,7 +36,7 @@ class Alarm(object):
 
         self.set_all_devices_to_green()
 
-        d_status = [[{"parent": 7, "name": "MS 53", "dtype": "Sensor", "type": 2, "severity": 1, "message": "Wrong actuator id"}],[{"parent": 7, "name": "MS 2", "dtype": "Sensor", "type": 3, "severity": 3, "message": "Wrong actuator id"}]]
+        d_status = [[{"parent": 15, "name": "MS 53", "dtype": "Sensor", "type": 2, "severity": 1, "message": "Wrong actuator id"}],[{"parent": 15, "name": "MS 2", "dtype": "Sensor", "type": 3, "severity": 3, "message": "Wrong actuator id"}]]
         self.set_device_alarm_and_graph(d_status)
        # self.set_dependency_alarm(dd_status)
         i  = 0
@@ -138,7 +138,7 @@ class Alarm(object):
             else:
 
                 # Set dependencies (building, floor, room, devices) graph to error
-                self.set_dependencies_graph_error(datas.dependency_name)
+                self.set_dependencies_graph_error(datas.dependency_name, dependency_devices_error)
 
         # Set device graph error and send alarm
         if d_status:
@@ -410,7 +410,7 @@ class Alarm(object):
 
     # Find all devices attached to that dependecy and make them as error
     # Must also set building((associate to floor)), floor(associate to room), room(associate to device) as error
-    def set_dependencies_graph_error(self, dependency_name):
+    def set_dependencies_graph_error(self, dependency_name, dependency_devices_error):
 
         self.set_all_devices_to_green()
 
@@ -431,6 +431,12 @@ class Alarm(object):
         unique_building_id = self.get_building_id(unique_floor_id)
 
         ids_to_change = unique_room_id + unique_floor_id + unique_building_id + unique_device_id
+
+        # TODO check if device['ddname'] is the device name error
+        # TODO add multiple element to derror list in db => for each (sensor/actioneur, room, floor, building)
+        error = []
+        for device in dependency_devices_error:
+            error.append(device['ddname'])
 
         for id in ids_to_change:
             query = {'id': id}
@@ -466,7 +472,7 @@ class Alarm(object):
 
         for data in dd:
             query = {'id': data['id']}
-            set = {'$set': {"itemStyle.color": const.device_color_no_error}}
+            set = {'$set': {"itemStyle.color": const.device_color_no_error, "derror": ""},}
             self.__client.sh.devices.update(query, set)
 
     # Set alarm
@@ -481,9 +487,9 @@ class Alarm(object):
                 # Check if device name and ack
                 # If length > 1 => we have already an alarm not ack, so we can update
                 # Else we create a new alarm entree
-                query = {'$and': [{"name": device['ddname']}, {"ack": 0}]}
                 # TODO change here
-                #'$and': [{"name": device['ddname']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['type']}]
+                #query = {'$and': [{"name": device['ddname']}, {"ack": 0}]}
+                query = {'$and': [{"name": device['ddname']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['dtype']}]}
                 datas = self.__client.sh.alarms.find(query)
                 if datas.count() == 0:
                     query = {"name": device['ddname'], "dtype": device['dname'], "atype": device['type'],
@@ -497,12 +503,14 @@ class Alarm(object):
                     # => add new date (new same alarm) fro details
                     # => add count + 1
                     # => add time last
-                    query = {'$and': [{"name": device['name']}, {"ack": 0}]}
+                    #query = {'$and': [{"name": device['name']}, {"ack": 0}]}
                     value = {'$inc': {'count': 1}, '$set': {"dlast": date_now}, '$push': {"detail": date_now}}
                     self.__client.sh.alarms.update(query, value)
 
     # Set alarm and color graph
     def set_device_alarm_and_graph(self, status):
+
+        self.cool_test(status)
         for stat in status:
             for device in stat:
 
@@ -523,6 +531,56 @@ class Alarm(object):
                     # => add new date (new same alarm) fro details
                     # => add count + 1
                     # => add time last
-                    query = {'$and': [{"name": device['name']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['type']}]}
                     value = {'$inc': {'count': 1}, '$set': {"dlast": date_now}, '$push': {"detail": date_now}}
                     self.__client.sh.alarms.update(query, value)
+
+    def cool_test(self, status):
+
+        # Combine sensor by parent (room)
+        room_sensor_count = {}
+        sensors = []
+        actuators = []
+        for stat in status:
+            for device in stat:
+                if device['dtype'] == "Sensor":
+                    sensors.append(device)
+                else:
+                    actuators.append(device)
+
+        # Merge sensor by parent(room) to then check if warning or error
+        for sensor in sensors:
+            room_sensor_count[sensor['parent']] = room_sensor_count.get(sensor['parent'], 0) + 1
+
+        # Iter on merged sensor by parent (room)
+        for key, value in room_sensor_count.items():
+
+            # Set to orange the sensor
+            for sensor in sensors:
+                if sensor['parent'] == key:
+                    print(f"{sensor['name']} => orange")
+
+            count = self.get_sensor_room(key)
+
+            # If max sensor are down we must push red to (room, floor, building)
+            # Else push orange if not already red
+            if count == value:
+                print(f"if => key: {key}; value: {value}/{count}")
+                print(f"{key} => room red")
+                print(f"{key} => floor red")
+                print(f"{key} => building red")
+            else:
+                print(f"else=> key: {key}; value: {value}/{count}")
+                print(f"{key} => !!! check before if (room and floor) is not already red")
+                print(f"{key} => room orange")
+                print(f"{key} => floor orange")
+                print(f"{key} => building orange")
+
+        i = 0
+
+
+    # Get number of sensor ba room
+    # To define if error (max/max)
+    # Or if warning (1/max)
+    def get_sensor_room(self, parent):
+        datas = self.__client.sh.devices.find({"$and": [{"parent": {"$eq": parent}},{"type": {"$eq": "Sensor"}}]})
+        return datas.count()

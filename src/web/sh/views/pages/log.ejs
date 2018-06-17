@@ -70,7 +70,7 @@
                             <div class="card-content collapse show">
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="alarmTable" class="table table-striped table-bordered text-inputs-searching dataTable">
+                                        <table id="logTable" class="table table-striped table-bordered text-inputs-searching dataTable">
                                             <thead>
                                             <tr>
                                                 <th>Detail</th>
@@ -163,18 +163,27 @@
 
 <script>
 
-
-
     onLoad();
-
-
 
     function onLoad(){
         //genAlarmTable()
         //$('#alarmTable').DataTable().order([3, "desc"]).draw();
     }
 
-    $('#alarmTable').dataTable({
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                $('#logTable').DataTable().ajax.reload();
+                updateBadge(span, response.atype, response.count);
+            }
+        });
+    }
+
+    $('#logTable').dataTable({
         order: [[2,'desc'], [3,'asc']],
         dom: 'lBfrtip',
         buttons: [
@@ -321,9 +330,9 @@
     }
 
     // Add event listener for opening and closing details
-    $('#alarmTable tbody').on('click', 'td.details-control', function () {
+    $('#logTable tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
-        var table = $('#alarmTable').DataTable();
+        var table = $('#logTable').DataTable();
         var row =  table.row( tr );
 
         if ( row.child.isShown() ) {
@@ -339,13 +348,9 @@
     });
 
 
-
-
-
-
-    $("#alarmTable tbody").on("click","#ackSumbit", function () {
+    $("#logTable tbody").on("click","#ackSumbit", function () {
         var nRow = $(this).parents('tr')[0];
-        var oTable = $('#alarmTable').dataTable();
+        var oTable = $('#logTable').dataTable();
         var aData = oTable.fnGetData(nRow); //works
         console.log(aData._id);
     });
@@ -375,17 +380,13 @@
 
     socket.on('welcome',function(data){
         console.log("Receive welcome");
-        console.log(data);
-        var span = $('#alarmBadge');
-        updateBadge(span, data.atype, data.count);
+        loadBadge();
     });
 
     // Manager, admin receive notif when graph change
     socket.on('alarmNotify',function(data){
         console.log("Receive alarmNotify");
-        console.log(data);
-        var span = $('#alarmBadge');
-        updateBadge(span, data.atype, data.count);
+        loadBadge();
     });
     // END alarm section /////////////////////////////////////////////////////////////////
     <%}%>

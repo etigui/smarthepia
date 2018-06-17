@@ -250,6 +250,18 @@
         loadBuilding('#buildingDevice');
     }
 
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                updateBadge(span, response.atype, response.count);
+            }
+        });
+    }
+
     function loadBuilding(id){
 
         // Fill in device load building select option
@@ -475,17 +487,13 @@
 
     socket.on('welcome',function(data){
         console.log("Receive welcome");
-        console.log(data);
-        var span = $('#alarmBadge');
-        updateBadge(span, data.atype, data.count);
+        loadBadge();
     });
 
     // Manager, admin receive notif when graph change
     socket.on('alarmNotify',function(data){
         console.log("Receive alarmNotify");
-        console.log(data);
-        var span = $('#alarmBadge');
-        updateBadge(span, data.atype, data.count);
+        loadBadge();
     });
     // END alarm section /////////////////////////////////////////////////////////////////
     <%}%>

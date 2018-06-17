@@ -30,7 +30,7 @@ router.get('/list', isAuth, function(req, res, next) {
         var email = req.query.email;
         res.type('json');
         let toRemove = {__v: false, _id: false, password : false, lastConnection: false};
-        User.find({email: {$ne: email}}, toRemove, function(err, user) {
+        User.find({$and: [{email: {$ne: email}}, {email: {$ne: "notify@gmail.com"}}]}, toRemove, function(err, user) {
             if (err) {
                 return next(error);
             }
