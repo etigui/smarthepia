@@ -6,8 +6,6 @@ var Alarm = require('../models/alarm');
 var io = require('socket.io')();
 var auth = require('../controllers/auth');
 
-var Notify = require('../controllers/alarm');
-
 // Module variables
 var userSockets = {};
 
@@ -26,6 +24,8 @@ io.on('connection', function (socket) {
     var userPermission = -1;
     var alarmType = 0;
 
+    var email = socket.request.session.email;
+
     // Check if current user exist and get user info
     // passport id most match with => _id
     User.findOne({_id: ID}, function (err, user) {
@@ -36,37 +36,8 @@ io.on('connection', function (socket) {
         userPermission = user.permissions;
 
         // Only manager, admin can use this message
-        if(userPermission > auth.getManager()) {
-
-            // Get number of alarm not ack and the type
-            Notify.alarmNotify(function (sucess, json) {
-                if (sucess) {
-                    socket.emit('welcome', json);
-                }
-            });
-
-            // Get what type of alarm, not ack
-            /*Alarm.aggregate([{$match: {ack: 0}},{$group: {_id: null, minType: {$min: "$atype"}}}], function (err, alarmMin) {
-                if (err) {
-                    console.error(err);
-                    throw(err);
-                }
-
-                // Get number of alarm, not ack
-                Alarm.count({ack: 0}, function (err, alarmNumber) {
-                    if (err) {
-                        console.error(err);
-                        throw(err);
-                    }
-                    var json = null;
-                    if(alarmNumber !== 0) {
-                        json = {"atype": alarmMin[0].minType, "count": alarmNumber};
-                    }else{
-                        json = {"atype": -1, "count": -1};
-                    }
-                    socket.emit('welcome', json);
-                });
-            });*/
+        if(userPermission => auth.getManager()) {
+            socket.emit('welcome', "");
         }
     });
 
@@ -80,7 +51,7 @@ io.on('connection', function (socket) {
     socket.on('graphChange', function (data) {
 
         // Only user, manager, admin can use this message
-        if(userPermission > auth.getUser()) {
+        if(userPermission => auth.getUser()) {
             console.log('Receive graphChange');
             socket.broadcast.emit('graphChange', "");
         }
@@ -90,37 +61,10 @@ io.on('connection', function (socket) {
     socket.on('alarmNotify', function (data) {
 
         // Only manager, admin can use this message
-        if(userPermission > auth.getManager()) {
+        if(userPermission => auth.getManager()) {
             console.log('Receive alarmNotify');
-
-            // Get number of alarm not ack and the type
-            Notify.alarmNotify(function (sucess, json) {
-                if (sucess) {
-                    socket.broadcast.emit('alarmNotify', json);
-                }
-            });
-
-            // Get what type of alarm, not ack
-            /*Alarm.aggregate([{$match: {ack: 0}},{$group: {_id: null, minType: {$min: "$atype"}}}], function (err, alarmMin) {
-                if(err) {
-                    console.error(err);
-                    throw(err);
-                }
-                // Get number of alarm, not ack
-                Alarm.count({ack: 0}, function (err, alarmNumber) {
-                    if(err) {
-                        console.error(err);
-                        throw(err);
-                    }
-                    var json = null;
-                    if(alarmNumber !== 0) {
-                        json = {"atype": alarmMin[0].minType, "count": alarmNumber};
-                    }else{
-                        json = {"atype": -1, "count": -1};
-                    }
-                    socket.broadcast.emit('alarmNotify', json);
-                });
-            });*/
+            socket.broadcast.emit('alarmNotify', "");
+            socket.emit('alarmNotify', "");
         }
     });
 });

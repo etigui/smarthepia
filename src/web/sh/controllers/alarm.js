@@ -3,16 +3,16 @@ var Alarm = require('../models/alarm');
 var router = express.Router();
 
 module.exports = {
-    alarmNotify: function (callback) {
+    alarmNotify: function (email, callback) {
 
         // Get what type of alarm, not ack
-        Alarm.aggregate([{$match: {ack: 0}},{$group: {_id: null, minType: {$min: "$atype"}}}], function (err, alarmMin) {
+        Alarm.aggregate([{$match: {$and:[{$or :[{assign: "anyone"}, {assign: email}]},{ack: 0}]}},{$group: {_id: null, minType: {$min: "$atype"}}}], function (err, alarmMin) {
             if (err) {
                 return callback(false, err);
             }
 
             // Get number of alarm, not ack
-            Alarm.count({ack: 0}, function (err, alarmNumber) {
+            Alarm.count({$and:[{$or :[{assign: "anyone"}, {assign: email}]},{ack: 0}]}, function (err, alarmNumber) {
                 if (err) {
                     return callback(false, err);
                 }

@@ -121,6 +121,32 @@
         </div>
     </div>
 </div>
+<div class="modal fade text-left" id="modalAssignAlarm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel35" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Assign alarm</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="assignAlarmSubmit" class="form">
+                <div class="modal-body">
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="title">User</label>
+                        <select id="userEmail" class="form-control square">
+                        </select>
+                    </fieldset>
+                    <input id="alarmId" value=""  type="hidden">
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <% include ../partials/footer %>
 
 <!-- BEGIN VENDOR JS-->
@@ -162,16 +188,39 @@
 
 
 <script>
-
-
-
     onLoad();
-
-
 
     function onLoad(){
         //genAlarmTable()
         //$('#alarmTable').DataTable().order([3, "desc"]).draw();
+        loadUserEmail();
+    }
+
+    function loadUserEmail(){
+        $.ajax({
+            url: "/alarm/email",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $('#userEmail').empty().append('<option value="" selected disabled hidden>Select user</option>');
+                $.each(response.data, function (i, item) {
+                    $('#userEmail').append($('<option>', {value: item.id, text : item.email}));
+                });
+            }
+        });
+    }
+
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                $('#alarmTable').DataTable().ajax.reload();
+                updateBadge(span, response.atype, response.count);
+            }
+        });
     }
 
     $('#alarmTable').dataTable({
@@ -236,9 +285,9 @@
                     '        Action\n' +
                     '    </button>\n' +
                     '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                    '        <button id="ackSumbit" class="dropdown-item ack" type="button" data-toggle="modal" data-target="#modalEditUser" >Ack</button>\n' +
-                    '        <button id="postponeSubmit" class="dropdown-item" type="button">Postpone</button>\n' +
-                    '        <button id="assignSubmit" class="dropdown-item" type="button">Assign</button>\n' +
+                    '        <button id="ackSumbit" class="dropdown-item ack" type="button" >Ack</button>\n' +
+                    '        <button id="postponeAlarm" class="dropdown-item" type="button">Postpone</button>\n' +
+                    '        <button id="assignAlarm" class="dropdown-item" data-toggle="modal" data-target="#modalAssignAlarm" type="button">Assign</button>\n' +
                     '    </div>\n' +
                     '</div>';
             }
@@ -345,22 +394,59 @@
 
     socket.on('welcome',function(data){
         console.log("Receive welcome");
-        console.log(data);
-        var span = $('#alarmBadge');
-        $('#alarmTable').DataTable().ajax.reload();
-        updateBadge(span, data.atype, data.count);
+        loadBadge();
+        //console.log(data);
+        //var span = $('#alarmBadge');
+        //$('#alarmTable').DataTable().ajax.reload();
+        //updateBadge(span, data.atype, data.count);
     });
 
     // Manager, admin receive notif when graph change
     socket.on('alarmNotify',function(data){
         console.log("Receive alarmNotify");
-        console.log(data);
-        var span = $('#alarmBadge');
-        $('#alarmTable').DataTable().ajax.reload();
-        updateBadge(span, data.atype, data.count);
+        loadBadge();
+        ///console.log(data);
+        //var span = $('#alarmBadge');
+        //$('#alarmTable').DataTable().ajax.reload();
+        //updateBadge(span, data.atype, data.count);
     });
     // END alarm section /////////////////////////////////////////////////////////////////
     <%}%>
+
+    $("#assignAlarmSubmit").submit(function( event ) {
+        event.preventDefault();
+        var emailUser = $("#userEmail").val();
+        var alarmId = $("#alarmId").val();
+        if (emailUser && alarmId) {
+            $.ajax({
+                url: "/alarm/assign",
+                type: "get",
+                data: {email: emailUser, id: alarmId},
+                dataType: "json",
+                success: function (response) {
+                    $('#modalAssignAlarm').modal('toggle');
+                    //$('#alarmTable').DataTable().ajax.reload();
+                    //socket.emit("alarmNotify", "")
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }
+    });
+
+    // Set hidden id to assign person by alarm id
+    $("#alarmTable tbody").on('click',"#assignAlarm", function () {
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#alarmTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        var id = aData._id;
+        $("#alarmId").val(id);
+    });
 
 
     $("#alarmTable tbody").on("click","#ackSumbit", function () {
