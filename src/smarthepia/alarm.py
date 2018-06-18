@@ -31,16 +31,20 @@ class Alarm(object):
 
     def run(self):
 
+        '''
         # Init MongoDB client, check connection
         status, self.__client = self.db_connect()
 
         self.set_all_devices_to_green()
 
-        d_status = [[{"parent": 15, "name": "MS 53", "dtype": "Sensor", "type": 2, "severity": 1, "message": "Wrong actuator id"}],[{"parent": 15, "name": "MS 2", "dtype": "Sensor", "type": 3, "severity": 3, "message": "Wrong actuator id"}]]
+        d_status = [[{"id": 22, "parent": 15, "name": "MS 22", "dtype": "Sensor", "type": 1, "severity": 1, "message": "Wrong actuator id"}],
+                    [{"id": 23,"parent": 15, "name": "MS 23", "dtype": "Sensor", "type": 1, "severity": 3, "message": "Wrong actuator id"}],
+                    [{"id": 27, "parent": 14, "name": "MS 27", "dtype": "Sensor", "type": 1, "severity": 3,"message": "Wrong actuator id"}],
+                    [{"id": 26, "parent": 14, "name": "MS 26", "dtype": "Sensor", "type": 1, "severity": 3,"message": "Wrong actuator id"}],
+                    [{"id": 29, "parent": 12, "name": "MS 29", "dtype": "Sensor", "type": 2, "severity": 3,"message": "Wrong actuator id"}]]
         self.set_device_alarm_and_graph(d_status)
        # self.set_dependency_alarm(dd_status)
         i  = 0
-
         '''
 
         # Process alarm
@@ -72,7 +76,7 @@ class Alarm(object):
 
             # Close connection and wait
             time.sleep(const.st_alarm)
-        '''
+
 
     # Get all device (sensor, actuator) in the inventory (active, with dependency)
     def get_db_devices(self):
@@ -117,6 +121,8 @@ class Alarm(object):
         dd_status = []
         error = False
 
+        self.set_all_devices_to_green()
+
         # All dependency and devices
         db_devices = self.get_db_device_and_dependencies()
         for datas in db_devices:
@@ -158,13 +164,13 @@ class Alarm(object):
             self.net_status = False
         elif not self.net_status and error: # If last status = false & error = true => notify change
             self.net_status = True
-            #self.notify_alarm_change()
+            self.notify_alarm_change()
         elif self.net_status and not error: # If last status = true & error = false => notify change cause now no error => all green
             self.net_status = False
-            #self.notify_alarm_change()
+            self.notify_alarm_change()
         else:
             self.net_status = True
-            #self.notify_alarm_change()
+            self.notify_alarm_change()
 
         i = 0
 
@@ -271,9 +277,9 @@ class Alarm(object):
             r.encoding = "utf-8"
             result = r.text
             if r.status_code == 200 and result == const.wrong_not_available_device:
-                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Sensor not exists"}
+                return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Sensor not exists"}
             else:
-                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'],"type": const.warning_alarm, "severity": const.severity_high, "message": "Wrong sensor id"}
+                return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'],"type": const.error_alarm, "severity": const.severity_high, "message": "Wrong sensor id"}
         else:
             result = r.json()
 
@@ -282,13 +288,13 @@ class Alarm(object):
             diff = datetime.datetime.now() + datetime.timedelta(hours=(-2))
             device_update_time = datetime.datetime.fromtimestamp(int(result['updateTime']))
             if device_update_time < diff:
-                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Device value are not updated"}
+                return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Device value are not updated"}
 
             if int(result['battery']) < const.battery_min_warning:
-                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Battery less than 10%"}
+                return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Battery less than 10%"}
 
             if int(result['battery']) < const.battery_min_info:
-                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.info_alarm, "severity": const.severity_high, "message": "Battery less than 20%"}
+                return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.info_alarm, "severity": const.severity_high, "message": "Battery less than 20%"}
         return True, None
 
     # Check device with the label type => actuator
@@ -306,7 +312,7 @@ class Alarm(object):
         elif type == "2":
             type = "store"
         else:
-            return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator type"}
+            return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator type"}
 
         route = const.route_knx_device_value_read(ip, port, id, type)
         r = requests.get(route)
@@ -320,14 +326,14 @@ class Alarm(object):
 
             # If return != 200 means that server internal error (5xx)
             if r.status_code != 200:
-                return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator id malformed"}
+                return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator id malformed"}
         else:
             result = r.json()
             if result.get('result'):
 
                 # Check if the sensor id is wrong
                 if result['result'] == const.wrong_radiator_id or result['result'] == const.wrong_store_id:
-                    return False, {"parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong actuator id"}
+                    return False, {"id": device['id'], "parent": device['parent'], "name": device['name'], "dtype":device['type'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong actuator id"}
         return True, None
 
     # Check device available (sensor/actuator)
@@ -412,8 +418,6 @@ class Alarm(object):
     # Must also set building((associate to floor)), floor(associate to room), room(associate to device) as error
     def set_dependencies_graph_error(self, dependency_name, dependency_devices_error):
 
-        self.set_all_devices_to_green()
-
         query = {'dependency': dependency_name}
         unique_device_id = []
         datas = self.__client.sh.devices.find(query)
@@ -424,25 +428,19 @@ class Alarm(object):
 
         # Get the parent (room) for each device
         # We add it as unique value
-        unique_room_id = utils.add_one_time_value_in_list(devices, "parent")
+        ids_to_change = self.get_hierarchy_id(devices)
 
-        unique_floor_id = self.get_floor_id(unique_room_id)
-
-        unique_building_id = self.get_building_id(unique_floor_id)
-
-        ids_to_change = unique_room_id + unique_floor_id + unique_building_id + unique_device_id
-
-        # TODO check if device['ddname'] is the device name error
-        # TODO add multiple element to derror list in db => for each (sensor/actioneur, room, floor, building)
+        # Get all device dependency in error
         error = []
         for device in dependency_devices_error:
             error.append(device['ddname'])
 
+        # Add multiple element to derror list in db => for each (sensor/actioneur, room, floor, building)
+        # Set color for each (sensor/actioneur, room, floor, building)
         for id in ids_to_change:
             query = {'id': id}
-            set = {'$set': {"itemStyle.color": const.device_color_error}}
+            set = {'$set': {"itemStyle.color": const.device_color_error}, "$push": {"derror": {"$each" : error}}}
             self.__client.sh.devices.update(query, set)
-
 
     def get_floor_id(self, unique_room_id):
         floors = []
@@ -472,7 +470,7 @@ class Alarm(object):
 
         for data in dd:
             query = {'id': data['id']}
-            set = {'$set': {"itemStyle.color": const.device_color_no_error, "derror": ""},}
+            set = {'$set': {"itemStyle.color": const.device_color_no_error, "derror": []},}
             self.__client.sh.devices.update(query, set)
 
     # Set alarm
@@ -489,7 +487,7 @@ class Alarm(object):
                 # Else we create a new alarm entree
                 # TODO change here
                 #query = {'$and': [{"name": device['ddname']}, {"ack": 0}]}
-                query = {'$and': [{"name": device['ddname']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['dtype']}]}
+                query = {'$and': [{"name": device['ddname']}, {"ack": 0}, {"aseverity": device['severity']}, {"atype": device['type']}]}
                 datas = self.__client.sh.alarms.find(query)
                 if datas.count() == 0:
                     query = {"name": device['ddname'], "dtype": device['dname'], "atype": device['type'],
@@ -537,48 +535,121 @@ class Alarm(object):
     def cool_test(self, status):
 
         # Combine sensor by parent (room)
-        room_sensor_count = {}
+
         sensors = []
         actuators = []
         for stat in status:
             for device in stat:
-                if device['dtype'] == "Sensor":
-                    sensors.append(device)
-                else:
-                    actuators.append(device)
 
+                # Only add warning and error for the graph
+                if device['type'] == const.warning_alarm or device['type'] == const.error_alarm:
+
+                    # Check if sensor or actuator
+                    if device['dtype'] == "Sensor":
+                        sensors.append(device)
+                    else:
+                        actuators.append(device)
+
+        self.set_sensor_graph(sensors)
+        self.set_actuator_graph(actuators)
+        i = 0
+
+    # Set sensor graph color
+    def set_actuator_graph(self, actuators):
+        error = []
+        for actuator in actuators:
+            error.append(actuator['name'])
+
+        ids_to_change = self.get_hierarchy_id(actuators)
+        for id in ids_to_change:
+            query = {'id': id}
+            set = {'$set': {"itemStyle.color": const.device_color_error}, "$push": {"derror": {"$each": error}}}
+            self.__client.sh.devices.update(query, set)
+
+    # Set sensor graph color
+    def set_sensor_graph(self, sensors):
         # Merge sensor by parent(room) to then check if warning or error
+        room_sensor_count = {}
         for sensor in sensors:
-            room_sensor_count[sensor['parent']] = room_sensor_count.get(sensor['parent'], 0) + 1
 
+            # Only add sensor to list if error
+            if sensor['type'] == const.error_alarm:
+                room_sensor_count[sensor['parent']] = room_sensor_count.get(sensor['parent'], 0) + 1
+
+
+        room_error = {}
         # Iter on merged sensor by parent (room)
         for key, value in room_sensor_count.items():
-
-            # Set to orange the sensor
-            for sensor in sensors:
-                if sensor['parent'] == key:
-                    print(f"{sensor['name']} => orange")
-
             count = self.get_sensor_room(key)
 
             # If max sensor are down we must push red to (room, floor, building)
             # Else push orange if not already red
             if count == value:
-                print(f"if => key: {key}; value: {value}/{count}")
-                print(f"{key} => room red")
-                print(f"{key} => floor red")
-                print(f"{key} => building red")
+                room_error[key] = True
             else:
-                print(f"else=> key: {key}; value: {value}/{count}")
-                print(f"{key} => !!! check before if (room and floor) is not already red")
-                print(f"{key} => room orange")
-                print(f"{key} => floor orange")
-                print(f"{key} => building orange")
-
-        i = 0
+                room_error[key] = False
 
 
-    # Get number of sensor ba room
+        # Merge sensor error and warning
+        sensor_warning = []
+        sensor_error = []
+        for sensor in sensors:
+
+            # If sensor is in warning then it is not in the room_error dico
+            if sensor['parent'] in room_error:
+
+                # To define if error (max/max)
+                # Or if warning (1/max)
+                if room_error[sensor['parent']]:
+                    print(f"Snesor: {sensor['name']} error")
+                    sensor_error.append(sensor)
+                else:
+                    print(f"Snesor: {sensor['name']} warning")
+                    sensor_warning.append(sensor)
+            else:
+                print(f"Snesor: {sensor['name']} warning")
+                sensor_warning.append(sensor)
+
+        error = []
+        for sensor in sensors:
+            error.append(sensor['name'])
+
+        ids_to_change = self.get_hierarchy_id(sensor_error)
+        for id in ids_to_change:
+            query = {'id': id}
+            set = {'$set': {"itemStyle.color": const.device_color_error}, "$push": {"derror": {"$each" : error}}}
+            self.__client.sh.devices.update(query, set)
+
+        ids_to_change = self.get_hierarchy_id(sensor_warning)
+        for id in ids_to_change:
+
+            # Get current color for this id
+            query = {'id': id}
+            color = self.__client.sh.devices.find_one(query)
+
+            # If the device is not already color error (red)
+            # So we change the (device/room/floor/building) to color warning (orange)
+            if color['itemStyle']['color'] != const.device_color_error:
+                set = {'$set': {"itemStyle.color": const.device_color_warning}, "$push": {"derror": {"$each" : error}}}
+                self.__client.sh.devices.update(query, set)
+
+    def get_hierarchy_id(self, devices):
+        unique_device_id = []
+        for device in devices:
+            unique_device_id.append(device['id'])
+
+
+        # Get the parent (room) for each device
+        # We add it as unique value
+        unique_room_id = utils.add_one_time_value_in_list(devices, "parent")
+
+        unique_floor_id = self.get_floor_id(unique_room_id)
+
+        unique_building_id = self.get_building_id(unique_floor_id)
+
+        return unique_room_id + unique_floor_id + unique_building_id + unique_device_id
+
+    # Get number of sensor by room
     # To define if error (max/max)
     # Or if warning (1/max)
     def get_sensor_room(self, parent):

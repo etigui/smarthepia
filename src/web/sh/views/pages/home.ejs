@@ -150,15 +150,22 @@
                 tooltip : {
                     trigger: 'item',
                     formatter: function (info) {
-                        var color = "undefined";
+
+                        /*var color = "undefined";
                         if ('itemStyle' in info.data) {
                             color = info.data.itemStyle.color;
+                        }*/
+
+                        // Check if derror exist and not empty
+                        // If not empty show error device to popup
+                        var error = "";
+                        if (Array.isArray(info.data.derror) && info.data.derror.length) {
+                            error = "Device W/E: " + info.data.derror + "</br>";
                         }
                         return [
                             "Name: " + info.data.name + "</br>",
-                            "Value: " + info.data.value + "</br>",
                             "Type: " + info.data.type+ "</br>",
-                            "Color: " + color + "</br>",
+                            error,
                         ].join('');
                     }
                 },

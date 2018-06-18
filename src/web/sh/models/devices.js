@@ -51,8 +51,7 @@ var DevicesSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },derror:{
-        type: Array,
-        default: ""
+        type: Array
     }
 });
 
