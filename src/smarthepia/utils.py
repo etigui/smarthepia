@@ -2,8 +2,11 @@ import requests
 from platform import system as system_name
 from subprocess import call as system_call
 import os
-
 import subprocess
+
+
+
+import const
 
 
 # Split email to get only username
@@ -85,3 +88,50 @@ def add_one_time_value_in_list(datas, index):
             list.append(item[index])
             list_set.add(item[index])
     return list
+
+
+# Get http request
+def request_api(url):
+    try:
+        r = requests.get(url, timeout=3)
+        return True, r.json()
+    except requests.exceptions.HTTPError as errh:
+        return False, None
+    except requests.exceptions.ConnectionError as errc:
+        return False, None
+    except requests.exceptions.Timeout as errt:
+        return False, None
+    except requests.exceptions.RequestException as err:
+        return False, None
+
+# Get current weather
+def get_current_weather():
+
+    # Check if the API return good value
+    status, json = request_api(const.route_current_weather())
+    if json['cod'] == const.return_code_success:
+        if status:
+            return True, json
+        else:
+            return False, None
+    else:
+        return False, None
+
+# Get forecast (5 days every 3h)
+def get_forecast():
+
+    # Check if the API return good value
+    status, json = request_api(const.route_forecast())
+    if json['cod'] == const.return_code_success:
+        if status:
+            return True, json
+        else:
+            return False, None
+    else:
+        return False, None
+
+
+def get_degree_from_fahrenheit(fahrenheit):
+    return (fahrenheit - 32) / 1.8
+
+

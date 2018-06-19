@@ -46,7 +46,7 @@ class Sensor(object):
             for device in dependency.devices:
 
                 # Predefine route for ip, port and device and get measures
-                route = const.route_device_all_measures(dependency.ip, dependency.port, device['address'])
+                route = const.route_zwave_device_all_measures(dependency.ip, dependency.port, device['address'])
                 status, measures = self.get_mesures(route)
 
                 # Check if http error or device address not available or wrong

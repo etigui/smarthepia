@@ -39,13 +39,13 @@ device_color_no_error = '#34a046'
 dependency_method_ping = "Ping"
 dependency_method_http = "REST/HTTP"
 
-
 # Routes ZWAVE return
 wrong_not_available_device = "Node not ready or wrong sensor node type !"
 
 # Route KNX return
 wrong_store_id = "Wrong Store ID"
 wrong_radiator_id = "Wrong Radiator ID"
+
 
 # Routes ZWAVE
 def route_zwave_node_list(ip, port):
@@ -60,10 +60,9 @@ def route_zwave_device_all_measures(ip, port, address):
     return f"http://{ip}:{port}/sensors/{address}/get_all_measures"
 
 
-#Routes KNX
+# Routes KNX
 def route_knx_device_value_read(ip, port, id, type):
     return f"http://{ip}:{port}/v0/{type}/read/{id}"
-
 
 # Battery min max value
 battery_min_info = 20
@@ -82,5 +81,21 @@ info_alarm = 3
 severity_low = 1
 severity_medium = 2
 severity_high = 3
+
+# Openweathermap
+city_id = "2659667"
+api_key = "adeaa68b9d2f5a100919934788d350e0"
+
+return_code_limitation = 429
+return_code_success = 200
+
+
+# Openweathermap routes
+def route_current_weather():
+    return f"http://api.openweathermap.org/data/2.5/weather?id={city_id}&appid={api_key}"
+
+def route_forecast():
+    return f"http://api.openweathermap.org/data/2.5/forecast?id={city_id}&appid={api_key}"
+
 
 
