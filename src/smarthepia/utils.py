@@ -4,9 +4,16 @@ from subprocess import call as system_call
 import os
 import subprocess
 
+# Client SMTP
+import smtplib
+import email.message
 
-
+# Local import
 import const
+
+# HTML mail
+from html import database
+from html import web_server
 
 
 # Split email to get only username
@@ -133,5 +140,79 @@ def get_forecast():
 
 def get_degree_from_fahrenheit(fahrenheit):
     return (fahrenheit - 32) / 1.8
+
+
+# Send mail
+def send_mail(email_from, email_to, password, message, subject):
+
+    # Mail content
+    msg = email.message.Message()
+    msg['Subject'] = subject
+    msg['From'] = email_from
+    msg['To'] = email_to
+    password = password
+    msg.add_header('Content-Type', 'text/html')
+    msg.set_payload(message)
+
+    # Init client
+    client = smtplib.SMTP('smtp.gmail.com: 587')
+    client.starttls()
+
+    # Login Credentials for sending the mail
+    client.login(msg['From'], password)
+
+    # Send and quit
+    client.sendmail(msg['From'], [msg['To']], msg.as_string())
+    client.quit()
+    print(f"successfully sent html to {msg['To']}")
+
+
+# Send mail if the database is down
+def send_database_alert(email_from, email_to, password, subject):
+    message = database.email_html_database(email_splitter(email_to))
+    send_mail(email_from, email_to, password, message, subject)
+
+
+# Send mail if the web server is down
+def send_web_server_alert(email_from, email_to, password, subject):
+    message = web_server.email_html_web_server(email_splitter(email_to))
+    send_mail(email_from, email_to, password, message, subject)
+
+
+# Notify server web when new alarm
+# Then when the web server receive the request
+# it send new alarm in the socket
+def notify_alarm_change():
+    try:
+        s = requests.Session()
+        data = {"email": const.ws_notify_email, "password": const.ws_notify_password}
+        s.post(const.ws_notify_url_post, data=data)
+        response = s.get(const.ws_notify_url_get)
+
+        if response.json() != const.ws_notify_response:
+            # TODO it might be a good idea to notify (mail)
+            # cause web server is down
+            pass
+    except requests.exceptions.HTTPError as errh:
+        pass
+    except requests.exceptions.ConnectionError as errc:
+        pass
+    except requests.exceptions.Timeout as errt:
+        pass
+    except requests.exceptions.RequestException as err:
+        pass
+
+
+# Remove duplicate from list
+def remove_duplicates(datas):
+    output = []
+    seen = set()
+    for data in datas:
+        # If value has not been encountered yet,
+        # ... add it to both list and set.
+        if data not in seen:
+            output.append(data)
+            seen.add(data)
+    return output
 
 

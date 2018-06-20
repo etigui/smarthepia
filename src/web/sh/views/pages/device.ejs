@@ -165,12 +165,18 @@
                                                     </label>
                                                     <select name="typeDevice" id="typeDevice" class="form-control square" required>
                                                         <option value="" selected="" disabled="" hidden="">Select type</option>
-                                                        <option value="Sensor">Sensor</option>
-                                                        <option value="Actuator">Actuator</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-lg-12">
+                                                <div id="" class="form-group">
+                                                    <label for="donationinput2">Subtype
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="subTypeDevice" id="subTypeDevice" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select subtype</option>
+                                                    </select>
+                                                </div>
                                                 <div id="orientationDiv" class="form-group">
                                                     <label for="donationinput2">Building
                                                         <span class="danger">*</span>
@@ -273,9 +279,38 @@
         });
     }
 
+    // Load device type
+    // => Can change type here
+    function loadDevieTypes(){
+        var deviceType = ["Sensor", "Actuator"];
+        $.each(deviceType, function (i, item) {
+            $('#typeDevice').append($('<option>', {value: item, text : item}));
+        });
+    }
+
+    // Load subtype
+    // => Can change subtype here
+    $('#typeDevice').on('change', function() {
+
+        var type = $('#typeDevice').find(":selected").text()
+        $('#subTypeDevice').empty().append('<option value="" selected disabled hidden>Select subtype</option>');
+        if(type === "Sensor"){
+            var sensorSubType = ["Multisensor"];
+            $.each(sensorSubType, function (i, item) {
+                $('#subTypeDevice').append($('<option>', {value: item, text : item}));
+            });
+        }else if(type === "Actuator"){
+            var actuatorSubType = ["Blind", "Valve"];
+            $.each(actuatorSubType, function (i, item) {
+                $('#subTypeDevice').append($('<option>', {value: item, text : item}));
+            });
+        }
+    })
+
     function onLoad(){
 
         genDeviceTable();
+        loadDevieTypes();
 
         // Fill in device load dependency select option
         $.ajax({

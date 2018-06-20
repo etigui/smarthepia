@@ -7,6 +7,7 @@ var Alarm = require('../models/alarm');
 var User = require('../models/user');
 var io = require('../sockets/socket').io;
 var Notify = require('../controllers/alarm');
+var config = require('../configs/config');
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
@@ -68,7 +69,7 @@ router.get('/ack',  isAuth, function(req, res, next) {
 // GET /alarm/email
 router.get('/email', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
-        User.find({email: {$ne: req.session.email}}, function(err, user) {
+        User.find({$and : [{email: {$ne: req.session.email}}, {email: {$ne: config.emailNotify}}]}, function(err, user) { // loadUserEmail
             if (err) {
                 return next(err);
             }

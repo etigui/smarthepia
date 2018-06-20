@@ -82,6 +82,12 @@ severity_low = 1
 severity_medium = 2
 severity_high = 3
 
+# Alarm type
+alarm_type_dependency = 20
+alarm_type_device = 10
+alarm_sub_type_sensor = 100
+alarm_sub_type_actuator = 200
+
 # Openweathermap
 city_id = "2659667"
 api_key = "adeaa68b9d2f5a100919934788d350e0"

@@ -6,9 +6,6 @@ import alarm
 import measure
 
 
-import requests
-import datetime
-
 def main():
 
     # Class

@@ -41,7 +41,14 @@ class Automation(object):
 
     # Get last forecast from api or db if fail
     def get_api_forecast(self):
-        status, forecast = utils.get_forecast()
+
+        # If error we get last data from db
+        status, api_datas = utils.get_forecast()
+        if status:
+            self.__client.sh.currents.insert(api_datas)
+            return api_datas
+        else:
+            return self.get_db_forecast()
 
     # Get last current weather from api or db if fail
     def get_api_current_weather(self):
@@ -50,16 +57,16 @@ class Automation(object):
         db_datas = self.get_db_current_weather()
 
         # Get last measures from api
-        status, api_new_datas = utils.get_current_weather()
+        status, api_datas = utils.get_current_weather()
 
         # If get measures from api
         if status:
 
             # If the api have a new measures then we add it to the db and return it
             # Else give last measure from db
-            if datetime.datetime.fromtimestamp(int(db_datas['dt'])) < datetime.datetime.fromtimestamp(int(api_new_datas['dt'])):
-                self.__client.sh.currents.insert(api_new_datas)
-                return api_new_datas
+            if datetime.datetime.fromtimestamp(int(db_datas['dt'])) < datetime.datetime.fromtimestamp(int(api_datas['dt'])):
+                self.__client.sh.currents.insert(api_datas)
+                return api_datas
             else:
                 return db_datas
         else:

@@ -191,9 +191,6 @@
     onLoad();
 
     function onLoad(){
-        //genAlarmTable()
-        //$('#alarmTable').DataTable().order([3, "desc"]).draw();
-        loadUserEmail();
     }
 
     function loadUserEmail(){
@@ -204,8 +201,9 @@
             success: function (response) {
                 $('#userEmail').empty().append('<option value="" selected disabled hidden>Select user</option>');
                 $.each(response.data, function (i, item) {
-                    $('#userEmail').append($('<option>', {value: item.id, text : item.email}));
+                    $('#userEmail').append($('<option>', {value: item.email, text : item.email}));
                 });
+                $('#userEmail').append($('<option>', {value: "anyone", text : "anyone"}));
             }
         });
     }
@@ -433,6 +431,7 @@
 
     // Set hidden id to assign person by alarm id
     $("#alarmTable tbody").on('click',"#assignAlarm", function () {
+        loadUserEmail();
         var nRow = $(this).parents('tr')[0];
         var oTable = $('#alarmTable').dataTable();
         var aData = oTable.fnGetData(nRow);

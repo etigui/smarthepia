@@ -15,11 +15,17 @@ var DevicesSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        default: ""},
+        default: ""
+    },
     type: {
         type: String,
         required: true,
-    },value: {
+    },
+    subtype: {
+        type: String,
+        default: ""
+    },
+    value: {
         type: Number,
         default: 1},
     itemStyle: {
