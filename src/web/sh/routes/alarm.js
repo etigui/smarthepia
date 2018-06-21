@@ -44,8 +44,10 @@ router.get('/listall',  isAuth, function(req, res, next) {
 router.get('/ack',  isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         var id = req.query.id;
+        var comment = req.query.comment;
         if(id) {
-            Alarm.update({_id: id}, {$set: { ack: 1 }}, function (err, alarm) {
+            var set = {$set: { ack: 1, dend: Date.now(), comment: (comment ? comment : ""), assign: req.session.email}};
+            Alarm.update({_id: id}, set,  function (err, alarm) {
                 if (err) {
                     return next(error);
                 }

@@ -79,15 +79,19 @@
                                                 <th>Type</th>
                                                 <th>Severity</th>
                                                 <th>Count</th>
-                                                <th>Last</th>
+                                                <th>Start</th>
+                                                <th>End</th>
                                                 <th>Message</th>
-                                                <th>Action</th>
+                                                <th>Comment</th>
+                                                <th>User</th>
                                             </tr>
                                             </thead>
                                             <tbody id="appendHere">
                                             </tbody>
                                             <tfoot>
                                             <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
                                                 <th rowspan="1" colspan="1">
                                                 </th>
                                                 <th rowspan="1" colspan="1">
@@ -208,10 +212,11 @@
             { data: "atype"},
             { data: "aseverity"},
             { data: "count"},
-            { data: "dlast"},
+            { data: "dstart"},
+            { data: "dend"},
             { data: "amessage"},
-            {},
-            {data: "_id"}
+            { data: "comment"},
+            { data: "assign"}
         ],
         aoColumnDefs: [{
             targets: 3,
@@ -233,24 +238,6 @@
                     color =  "danger";
                 }
                 return '<div class="badge badge-'+color+'" style="line-height: 1.5; display: block;">'+data+'</div>';
-            }
-        }, {
-            targets: 8,
-            searching: false,
-            orderable: false,
-            data: null,
-            className: "text-center align-middle last",
-            render: function (data, type, full, meta) {
-                return '<div class="btn-group">\n' +
-                    '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
-                    '        Action\n' +
-                    '    </button>\n' +
-                    '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                    '        <button id="ackSumbit" class="dropdown-item ack" type="button" data-toggle="modal" data-target="#modalEditUser" >Ack</button>\n' +
-                    '        <button id="postponeSubmit" class="dropdown-item" type="button">Postpone</button>\n' +
-                    '        <button id="assignSubmit" class="dropdown-item" type="button">Assign</button>\n' +
-                    '    </div>\n' +
-                    '</div>';
             }
         }, {
             targets: 4,
@@ -279,6 +266,9 @@
             {targets: 2, className: "text-center align-middle"},
             {targets: 1, className: "text-center align-middle"},
             {targets: 5, className: "text-center align-middle"},
+            {targets: 8, className: "text-center align-middle"},
+            {targets: 9,className: "text-center align-middle"},
+            {targets: 10,className: "text-center align-middle"},
             {targets: 6,
                 data: null,
                 className: "text-center align-middle",
@@ -287,11 +277,13 @@
                     return formatDate(date);
                 }
             },
-            {targets: 7, className: "text-center align-middle"},
-            {
-                "targets": 9,
-                "visible": false,
-                "searchable": false
+            {targets: 7,
+                data: null,
+                className: "text-center align-middle",
+                render: function (data, type, full, meta) {
+                    date = new Date(data);
+                    return formatDate(date);
+                }
             }]
     });
 

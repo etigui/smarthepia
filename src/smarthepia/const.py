@@ -104,4 +104,11 @@ def route_forecast():
     return f"http://api.openweathermap.org/data/2.5/forecast?id={city_id}&appid={api_key}"
 
 
+# Database devices collection param
+db_devices_type_room = "Room"
+db_devices_type_not_location = ["Floor", "Building", "Room"]
+db_devices_type_not_location_actuator = db_devices_type_not_location + ["Actuator"]
+db_devices_type_not_location_sensor = db_devices_type_not_location + ["Sensor"]
+
+
 

@@ -79,7 +79,7 @@
                                                     <th>Type</th>
                                                     <th>Severity</th>
                                                     <th>Count</th>
-                                                    <th>Last</th>
+                                                    <th>Start</th>
                                                     <th>Message</th>
                                                     <th>Action</th>
                                                 </tr>
@@ -137,11 +137,37 @@
                         <select id="userEmail" class="form-control square">
                         </select>
                     </fieldset>
-                    <input id="alarmId" value=""  type="hidden">
-                    <br>
+                    <input id="alarmIdAssign" value=""  type="hidden">
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
                     <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="modalAckAlarm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel35" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Ack alarm</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="alarmAckSubmit" class="form">
+                <div class="modal-body">
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="commentAck">Comment</label>
+                        <textarea class="form-control" id="commentAck" rows="3" placeholder="Comment"></textarea>
+                    </fieldset>
+                    <input id="alarmIdAck" value=""  type="hidden">
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
                 </div>
             </form>
         </div>
@@ -245,7 +271,7 @@
             { data: "atype"},
             { data: "aseverity"},
             { data: "count"},
-            { data: "dlast"},
+            { data: "dstart"},
             { data: "amessage"},
             {},
             {data: "_id"}
@@ -283,8 +309,8 @@
                     '        Action\n' +
                     '    </button>\n' +
                     '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                    '        <button id="ackSumbit" class="dropdown-item ack" type="button" >Ack</button>\n' +
-                    '        <button id="postponeAlarm" class="dropdown-item" type="button">Postpone</button>\n' +
+                    '        <button id="ackSumbit" data-toggle="modal" data-target="#modalAckAlarm" class="dropdown-item ack" type="button" >Ack</button>\n' +
+                    //'        <button id="postponeAlarm" class="dropdown-item" type="button">Postpone</button>\n' +
                     '        <button id="assignAlarm" class="dropdown-item" data-toggle="modal" data-target="#modalAssignAlarm" type="button">Assign</button>\n' +
                     '    </div>\n' +
                     '</div>';
@@ -406,7 +432,7 @@
     $("#assignAlarmSubmit").submit(function( event ) {
         event.preventDefault();
         var emailUser = $("#userEmail").val();
-        var alarmId = $("#alarmId").val();
+        var alarmId = $("#alarmIdAssign").val();
         if (emailUser && alarmId) {
             $.ajax({
                 url: "/alarm/assign",
@@ -429,19 +455,66 @@
         }
     });
 
-    // Set hidden id to assign person by alarm id
+
+    // Set hidden id by alarm id for ack alarm
     $("#alarmTable tbody").on('click',"#assignAlarm", function () {
         loadUserEmail();
         var nRow = $(this).parents('tr')[0];
         var oTable = $('#alarmTable').dataTable();
         var aData = oTable.fnGetData(nRow);
         var id = aData._id;
-        $("#alarmId").val(id);
+        $("#alarmIdAssign").val(id);
     });
 
+    // Submit and add comment for ack alarm
+    $("#alarmAckSubmit").submit(function(event) {
+        event.preventDefault();
 
+        var comment = $("#commentAck").val();
+        var id = $("#alarmIdAck").val();
+
+        // Check if the alarm is exist
+        if(id) {
+            $.ajax({
+                url: "/alarm/ack",
+                type: "get",
+                data: {
+                    id: id,
+                    comment: comment
+                },
+                dataType: "json",
+                success: function (response) {
+
+                    if (response.status === "success") {
+
+
+                        //socket.emit("alarmNotify", "")
+                        //$('#alarmTable').DataTable().ajax.reload();
+                        $('#modalAckAlarm').modal('toggle');
+                        toastr.success(response.message, response.status, {closeButton: true})
+                        $("#alarmAckSubmit").get(0).reset();
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }else{
+            toastr.error("Alarm id error", "error", {closeButton: true})
+        }
+    });
+
+    // Set hidden id to assign person by alarm id
     $("#alarmTable tbody").on("click","#ackSumbit", function () {
         var nRow = $(this).parents('tr')[0];
+        var oTable = $('#alarmTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        var id =  aData._id;
+        $("#alarmIdAck").val(id);
+
+
+        /*var nRow = $(this).parents('tr')[0];
         var oTable = $('#alarmTable').dataTable();
         var aData = oTable.fnGetData(nRow);
         var id =  aData._id;
@@ -471,7 +544,7 @@
             });
         }else{
             toastr.error("Alarm id error", "error", {closeButton: true})
-        }
+        }*/
     });
 
     // BEGIN Server time section /////////////////////////////////////////////////////////////

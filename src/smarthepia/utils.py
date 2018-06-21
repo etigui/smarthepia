@@ -3,6 +3,7 @@ from platform import system as system_name
 from subprocess import call as system_call
 import os
 import subprocess
+import datetime
 
 # Client SMTP
 import smtplib
@@ -10,6 +11,9 @@ import email.message
 
 # Local import
 import const
+
+# Astral calc
+import ephem
 
 # HTML mail
 from html import database
@@ -116,7 +120,7 @@ def get_current_weather():
 
     # Check if the API return good value
     status, json = request_api(const.route_current_weather())
-    if json['cod'] == const.return_code_success:
+    if int(json['cod']) == const.return_code_success:
         if status:
             return True, json
         else:
@@ -129,7 +133,7 @@ def get_forecast():
 
     # Check if the API return good value
     status, json = request_api(const.route_forecast())
-    if json['cod'] == const.return_code_success:
+    if int(json['cod']) == const.return_code_success:
         if status:
             return True, json
         else:
@@ -214,5 +218,23 @@ def remove_duplicates(datas):
             output.append(data)
             seen.add(data)
     return output
+
+
+# Get season from time
+def get_season(now):
+
+    Y = 2000  # dummy leap year to allow input X-02-29 (leap day)
+    seasons = [('winter', (datetime.date(Y, 1, 1), datetime.date(Y, 3, 20))),
+               ('spring', (datetime.date(Y, 3, 21), datetime.date(Y, 6, 20))),
+               ('summer', (datetime.date(Y, 6, 21), datetime.date(Y, 9, 22))),
+               ('autumn', (datetime.date(Y, 9, 23), datetime.date(Y, 12, 20))),
+               ('winter', (datetime.date(Y, 12, 21), datetime.date(Y, 12, 31)))]
+
+    if isinstance(now, datetime.datetime):
+        now = now.date()
+    now = now.replace(year=Y)
+    return next(season for season, (start, end) in seasons if start <= now <= end)
+
+
 
 
