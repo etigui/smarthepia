@@ -11,62 +11,67 @@ var userSockets = {};
 
 // Client connected
 io.on('connection', function (socket) {
-    console.log('A client has connected');
-    //console.log('the socket session object', socket.request.session);
-    console.log('the actual serialized user from passport', socket.request.session.passport.user);
 
-    // Get and store _id of connected user in order to access it easily
-    // from other modules e.g. from router
-    var ID = socket.request.session.passport.user;
-    userSockets[ID] = socket;
+    // Check if user property exists, cause otherwise error
+    if(socket.request.session.hasOwnProperty('passport') &&  socket.request.session.passport.hasOwnProperty('user')) {
 
-    // Get user permission to let only authorized user to talk (even normally the other can't)
-    var userPermission = -1;
-    var alarmType = 0;
+        console.log('A client has connected');
+        //console.log('the socket session object', socket.request.session);
+        console.log('the actual serialized user from passport', socket.request.session.passport.user);
 
-    var email = socket.request.session.email;
+        // Get and store _id of connected user in order to access it easily
+        // from other modules e.g. from router
+        var ID = socket.request.session.passport.user;
+        userSockets[ID] = socket;
 
-    // Check if current user exist and get user info
-    // passport id most match with => _id
-    User.findOne({_id: ID}, function (err, user) {
-        if(err) {
-            console.error(err);
-            throw(err);
-        }
-        userPermission = user.permissions;
+        // Get user permission to let only authorized user to talk (even normally the other can't)
+        var userPermission = -1;
+        var alarmType = 0;
 
-        // Only manager, admin can use this message
-        if(userPermission => auth.getManager()) {
-            socket.emit('welcome', "");
-        }
-    });
+        var email = socket.request.session.email;
 
-    // Client disconnected
-    socket.on('disconnect', function () {
-        delete userSockets[ID];
-        console.log('Client has disconnected');
-    });
+        // Check if current user exist and get user info
+        // passport id most match with => _id
+        User.findOne({_id: ID}, function (err, user) {
+            if (err) {
+                console.error(err);
+                throw(err);
+            }
+            userPermission = user.permissions;
 
-    // Received from client => graph changed
-    socket.on('graphChange', function (data) {
+            // Only manager, admin can use this message
+            if (userPermission => auth.getManager()) {
+                socket.emit('welcome', "");
+            }
+        });
 
-        // Only user, manager, admin can use this message
-        if(userPermission => auth.getUser()) {
-            console.log('Receive graphChange');
-            socket.broadcast.emit('graphChange', "");
-        }
-    });
+        // Client disconnected
+        socket.on('disconnect', function () {
+            delete userSockets[ID];
+            console.log('Client has disconnected');
+        });
 
-    // Received from client => alarm notify (modified)
-    socket.on('alarmNotify', function (data) {
+        // Received from client => graph changed
+        socket.on('graphChange', function (data) {
 
-        // Only manager, admin can use this message
-        if(userPermission => auth.getManager()) {
-            console.log('Receive alarmNotify');
-            socket.broadcast.emit('alarmNotify', "");
-            socket.emit('alarmNotify', "");
-        }
-    });
+            // Only user, manager, admin can use this message
+            if (userPermission => auth.getUser()) {
+                console.log('Receive graphChange');
+                socket.broadcast.emit('graphChange', "");
+            }
+        });
+
+        // Received from client => alarm notify (modified)
+        socket.on('alarmNotify', function (data) {
+
+            // Only manager, admin can use this message
+            if (userPermission => auth.getManager()) {
+                console.log('Receive alarmNotify');
+                socket.broadcast.emit('alarmNotify', "");
+                socket.emit('alarmNotify', "");
+            }
+        });
+    }
 });
 
 // Export module

@@ -114,7 +114,7 @@
     option = null;
 
     function onLoad() {
-        loadGraph();
+
     }
 
     function loadGraph(){
@@ -236,6 +236,7 @@
     var socket = io.connect();
     socket.on('connect', function () {
         console.log('Socket connected');
+        loadGraph();
     });
 
     // All user receive notif when graph change

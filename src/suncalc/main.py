@@ -8,14 +8,15 @@ import test
 import matplotlib.pyplot as plt
 
 def main():
-    test.test()
-    date = datetime.datetime(2018, 6, 19, 00,00,00)
+    #test.test()
+    #date = datetime.datetime(2018, 6, 19, 00,00,00)
 
     lel = []
     lalt = []
     ldate = []
     while True:
-        date += datetime.timedelta(minutes=6)
+        #date += datetime.timedelta(minutes=6)
+        date = datetime.datetime.now()
         elevation = get_altitude(46.20949, 6.135212, date)
         azimuth = convert_north(get_azimuth(46.20949, 6.135212, date))
 

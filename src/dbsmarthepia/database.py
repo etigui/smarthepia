@@ -17,7 +17,7 @@ def get_smarthepia_datas():
 
     # MongoDB database setup
     mdb_client = MongoClient(const.mdb_ip, const.mdb_port)
-    mdb_client.smarthepia.authenticate(const.mdb_username,const.mdb_password)
+    #mdb_client.smarthepia.authenticate(const.mdb_username,const.mdb_password)
 
     plot_measures_by_sensor(mdb_client, time_start, time_stop)
 
