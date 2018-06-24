@@ -48,16 +48,16 @@ class Sensor(object):
                 route = const.route_zwave_device_all_measures(dependency.ip, dependency.port, device['address'])
                 status, measures = self.get_mesures(route)
 
-                #last_measure = datetime.datetime.fromtimestamp(measures['updateTime'])
-                xx = self.__client.sh.statistics.find().count()
-                print(xx)
-
-                #datass = self.__client.sh.statistics.find_one({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}]}, {'$query': {}, '$orderby': {'$natural': -1}})
+                # Add to the db to check if the last record alarady exists
+                ref_time = datetime.datetime.fromtimestamp(measures['updateTime'])
 
                 # Check if http error or device address not available or wrong
                 if status:
+                    already_exist = self.__client.sh.stats.find({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}, {'reftime': ref_time}]}).count()
+                    print(already_exist)
+                    if already_exist == 0:
+                        self.__client.sh.stats.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
 
-                    self.__client.sh.statistics.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now()})
 
     # Get device measures
     def get_mesures(self, route):

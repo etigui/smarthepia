@@ -109,7 +109,7 @@ io.use(function (socket, next) {
 var indexRouter = require('./routes/index');
 var homeRouter = require('./routes/home');
 var statisticRouter = require('./routes/statistic');
-var automationRouter = require('./routes/automation');
+var ruleRouter = require('./routes/rule');
 var userRouter = require('./routes/user');
 var alarmRouter = require('./routes/alarm');
 var deviceRouter = require('./routes/device');
@@ -127,7 +127,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/home', homeRouter);
 app.use('/statistic', statisticRouter);
-app.use('/automation', automationRouter);
+app.use('/rule', ruleRouter);
 app.use('/user', userRouter);
 app.use('/alarm', alarmRouter);
 app.use('/device', deviceRouter);

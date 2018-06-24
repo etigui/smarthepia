@@ -4,6 +4,7 @@ var User = require('../models/user');
 var Dependency = require('../models/dependency');
 var Devices = require('../models/devices');
 var Automation = require('../models/automation');
+var Rule = require('../models/rule');
 var bcrypt = require('bcrypt');
 
 module.exports = {
@@ -57,8 +58,8 @@ module.exports = {
                 return callback(true);
             }
         });
-    },checkUniqueAutomation: function(value, callback){
-        Automation.find({ name: value }).exec(function (err, automation) {
+    },checkUniqueRule: function(value, callback){
+        Rule.find({ name: value }).exec(function (err, automation) {
             if (err) {
                 return callback(err)
             } else if(automation.length > 0){

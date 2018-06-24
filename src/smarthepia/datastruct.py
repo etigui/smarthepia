@@ -31,3 +31,16 @@ class StructAutomation():
         self.sensors = sensors
         self.actuators = actuators
         self.rule = rule
+
+
+# Struct to store automation rule
+class StructAutomationRule():
+    def __init__(self, heater_on_start_day, heater_on_start_month, heater_on_stop_day, heater_on_stop_month, heater_on_temp_min, heater_on_temp_max, heater_off_temp_min, heater_off_temp_max):
+        self.heater_on_start_day = heater_on_start_day
+        self.heater_on_start_month = heater_on_start_month
+        self.heater_on_stop_day = heater_on_stop_day
+        self.heater_on_stop_month = heater_on_stop_month
+        self.heater_on_temp_min = heater_on_temp_min
+        self.heater_on_temp_max = heater_on_temp_max
+        self.heater_off_temp_min = heater_off_temp_min
+        self.heater_off_temp_max = heater_off_temp_max

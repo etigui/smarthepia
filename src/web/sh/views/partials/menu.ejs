@@ -11,7 +11,10 @@
                 <li class="nav-item <%= page=='statistic'?'active':'' %>"><a href="/statistic"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Statistics</span></a></li>
             <% } %>
             <% if(permission>=1) {%>
-                <li class="nav-item <%= page=='automation'?'active':'' %>"><a href="/automation"><i class="ft-sliders"></i><span class="menu-title" data-i18n="">Automation</span></a></li>
+                <li class="nav-item <%= page=='rule'?'active':'' %>"><a href="/rule"><i class="ft-sliders"></i><span class="menu-title" data-i18n="">Rule</span></a></li>
+            <% } %>
+            <% if(permission>=1) {%>
+            <li class="nav-item <%= page=='automation'?'active':'' %>"><a href="/automation"><i class="ft-refresh-cw"></i><span class="menu-title" data-i18n="">Automation</span></a></li>
             <% } %>
             <% if(permission==2) {%>
                 <li class="nav-item <%= page=='user'?'active':'' %>"><a href="/user"><i class="ft-user"></i><span class="menu-title" data-i18n="">Users</span></a></li>

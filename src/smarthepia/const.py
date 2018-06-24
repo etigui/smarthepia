@@ -115,6 +115,3 @@ db_devices_sub_type_multisensor = "Multisensor"
 db_devices_sub_type_valve = "Valve"
 db_devices_sub_type_blind = "Blind"
 db_devices_sub_type_actuator = [db_devices_sub_type_valve, db_devices_sub_type_blind]
-
-
-

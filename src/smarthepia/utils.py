@@ -4,6 +4,8 @@ from subprocess import call as system_call
 import os
 import subprocess
 import datetime
+import json
+import urllib3
 
 # Client SMTP
 import smtplib
@@ -234,6 +236,21 @@ def get_season(now):
         now = now.date()
     now = now.replace(year=Y)
     return next(season for season, (start, end) in seasons if start <= now <= end)
+
+
+# Get device measures
+def get_mesures(route):
+    http = urllib3.PoolManager()
+    response = http.request('GET', route)
+
+    # if != 200 => HTTP error
+    if response.status == 200:
+        data = response.data.decode("utf-8")
+        if data != const.wrong_not_available_device:
+            return True, json.loads(data)
+        return False, None
+    else:
+        return False, None
 
 
 
