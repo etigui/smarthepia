@@ -4,11 +4,14 @@ import numpy as np
 import csv
 import time
 import test
+import sun_set_rise
 
 import matplotlib.pyplot as plt
 
 def main():
-    #test.test()
+
+    sun_set_rise.process_sun_position()
+    test.test()
     #date = datetime.datetime(2018, 6, 19, 00,00,00)
 
     lel = []

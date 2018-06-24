@@ -18,7 +18,7 @@ class Sensor(object):
     def run(self):
 
         # For first start tempo
-        time.sleep(const.st_start)
+        #time.sleep(const.st_start)
         while True:
 
             print(f"Sensor: {datetime.datetime.now()}")
@@ -41,7 +41,6 @@ class Sensor(object):
 
     # Add measures from devices to db
     def add_db_measures(self, db_sensors):
-
         for dependency in db_sensors:
             for device in dependency.devices:
 
@@ -49,8 +48,15 @@ class Sensor(object):
                 route = const.route_zwave_device_all_measures(dependency.ip, dependency.port, device['address'])
                 status, measures = self.get_mesures(route)
 
+                #last_measure = datetime.datetime.fromtimestamp(measures['updateTime'])
+                xx = self.__client.sh.statistics.find().count()
+                print(xx)
+
+                #datass = self.__client.sh.statistics.find_one({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}]}, {'$query': {}, '$orderby': {'$natural': -1}})
+
                 # Check if http error or device address not available or wrong
                 if status:
+
                     self.__client.sh.statistics.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now()})
 
     # Get device measures

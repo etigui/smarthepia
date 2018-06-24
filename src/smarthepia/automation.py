@@ -87,6 +87,8 @@ class Automation(object):
             if sensor_status and actuator_status and rule['active']:
                 self.automations.append(datastruct.StructAutomation(sensors, actuators, rule))
 
+        i =0
+
     # Get rule ba room
     def get_rules_by_room(self, room_rule):
         query = {"name": room_rule}
@@ -95,7 +97,8 @@ class Automation(object):
     # Get sensors by room id
     def get_sensor_by_room(self, room_id):
         sensors = []
-        query = {'$and': [{"parent": int(room_id)}, {'type': {'$nin': const.db_devices_type_not_location_actuator}}]}
+        #query = {'$and': [{"parent": int(room_id)}, {'type': {'$nin': const.db_devices_type_not_location_actuator}}]}
+        query = {'$and': [{"parent": int(room_id)},{'subtype': const.db_devices_sub_type_multisensor}]}
         datas = self.__client.sh.devices.find(query)
 
         # Check if sensor available
@@ -109,7 +112,8 @@ class Automation(object):
     # Get actuators by room id
     def get_actuator_by_room(self, room_id):
         actuators = []
-        query = {'$and': [{"parent": int(room_id)}, {'type': {'$nin': const.db_devices_type_not_location_sensor}}, {}]}
+        #query = {'$and': [{"parent": int(room_id)}, {'type': {'$nin': const.db_devices_type_not_location_sensor}}, {}]}
+        query = {'$and': [{"parent": int(room_id)}, {'subtype': {'$in': const.db_devices_sub_type_actuator}}]}
         datas = self.__client.sh.devices.find(query)
 
         # Check if actuator available

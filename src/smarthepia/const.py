@@ -64,6 +64,7 @@ def route_zwave_device_all_measures(ip, port, address):
 def route_knx_device_value_read(ip, port, id, type):
     return f"http://{ip}:{port}/v0/{type}/read/{id}"
 
+
 # Battery min max value
 battery_min_info = 20
 battery_min_warning = 10
@@ -109,6 +110,11 @@ db_devices_type_room = "Room"
 db_devices_type_not_location = ["Floor", "Building", "Room"]
 db_devices_type_not_location_actuator = db_devices_type_not_location + ["Actuator"]
 db_devices_type_not_location_sensor = db_devices_type_not_location + ["Sensor"]
+
+db_devices_sub_type_multisensor = "Multisensor"
+db_devices_sub_type_valve = "Valve"
+db_devices_sub_type_blind = "Blind"
+db_devices_sub_type_actuator = [db_devices_sub_type_valve, db_devices_sub_type_blind]
 
 
 

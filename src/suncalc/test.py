@@ -3,6 +3,8 @@ import datetime
 import numpy as np
 import csv
 import time
+from astral import Astral
+import location
 
 import matplotlib.pyplot as plt
 
@@ -25,6 +27,7 @@ def test():
                 y.append(date.minute)
                 break
             date += datetime.timedelta(minutes=1)
+            print(f"Azimuth: {azimuth}\nElevation: {elevation}\nDate: {date}\n")
 
         tmp_date += datetime.timedelta(days=1)
         date = tmp_date
