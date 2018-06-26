@@ -1,0 +1,3 @@
+table.dataTable tbody tr.selected {
+    opacity: 1;
+}

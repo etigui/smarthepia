@@ -143,12 +143,4 @@ router.post('/delete', isAuth, function(req, res, next) {
     }
 });
 
-
-
-
-
-
-
-
-
 module.exports = router;

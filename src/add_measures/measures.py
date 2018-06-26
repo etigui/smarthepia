@@ -44,7 +44,7 @@ class Sensor(object):
                 route = const.route_zwave_device_all_measures(dependency.ip, dependency.port, device['address'])
                 status, measures = self.get_mesures(route)
 
-                # Add to the db to check if the last record alarady exists
+                # Add to the db to check if the last record already exists
                 ref_time = datetime.datetime.fromtimestamp(measures['updateTime'])
 
                 # Check if http error or device address not available or wrong

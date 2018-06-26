@@ -33,6 +33,9 @@ class Automation(object):
             # Init MongoDB client
             status, self.__client = self.db_connect()
 
+            res = self.check_multisensor_motion("ZWAVE RPI1", "2")
+            print(res)
+
             # Start to automation
             self.process_automation()
 
@@ -52,7 +55,7 @@ class Automation(object):
 
     def get_automation_rule(self):
         datas = self.__client.sh.automations.find_one()
-        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'])
+        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outtempmin'])
         i = 0
 
     # Start to automation
@@ -208,6 +211,31 @@ class Automation(object):
     def get_db_forecast(self):
         return self.__client.sh.apiforecast.find_one({'$query': {}, '$orderby': {'$natural': -1}})
 
+    # Get last 2 motion measure to check if no one is in the room
+    def check_multisensor_motion(self, dependency, address):
+
+        # Date diff to compare the 2 measures up date time
+        diff = datetime.datetime.now() - datetime.timedelta(minutes=15)
+
+        # Get last 2 measure (sorted by _id)
+        datas = self.__client.sh.stats.find({'$and': [{"dependency": dependency}, {"address": str(address)}]}).sort([("_id", -1)]).limit(2)
+
+        # Return - if not enough data
+        # Or dependency name not fount
+        # Or address not fount
+        if datas.count() > 2:
+            for data in datas:
+
+                # Return -1 if one of the last timestamp if not up to date
+                # Last 2 measures cannot be taken if => not up to date
+                if data['updatetime'] < diff:
+                    return -1
+                if data['motion']:
+                    return 1
+
+        else:
+            return -1
+        return 0
 
     def check_multisensor_time(self, updatetime):
         return True

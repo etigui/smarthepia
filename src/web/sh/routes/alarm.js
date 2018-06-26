@@ -42,9 +42,80 @@ router.get('/listall',  isAuth, function(req, res, next) {
 
 // GET /alarm/ack
 router.get('/ack',  isAuth, function(req, res, next) {
-    if(auth.checkPermission(req, auth.getManager())){
+    if(auth.checkPermission(req, auth.getManager())) {
+
         var id = req.query.id;
         var comment = req.query.comment;
+        var many = req.query.many;
+
+        if (many && id) {
+            if (many === "1") {
+
+                // Ack one alarm
+                var set = {
+                    $set: {
+                        ack: 1,
+                        dend: Date.now(),
+                        comment: (comment ? comment : ""),
+                        assign: req.session.email
+                    }
+                };
+                Alarm.update({_id: id}, set, function (err, alarm) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    // Send to all client connected the new
+                    // alarm notify change
+                    io.emit('alarmNotify', "");
+
+                    res.type('json');
+                    return res.json({status: "success", message: "Alarm has been successfully ack"});
+                });
+            } else if (many === "2") {
+                var ids = [];
+
+                // Add all id to assign to list
+                id.forEach(function (item) {
+                    ids.push(item['_id'])
+                });
+
+                // Ack multiple alarm
+                var set = {
+                    $set: {
+                        ack: 1,
+                        dend: Date.now(),
+                        comment: (comment ? comment : ""),
+                        assign: req.session.email
+                    }
+                };
+                Alarm.updateMany({_id: {$in: ids}}, set, function (err, alarm) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    // Send to all client connected the new
+                    // alarm notify change
+                    io.emit('alarmNotify', "");
+                    res.type('json');
+                    return res.json({status: "success", message: "Alarm has been successfully ack"});
+                });
+            } else {
+                res.type('json');
+                return res.json({status: "error", message: "All field must be filled"});
+            }
+        }else {
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
+
+
+
+
+
+        /*var id = req.query.id;
+        var comment = req.query.comment;
+        var many = req.query.many;
         if(id) {
             var set = {$set: { ack: 1, dend: Date.now(), comment: (comment ? comment : ""), assign: req.session.email}};
             Alarm.update({_id: id}, set,  function (err, alarm) {
@@ -62,7 +133,7 @@ router.get('/ack',  isAuth, function(req, res, next) {
         }else{
             res.type('json');
             return res.json({status: "error", message: "All field must be filled"});
-        }
+        }*/
     }else{
         return res.redirect('/');
     }
@@ -89,21 +160,48 @@ router.get('/assign', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
 
         var email = req.query.email;
+        var many = req.query.many;
         var id = req.query.id;
+        if(many && email && id){
+            if(many === "1"){
 
-        if(email && id){
-            Alarm.update({_id: id}, {$set: {assign: email}}, function (err, alarm) {
-                if (err) {
-                    return next(error);
-                }
+                // Assign only one alarm
+                Alarm.update({_id: id}, {$set: {assign: email}}, function (err, alarm) {
+                    if (err) {
+                        return next(err);
+                    }
 
-                // Send to all client connected the new
-                // alarm notify change
-                io.emit('alarmNotify', "");
+                    // Send to all client connected the new
+                    // alarm notify change
+                    io.emit('alarmNotify', "");
 
+                    res.type('json');
+                    return res.json({status: "success", message: "Alarm has been successfully assign"});
+                });
+            }else if(many === "2"){
+                var ids = [];
+
+                // Add all id to assign to list
+                id.forEach(function(item) {
+                    ids.push(item['_id'])
+                });
+
+                // Assign multiple alarm to user
+                Alarm.updateMany({_id:{$in: ids}}, {$set: {assign: email}}, function (err, alarm) {
+                    if (err) {
+                        return next(err);
+                    }
+
+                    // Send to all client connected the new
+                    // alarm notify change
+                    io.emit('alarmNotify', "");
+                    res.type('json');
+                    return res.json({status: "success", message: "Alarm has been successfully assign"});
+                });
+            }else{
                 res.type('json');
-                return res.json({status: "success", message: "Alarm has been successfully assign"});
-            });
+                return res.json({status: "error", message: "All field must be filled"});
+            }
         }else{
             res.type('json');
             return res.json({status: "error", message: "All field must be filled"});

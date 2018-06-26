@@ -121,7 +121,7 @@ $('.file-export').DataTable({
         'copy', 'csv', 'excel', 'pdf', 'print'
     ]
 });
-$('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel, .buttons-collection').addClass('btn btn-primary');
+$('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel, .buttons-collection, .buttons-select-all, .buttons-select-none').addClass('btn btn-primary');
 
 
 });
