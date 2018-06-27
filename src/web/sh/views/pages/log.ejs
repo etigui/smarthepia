@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="">
-    <title>smarthepia - manager</title>
+    <title>Smarthepia - Log</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
 
     <!-- BEGIN VENDOR CSS-->
@@ -189,10 +189,46 @@
 
     $('#logTable').dataTable({
         order: [[2,'desc'], [3,'asc']],
-        dom: 'lBfrtip',
+        dom: 'Bfrtip',
+
+        buttons: [{
+            extend: 'collection',
+            text: 'Option',
+            className: 'btn btn-primary',
         buttons: [
-            'colvis','copy', 'csv', 'excel', 'pdf', 'print'
-        ],
+            {
+                extend: 'pdf',
+                text: "Export as PDF",
+                exportOptions: {
+
+                    columns: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ,10 ]
+
+                }
+            },
+            {
+                extend: 'csv',
+                text: "Export as CSV",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ,10 ]
+
+                }
+            },{
+                extend: 'excel',
+                text: "Export as Excel",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ,10 ]
+
+                }
+            },{
+                extend: 'copy',
+                text: "Copy to clipboard",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ,10 ]
+
+                }
+            }
+            ,'pageLength','colvis'
+        ]}],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         autoWidth: false,
         destroy: true,

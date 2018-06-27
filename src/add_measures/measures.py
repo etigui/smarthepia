@@ -52,7 +52,7 @@ class Sensor(object):
                     already_exist = self.__client.sh.stats.find({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}, {'reftime': ref_time}]}).count()
                     print(already_exist)
                     if already_exist == 0:
-                        self.__client.sh.stats.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
+                        self.__client.sh.stats.insert({'name': device['name'],'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
 
 
     # Get device measures
@@ -105,7 +105,8 @@ class Sensor(object):
     def get_db_devices(self):
         devices = []
         query = {'$and': [{'type': 'Sensor'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}, {'itemStyle.color': {'$eq': const.device_color_no_error}}]}
-        avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
+        # TODO 'name': False,
+        avoid = { 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
         datas = self.__client.sh.devices.find(query, avoid)
 
         # Get all devices

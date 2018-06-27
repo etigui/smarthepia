@@ -3,7 +3,7 @@ mc_host = "localhost:3000"
 mc_url = f"http://{mc_host}"
 mc_email_from = "smarthepia@gmail.com"
 mc_password = "rvfkEvXg_f0qm5K49_7scAq08BH32AFNCjFaztePJ_Es6YEty8p"
-mc_email_to = "guignard.etienne@gmail.com"
+mc_email_to_default = "smarthepia@gmail.com"
 mc_subject = "Smarthepia network notification"
 
 # Web server notify login

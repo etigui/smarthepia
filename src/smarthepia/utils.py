@@ -174,9 +174,12 @@ def send_mail(email_from, email_to, password, message, subject):
 
 
 # Send mail if the database is down
-def send_database_alert(email_from, email_to, password, subject):
-    message = database.email_html_database(email_splitter(email_to))
-    send_mail(email_from, email_to, password, message, subject)
+def send_database_alert(email_from, admin_email, password, subject):
+
+    # Send email to all admin
+    for email_to in admin_email:
+        message = database.email_html_database(email_splitter(email_to))
+        send_mail(email_from, email_to, password, message, subject)
 
 
 # Send mail if the web server is down

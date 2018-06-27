@@ -23,11 +23,11 @@ router.get('/',  isAuth, function(req, res, next) {
 router.get('/listall',  isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         var toRemove = {_id: false};
-        var query = {$and: [{$or : [{assign: {$eq: "anyone"}},{assign: {$eq: req.session.email}}]}, {ack: {$eq: 1}}]};
-        console.log(req.session.email);
+        //var query = {$and: [{$or : [{assign: {$eq: "anyone"}},{assign: {$eq: req.session.email}}]}, {ack: {$eq: 1}}]};
+        var query = {ack: {$eq: 1}};
         Alarm.find(query, {}, function(err, alarm) {
             if (err) {
-                return next(error);
+                return next(err);
             }
             res.type('json');
             return res.json({data: alarm});

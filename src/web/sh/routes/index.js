@@ -4,6 +4,7 @@ var passport = require('../controllers/passport');
 var auth = require('../controllers/auth');
 var config = require('../configs/config');
 var UserModel = require('../models/user');
+
 var router = express.Router();
 
 // Module variables
@@ -37,12 +38,21 @@ router.post('/', function(req, res, next) {
                 console.error(err);
                 return next(err);
             }
-            req.session.userId = user._id;
-            req.session.email = user.email;
-            req.session.lastname = user.lastName;
-            req.session.firstname = user.firstName;
-            req.session.permissions = user.permissions;
-            return res.status(302).redirect('/home');
+
+            // Update last connection
+            var lastConnection = Date.now();
+            UserModel.update({email: user.email}, {$set: {lastConnection: lastConnection}}, function (err, conn) {
+                if (err) {
+                    return next(err);
+                }
+                req.session.lastConnection = lastConnection;
+                req.session.userId = user._id;
+                req.session.email = user.email;
+                req.session.lastname = user.lastName;
+                req.session.firstname = user.firstName;
+                req.session.permissions = user.permissions;
+                return res.status(302).redirect('/home');
+            });
         });
     })(req, res, next);
 });

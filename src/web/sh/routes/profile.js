@@ -12,7 +12,19 @@ var isAuth = require('../controllers/isAuth');
 // GET /profile
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getUser())){
-        return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email});
+        var fullName = req.session.firstname + " " +req.session.lastname;
+        var perm = req.session.permissions;
+        if(perm === 0){
+            perm = "Smarthepia Simple user";
+        }else if(perm === 1){
+            perm = "Smarthepia Manger";
+        }else if(perm === 2){
+            perm = "Smarthepia Admin";
+        }else{
+            perm = "Smarthepia user undefined";
+        }
+
+        return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email, lastConnection : dateFormat(req.session.lastConnection , "dd.mm.yyyy HH:MM:ss"), fullName: fullName, perm});
     }else{
         return res.redirect('/');
     }

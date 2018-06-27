@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="">
-    <title>smarthepia - manager</title>
+    <title>Smarthepia - Device</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
 
     <!-- BEGIN VENDOR CSS-->
@@ -349,10 +349,45 @@
     function genDeviceTable(){
 
         $('#deviceTable').dataTable({
-            dom: 'lBfrtip',
-            buttons: [
-                'colvis','copy', 'csv', 'excel', 'pdf', 'print'
-            ],
+            dom: 'Bfrtip',
+            buttons: [{
+                extend: 'collection',
+                text: 'Option',
+                className: 'btn btn-primary',
+                buttons: [
+                    {
+                        extend: 'pdf',
+                        text: "Export as PDF",
+                        exportOptions: {
+
+                            columns: [0, 1, 2, 3, 4, 5, 6 ]
+
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: "Export as CSV",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+
+                        }
+                    },{
+                        extend: 'excel',
+                        text: "Export as Excel",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+
+                        }
+                    },{
+                        extend: 'copy',
+                        text: "Copy to clipboard",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5, 6 ]
+
+                        }
+                    }
+                    ,'pageLength','colvis'
+                ]}],
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
             autoWidth: false,
             destroy: true,

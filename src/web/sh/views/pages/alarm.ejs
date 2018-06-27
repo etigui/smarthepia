@@ -256,8 +256,9 @@
 
     $('#alarmTable').dataTable({
         order: [[2,'desc'], [3,'asc']],
-        dom: 'lBfrtip',
-        buttons: [{
+        dom: 'Bfrtip',
+        buttons: [
+            {
                 text: 'Ack sel.',
                 className: 'btn btn-primary ackMany',
                 key: '1',
@@ -265,7 +266,7 @@
 
                     // Error if nothing selected
                     if (!dt.rows('.selected').data().length) {
-                        toastr.error("Select at least one row", "error", {closeButton: true})
+                        toastr.error("Select at least one row", "error", {closeButton: true});
                     }else{
                     }
                 }
@@ -278,7 +279,7 @@
 
                     // Error if nothing selected
                     if (!dt.rows('.selected').data().length) {
-                        toastr.error("Select at least one row", "error", {closeButton: true})
+                        toastr.error("Select at least one row", "error", {closeButton: true});
                     }else{
 
                     }
@@ -305,9 +306,16 @@
                     $('.assMany').addClass('disabled');
                     $('.selNone').addClass('disabled');
                 }
-            },
+            },{
+            extend: 'collection',
+            text: 'Option',
+            className: 'btn btn-primary',
+
+
+        buttons: [
             {
                 extend: 'pdf',
+                text: "Export as PDF",
                 exportOptions: {
 
                     columns: [ 1, 2, 3, 4, 5, 6, 7 ]
@@ -316,14 +324,30 @@
             },
             {
                 extend: 'csv',
+                text: "Export as CSV",
                 exportOptions: {
                     columns: [ 1, 2, 3, 4, 5, 6, 7 ]
 
                 }
-            },'colvis'
+            },{
+                extend: 'excel',
+                text: "Export as Excel",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7 ]
+
+                }
+            },{
+                extend: 'copy',
+                text: "Copy to clipboard",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7 ]
+
+                }
+            }
+            ,'pageLength','colvis'
 
 
-        ],
+        ]}],
         //select: true,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         autoWidth: false,
@@ -660,7 +684,6 @@
         $("#alarmManyAck").val(1);
         $("#alarmIdAck").val(id);
     });
-
 
 
     // BEGIN Server time section /////////////////////////////////////////////////////////////

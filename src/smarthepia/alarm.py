@@ -24,6 +24,7 @@ class Alarm(object):
         self.net_status = False
         self.alarm = []
         self.popup_id = []
+        self.admin_email = []
 
     def run(self):
 
@@ -31,17 +32,21 @@ class Alarm(object):
         while True :
             print(f"Alarm: {datetime.datetime.now()}")
 
-            # Check web server status
-            self.web_server_connect(const.ws_url, const.mc_email_from, const.mc_email_to, const.mc_password, const.mc_subject)
-
             # Init MongoDB client, check connection
             status, self.__client = self.db_connect()
+
+            # Get admin email
+            self.get_admin_email()
+
+            # Check web server status
+            self.web_server_connect(const.ws_url, const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
 
             # Check if mongodb has been well init
             if status:
                 print(f"DB connection ok: {datetime.datetime.now()}")
                 self.process_network()
                 self.__client.close()
+                self.__client = None
                 self.db_status = True
             else:
 
@@ -52,13 +57,13 @@ class Alarm(object):
 
                     # Send mail to the admin, manager if the DB is down
                     self.db_status = False
-                    utils.send_database_alert(const.mc_email_from, const.mc_email_to, const.mc_password, const.mc_subject)
+                    utils.send_database_alert(const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
 
             # Close connection and wait
             time.sleep(const.st_alarm)
 
     # Check web server status
-    def web_server_connect(self, url, email_from, email_to, password, subject):
+    def web_server_connect(self, url, email_from, admin_email, password, subject):
 
         # HTTP request on web server
         if not utils.get_http(url):
@@ -68,7 +73,10 @@ class Alarm(object):
             # if true => send mail to admin
             if self.ws_status:
                 self.ws_status = False
-                utils.send_web_server_alert(email_from, email_to, password, subject)
+
+                # Send email to all admin
+                for email_to in admin_email:
+                    utils.send_web_server_alert(email_from, email_to, password, subject)
         else:
             print(f"Web server connection ok: {datetime.datetime.now()}")
             self.ws_status = True
@@ -509,9 +517,9 @@ class Alarm(object):
             if device_update_time < diff:
                 self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Device value are not updated"}))
             elif int(result['battery']) < const.battery_min_warning:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.warning_alarm, "severity": const.severity_high, "message": "Battery less than 10%"}))
+                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.warning_alarm, "severity": const.severity_medium, "message": "Battery less than 10%"}))
             elif int(result['battery']) < const.battery_min_info:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.info_alarm, "severity": const.severity_high, "message": "Battery less than 20%"}))
+                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.info_alarm, "severity": const.severity_medium, "message": "Battery less than 20%"}))
 
 
     # Empty alarm device array
@@ -580,3 +588,21 @@ class Alarm(object):
             return True, pymongo.MongoClient(const.db_host, const.db_port)
         except pymongo.errors.ConnectionFailure as e:
             return False, None
+
+    # Get admin user email to send critical error
+    def get_admin_email(self):
+
+        # If database error
+        if self.__client:
+            self.admin_email.clear()
+            query = {'$and': [{"enable": True}, {"permissions": {'$eq': 2}}]}
+            datas = self.__client.sh.users.find(query)
+
+            # Get all devices
+            for data in datas:
+                self.admin_email.append(data['email'])
+        else:
+
+            # Set as default email if db error
+            self.admin_email = [const.mc_email_to_default]
+
