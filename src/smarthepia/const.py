@@ -61,8 +61,18 @@ def route_zwave_device_all_measures(ip, port, address):
 
 
 # Routes KNX
-def route_knx_device_value_read(ip, port, id, type):
-    return f"http://{ip}:{port}/v0/{type}/read/{id}"
+def route_knx_device_value_read(ip, port, address, type):
+    return f"http://{ip}:{port}/v0/{type}/read/{address}"
+
+
+def route_knx_device_value_write(ip, port, address, ttype, value):
+
+    # Check if the value is between 0 and 255
+    if blind_min_value < value <= blind_max_value:
+        floor = address.split("/")[0]
+        id = address.split("/")[1]
+        return True, f"http://{ip}:{port}/v0/{str(ttype).lower()}/write/{floor}/{id}/{value}"
+    return False, None
 
 
 # Battery min max value
@@ -115,3 +125,10 @@ db_devices_sub_type_multisensor = "Multisensor"
 db_devices_sub_type_valve = "Valve"
 db_devices_sub_type_blind = "Blind"
 db_devices_sub_type_actuator = [db_devices_sub_type_valve, db_devices_sub_type_blind]
+
+# Dependency device type REST
+dependency_device_type_rest = "REST/HTTP"
+
+# Blind min max value
+blind_min_value = 0
+blind_max_value = 255

@@ -13,11 +13,13 @@ import const
 import utils
 import datastruct
 
+DEBUG = 1
+
 
 class Automation(object):
     def __init__(self):
         self.__client = None
-        self.automations = []
+        self.rooms = []
         self.automation_rule = None
         self.season = None
 
@@ -33,14 +35,13 @@ class Automation(object):
             # Init MongoDB client
             status, self.__client = self.db_connect()
 
-            res = self.check_multisensor_motion("ZWAVE RPI1", "2")
-            print(res)
+            if status:
 
-            # Start to automation
-            self.process_automation()
+                # Start to automation
+                self.process_automation()
 
-            # Close db
-            self.__client.close()
+                # Close db
+                self.__client.close()
 
             # Sleep until next time
             time.sleep(const.st_automation)
@@ -75,16 +76,24 @@ class Automation(object):
         api_current = self.get_api_current_weather(True)
 
         # Check if we have room to process automation
-        if len(self.automations) > 0:
+        if len(self.rooms) > 0:
 
             # Walk through all room
-            for room in self.automations:
+            for room in self.rooms:
 
                 # If True => we can process the room
                 status, temp, measures = self.check_multisensor(room.sensors)
                 if status:
-                    pass
 
+                    # Check if all multisensor dont return false
+                    # True => Someone in the room or (multisensor error/not up to date)
+                    # False => Nobody in the room
+                    motion_status = self.check_motion_all_multisensors_in_room(room.sensors)
+                    if motion_status:
+                        self.process_blinds(room)
+
+                self.process_valves()
+            i = 0
 
     # Get all rooms
     # Not disabled & not in error
@@ -102,7 +111,7 @@ class Automation(object):
             actuator_status, actuators = self.get_actuator_by_room(data['id'])
             rule = self.get_rules_by_room(data['rules'])
             if sensor_status and actuator_status and rule['active']:
-                self.automations.append(datastruct.StructAutomation(sensors, actuators, rule))
+                self.rooms.append(datastruct.StructAutomation(sensors, actuators, rule, data['orientation']))
 
     # Get rule ba room
     def get_rules_by_room(self, room_rule):
@@ -141,14 +150,14 @@ class Automation(object):
 
     # Get measure by multisensor
     def get_measure_by_multisensor(self, dependency_name, address):
-        query = {'$and': [{'depname': dependency_name}, {'devices.method': {'$eq': 'REST/HTTP'}}]}
+        query = {'$and': [{'depname': dependency_name}, {'devices.method': {'$eq': const.dependency_device_type_rest}}]}
         devices = self.__client.sh.dependencies.find_one(query)
 
         # Get REST server ip and port
         ip = ""
         port = 0
         for device in devices['devices']:
-            if device['method'] == "REST/HTTP":
+            if device['method'] == const.dependency_device_type_rest:
                 ip = device['ip']
                 port = device['port']
 
@@ -211,6 +220,22 @@ class Automation(object):
     def get_db_forecast(self):
         return self.__client.sh.apiforecast.find_one({'$query': {}, '$orderby': {'$natural': -1}})
 
+    # Check all the multisenor for one room
+    def check_motion_all_multisensors_in_room(self, sensors):
+
+        # Get all multisensor and get dependency name and address
+        # to check if motion is recorded
+        motion = False
+        for sensor in sensors:
+            motion_status = self.check_multisensor_motion(sensor['dependency'], sensor['address'])
+
+            # Check if the motion status is not
+            # 0 => Nobody in the room
+            # 1 => Someone on the room
+            # -1 => Multisensor error or date not up to date
+            if motion_status == 1 or motion_status == -1:
+                motion = True
+        return motion
     # Get last 2 motion measure to check if no one is in the room
     def check_multisensor_motion(self, dependency, address):
 
@@ -327,3 +352,81 @@ class Automation(object):
         if now.day <= start_day and now.month <= start_month and now.day >= stop_day and now.month >= stop_month:
             return True
         return False
+
+    # Process rule about blinds
+    def process_blinds(self, room):
+
+        # If it's night time => close blind
+        # Else => process day time rule by room
+        night_time_status = self.check_night_time(room.rule['dt'], room.rule['nt'])
+        if not night_time_status:
+            if DEBUG: print(f"Night time")
+            self.process_night_time(room.actuators)
+        else:
+            if DEBUG: print(f"Day time")
+
+    # Check if we are in night time => close all blinds
+    def check_night_time(self, rule_day_time, rule_night_time):
+
+        # Get current date and convert day and night time to time()
+        time_now = datetime.datetime.now().time()
+        night_time = datetime.datetime.strptime(f"{rule_night_time}:00", '%H:%M:%S').time()
+        day_time = datetime.datetime.strptime(f"{rule_day_time}:00", '%H:%M:%S').time()
+
+        # If we are during the night period
+        # Between => eg: 23:00:00 => 08:00:00
+        if night_time < time_now < day_time:
+            return True
+        return False
+
+    # Process closing all blind
+    def process_night_time(self, actuators):
+
+        # Get all actuator by room
+        for actuator in actuators:
+
+            # Check if blind
+            if actuator['subtype'] == const.db_devices_sub_type_blind:
+
+                # Get ip and port for this actuator
+                actuator_status, ip, port = self.get_knx_network_by_device(actuator['dependency'])
+                if actuator_status:
+                    self.close_one_blind(ip, port, actuator['address'])
+
+    # Close one blind
+    def close_one_blind(self, ip, port, address):
+
+        # Gen knx route to close blind => 255
+        route_status, route = const.route_knx_device_value_write(ip, port, address, const.db_devices_sub_type_blind, const.blind_max_value)
+        if route_status:
+            status, result = utils.http_get_request_json(route)
+            if not status:
+                # TODO error (maybe alarm) if we cant do it after 20min
+                # Global var list of error blind
+                if DEBUG: print(f"Cannot write {const.blind_max_value} to blind")
+
+    # Get knx dependency device type REST
+    # => ip and port
+    def get_knx_network_by_device(self, dependency_device_name):
+
+        # Get dependency
+        query = {'$and': [{'depname': dependency_device_name}, {'devices.method': {'$eq': const.dependency_device_type_rest}}]}
+        devices = self.__client.sh.dependencies.find_one(query)
+
+        # Get REST server ip and port
+        ip = ""
+        port = 0
+        for device in devices['devices']:
+            if device['method'] == const.dependency_device_type_rest:
+                ip = device['ip']
+                port = device['port']
+
+        # Check if ip and port not empty
+        # => Can be an error if not ip and port
+        if ip == "" or port == 0:
+            return False, None, None
+        return True, ip, port
+
+    # Process rule about valves
+    def process_valves(self):
+        pass

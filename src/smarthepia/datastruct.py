@@ -27,10 +27,11 @@ class StructAlarm():
 
 # Struct to store automation datas
 class StructAutomation():
-    def __init__(self, sensors, actuators, rule):
+    def __init__(self, sensors, actuators, rule, orientation):
         self.sensors = sensors
         self.actuators = actuators
         self.rule = rule
+        self.orientation = orientation
 
 
 # Struct to store automation rule

@@ -256,5 +256,23 @@ def get_mesures(route):
         return False, None
 
 
+# Get http request
+def http_get_request_json(url):
+    try:
+        r = requests.get(url, timeout=3)
+        if r.status_code == 200:
+            return True, r.json()
+        else:
+            return False, None
+    except requests.exceptions.HTTPError as errh:
+        return False, None
+    except requests.exceptions.ConnectionError as errc:
+        return False, None
+    except requests.exceptions.Timeout as errt:
+        return False, None
+    except requests.exceptions.RequestException as err:
+        return False, None
+
+
 
 
