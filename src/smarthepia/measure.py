@@ -1,43 +1,67 @@
 import time
 import urllib3
 import json
-import pymongo
 import datetime
+import os
+
+# Mongodb driver
+import pymongo
 from pymongo.errors import ConnectionFailure
 
 # Local import
 import utils
 import const
 import datastruct
+import conf
+import logger
 
 
 class Sensor(object):
     def __init__(self):
         self.__client = None
+        self.measure_log = None
 
     def run(self):
 
-        # For first start tempo
-        #time.sleep(const.st_start)
-        while True:
+        # Check if log are well init
+        if self.log_init():
 
-            print(f"Sensor: {datetime.datetime.now()}")
+            # For first start tempo
+            #time.sleep(const.st_start)
 
-            # Init MongoDB client
-            status, self.__client = self.db_connect()
+            while True:
 
-            # Check if mongodb has been well init
-            if status:
-                print(f"DB connection ok: {datetime.datetime.now()}")
+                print(f"Sensor: {datetime.datetime.now()}")
 
-                # Get all dependency devices and device and add to db
-                self.add_db_measures(self.get_db_dependency_devices())
-            else:
-                raise NotImplementedError("Error to implemented (mongodb init error)")
+                # Init MongoDB client
+                status, self.__client = self.db_connect()
 
-            # Close connection and wait
-            self.__client.close()
-            time.sleep(const.st_measure)
+                # Check if mongodb has been well init
+                if status:
+                    print(f"DB connection ok: {datetime.datetime.now()}")
+
+                    # Get all dependency devices and device and add to db
+                    self.add_db_measures(self.get_db_dependency_devices())
+                else:
+                    raise NotImplementedError("Error to implemented (mongodb init error)")
+
+                # Close connection and wait
+                self.__client.close()
+                time.sleep(const.st_measure)
+
+    # Init log
+    def log_init(self):
+
+        ldp_status , log_dir_path = conf.get_log_dir_path()
+        len_status, log_ext_name = conf.get_log_ext_name()
+        lfms_status, log_file_max_size = conf.get_log_file_max_size()
+        if ldp_status and len_status and lfms_status:
+            sp_name = str(os.path.basename(__file__)).replace(".py", "")
+            self.measure_log = logger.Logger(str(log_dir_path), int(log_file_max_size), sp_name, str(log_ext_name))
+            self.measure_log.log_info(f"Subprocess {sp_name} started")
+            return True
+        else:
+            return False
 
     # Add measures from devices to db
     def add_db_measures(self, db_sensors):
@@ -58,7 +82,6 @@ class Sensor(object):
                     if already_exist == 0:
                         self.__client.sh.stats.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
 
-
     # Get device measures
     def get_mesures(self, route):
         http = urllib3.PoolManager()
@@ -76,7 +99,7 @@ class Sensor(object):
             return False, {}
 
 
-    # Build struct with ip, dependency port by device (sensor)
+    # Build struct with ip, dependency port by device (multisensor)
     # Get dependency devices if method (REST/HTTP) is found
     # (REST/HTTP) => REST server for sensor
     def get_db_dependency_devices(self):
@@ -98,7 +121,7 @@ class Sensor(object):
         avoid = {'_id': False, '__v': False,'action': False, 'devices._id': False, 'devices.comment': False, 'devices.name': False } # , 'depname': False
         datas = self.__client.sh.dependencies.find(query, avoid)
 
-        # Build struct with ip, dependency port by device (sensor)
+        # Build struct with ip, dependency port by device (multisensor)
         for data in datas:
             for dep_device in data['devices']:
                 if dep_device['method'] == "REST/HTTP":
@@ -108,7 +131,7 @@ class Sensor(object):
     # Get all device active and not in error or warning
     def get_db_devices(self):
         devices = []
-        query = {'$and': [{'type': 'Sensor'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}, {'itemStyle.color': {'$eq': const.device_color_no_error}}]}
+        query = {'$and': [{'subtype': 'Multisensor'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}, {'itemStyle.color': {'$eq': const.device_color_no_error}}]}
         avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
         datas = self.__client.sh.devices.find(query, avoid)
 

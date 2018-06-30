@@ -117,36 +117,6 @@ def request_api(url):
     except requests.exceptions.RequestException as err:
         return False, None
 
-# Get current weather
-def get_current_weather():
-
-    # Check if the API return good value
-    status, json = request_api(const.route_current_weather())
-    if int(json['cod']) == const.return_code_success:
-        if status:
-            return True, json
-        else:
-            return False, None
-    else:
-        return False, None
-
-# Get forecast (5 days every 3h)
-def get_forecast():
-
-    # Check if the API return good value
-    status, json = request_api(const.route_forecast())
-    if int(json['cod']) == const.return_code_success:
-        if status:
-            return True, json
-        else:
-            return False, None
-    else:
-        return False, None
-
-
-def get_degree_from_fahrenheit(fahrenheit):
-    return (fahrenheit - 32) / 1.8
-
 
 # Send mail
 def send_mail(email_from, email_to, password, message, subject):
@@ -224,23 +194,6 @@ def remove_duplicates(datas):
             seen.add(data)
     return output
 
-
-# Get season from time
-def get_season(now):
-
-    Y = 2000  # dummy leap year to allow input X-02-29 (leap day)
-    seasons = [('winter', (datetime.date(Y, 1, 1), datetime.date(Y, 3, 20))),
-               ('spring', (datetime.date(Y, 3, 21), datetime.date(Y, 6, 20))),
-               ('summer', (datetime.date(Y, 6, 21), datetime.date(Y, 9, 22))),
-               ('autumn', (datetime.date(Y, 9, 23), datetime.date(Y, 12, 20))),
-               ('winter', (datetime.date(Y, 12, 21), datetime.date(Y, 12, 31)))]
-
-    if isinstance(now, datetime.datetime):
-        now = now.date()
-    now = now.replace(year=Y)
-    return next(season for season, (start, end) in seasons if start <= now <= end)
-
-
 # Get device measures
 def get_mesures(route):
     http = urllib3.PoolManager()
@@ -272,7 +225,3 @@ def http_get_request_json(url):
         return False, None
     except requests.exceptions.RequestException as err:
         return False, None
-
-
-
-

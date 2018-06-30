@@ -3,7 +3,7 @@ mc_host = "localhost:3000"
 mc_url = f"http://{mc_host}"
 mc_email_from = "smarthepia@gmail.com"
 mc_password = "rvfkEvXg_f0qm5K49_7scAq08BH32AFNCjFaztePJ_Es6YEty8p"
-mc_email_to_default = "smarthepia@gmail.com"
+#mc_email_to_default = "smarthepia@gmail.com"
 mc_subject = "Smarthepia network notification"
 
 # Web server notify login
@@ -39,6 +39,10 @@ device_color_no_error = '#34a046'
 dependency_method_ping = "Ping"
 dependency_method_http = "REST/HTTP"
 
+# Hepia position
+lat = 46.20949
+lon = 6.135212
+
 # Routes ZWAVE return
 wrong_not_available_device = "Node not ready or wrong sensor node type !"
 
@@ -61,8 +65,8 @@ def route_zwave_device_all_measures(ip, port, address):
 
 
 # Routes KNX
-def route_knx_device_value_read(ip, port, address, type):
-    return f"http://{ip}:{port}/v0/{type}/read/{address}"
+def route_knx_device_value_read(ip, port, address, ttype):
+    return f"http://{ip}:{port}/v0/{str(ttype).lower()}/read/{address}"
 
 
 def route_knx_device_value_write(ip, port, address, ttype, value):
@@ -99,22 +103,6 @@ alarm_type_device = 10
 alarm_sub_type_sensor = 100
 alarm_sub_type_actuator = 200
 
-# Openweathermap
-city_id = "2659667"
-api_key = "adeaa68b9d2f5a100919934788d350e0"
-
-return_code_limitation = 429
-return_code_success = 200
-
-
-# Openweathermap routes
-def route_current_weather():
-    return f"http://api.openweathermap.org/data/2.5/weather?id={city_id}&appid={api_key}"
-
-def route_forecast():
-    return f"http://api.openweathermap.org/data/2.5/forecast?id={city_id}&appid={api_key}"
-
-
 # Database devices collection param
 db_devices_type_room = "Room"
 db_devices_type_not_location = ["Floor", "Building", "Room"]
@@ -132,3 +120,24 @@ dependency_device_type_rest = "REST/HTTP"
 # Blind min max value
 blind_min_value = 0
 blind_max_value = 255
+
+# Room angle
+room_azimuth_min = 2
+
+# Rule define valve day time
+day_valve_off = 1
+day_valve_on = 2
+
+# Rule define blind day time
+day_blind_off = 1
+day_blind_sam = 2
+day_blind_ram = 3
+day_blind_full = 4
+
+# Rule define blind night time
+night_blind_off = 1
+night_blind_on = 2
+
+
+
+

@@ -21,7 +21,123 @@ router.get('/', isAuth, function(req, res, next) {
 router.post('/create', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
 
-        var locationType = req.body.locationCreate;
+        var locationType = req.body.locationSelect;
+        var building_parent = req.body.buildingSelect;
+        var floor_parent = req.body.floorSelect;
+        var building_name = req.body.buildingInput;
+        var floor_name = req.body.floorInput;
+        var corridor_name = req.body.corridorInput;
+        var room_name = req.body.roomInput;
+        var room_orientation = req.body.orientationInput;
+        var room_rule = req.body.ruleSelect;
+        var comment = req.body.commentInput;
+
+        if(locationType) {
+            if(locationType === "Building"){
+                if(building_name){
+
+                    // Check if building name already exists
+                    validation.checkUniqueLocation(building_name, 0, function (uniqueLocation) {
+                        if(uniqueLocation){
+                            var newLocation = {name: building_name, type: "Building", parent: 0, enable: true, comment: comment ? comment: ""};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Building has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Building name already exists"});
+                        }
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else if(locationType === "Floor"){
+                if(floor_name && building_parent){
+
+                    // Check if floor already exists for that building
+                    validation.checkUniqueLocation(floor_name, parseInt(building_parent), function (uniqueLocation) {
+                        if(uniqueLocation){
+                            var newLocation = {name: floor_name, type: "Floor", parent: parseInt(building_parent), enable: true, comment: comment ? comment: ""};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    console.log(error);
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Floor has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Floor name already exists for that building"});
+                        }
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else if(locationType === "Room"){
+                if(room_name && room_orientation && room_rule && building_parent && floor_parent){
+
+                    // Check if room already exists for that floor
+                    validation.checkUniqueLocation(room_name, parseInt(floor_parent), function (uniqueLocation) {
+                        if(uniqueLocation){
+                            var newLocation = {name: room_name, type: "Room", parent: parseInt(floor_parent), enable: true, orientation: room_orientation, comment: (comment ? comment : ""), rules: room_rule};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    console.log(error);
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Romm has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Room name already exists for that floor"});
+                        }
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else if(locationType === "Corridor"){
+                if(corridor_name && building_parent && floor_parent){
+
+                    // Check if room already exists for that floor
+                    validation.checkUniqueLocation(corridor_name, parseInt(floor_parent), function (uniqueLocation) {
+                        if(uniqueLocation){
+                            var newLocation = {name: corridor_name, type: "Corridor", parent: parseInt(floor_parent), enable: true, comment: (comment ? comment : "")};
+                            Devices.create(newLocation, function (error, user) {
+                                if (error) {
+                                    console.log(error);
+                                    return next(error);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Corridor has been successfully created"});
+                            });
+                        }else{
+                            res.type('json');
+                            return res.json({status: "error", message: "Corridor name already exists for that floor"});
+                        }
+                    });
+                }else{
+                    res.type('json');
+                    return res.json({status: "error", message: "All field must be filled"});
+                }
+            }else{
+                res.type('json');
+                return res.json({status: "error", message: "Not a location type"});
+            }
+        }else{
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
+
+        /*var locationType = req.body.locationCreate;
         var comment = req.body.commentCreate;
         var building = req.body.buildingCreate;
         var floor = req.body.floorCreate;
@@ -111,7 +227,7 @@ router.post('/create', isAuth, function(req, res, next) {
         }else{
             res.type('json');
             return res.json({status: "error", message: "All field must be filled"});
-        }
+        }*/
     }else{
         return res.redirect('/');
     }
@@ -138,7 +254,7 @@ router.get('/listall', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, id : false, value: false, itemStyle: false, group: false};
-        Devices.find({$or: [{type: "Building"},  {type: "Floor"}, {type: "Room"} ] }, toRemove, function(err, user) {
+        Devices.find({$or: [{type: "Building"},  {type: "Floor"}, {type: "Room"}, {type: "Corridor"} ] }, toRemove, function(err, user) {
             if (err) {
                 return next(error);
             }

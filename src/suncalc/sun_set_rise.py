@@ -14,8 +14,9 @@ def process_sun_position():
 
             azimuth = convert_north(get_azimuth(46.20949, 6.135212, date))
             elevation = get_altitude(46.20949, 6.135212, date)
-            date += datetime.timedelta(minutes=1)
-
+            date += datetime.timedelta(minutes=30)
+            print(f"Date: {date} Azimuth: {azimuth} Elevation: {elevation}\n")
+            '''
             if elevation > 0 and not sun_rise:
                 sun_rise = True
                 sun_set = False
@@ -26,6 +27,7 @@ def process_sun_position():
                 sun_set = True
                 print(f"Sun set => Azimuth: {azimuth}\nElevation: {elevation}\nDate: {date}\n")
                 break
+            '''
         tmp_date += datetime.timedelta(days=1)
         date = tmp_date
 

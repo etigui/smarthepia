@@ -48,10 +48,9 @@ var DevicesSchema = new mongoose.Schema({
     },rules: {
         type: String,
         default: "Default"
-
     },orientation: {
-        type: String,
-        default: "-"
+        type: Number,
+        default: 0
     }
     ,enable: {
         type: Boolean,

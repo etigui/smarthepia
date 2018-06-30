@@ -1,8 +1,11 @@
-import time
+import time as time_sleep
+
+from ephem import hours
 from pysolar.solar import *
 import datetime
 import statistics
 import sys
+import os
 
 # MongoDB driver
 import pymongo
@@ -12,9 +15,12 @@ from pymongo.errors import ConnectionFailure
 import const
 import utils
 import datastruct
+import logger
+import conf
+import weather
+import sun
 
 DEBUG = 1
-
 
 class Automation(object):
     def __init__(self):
@@ -22,30 +28,51 @@ class Automation(object):
         self.rooms = []
         self.automation_rule = None
         self.season = None
+        self.automation_log = None
+        self.weather_forecast = None
+        self.weather_current = None
 
     def run(self):
 
-        # For first start tempo
-        #time.sleep(const.st_start)
+        # Check if log are well init
+        if self.log_init():
 
-        # Process automation
-        while True :
-            print("Automation")
+            # self.close_one_blind("192.168.1.137", "5000", "4/2")
 
-            # Init MongoDB client
-            status, self.__client = self.db_connect()
+            # For first start tempo
+            # time.sleep(const.st_start)
 
-            if status:
+            # Process automation
+            while True :
+                print("Automation")
 
-                # Start to automation
-                self.process_automation()
+                # Init MongoDB client
+                status, self.__client = self.db_connect()
 
-                # Close db
-                self.__client.close()
+                if status:
 
-            # Sleep until next time
-            time.sleep(const.st_automation)
+                    # Start to automation
+                    self.process_automation()
 
+                    # Close db
+                    self.__client.close()
+
+                # Sleep until next time
+                time_sleep.sleep(const.st_automation)
+
+    # Init log
+    def log_init(self):
+
+        ldp_status , log_dir_path = conf.get_log_dir_path()
+        len_status, log_ext_name = conf.get_log_ext_name()
+        lfms_status, log_file_max_size = conf.get_log_file_max_size()
+        if ldp_status and len_status and lfms_status:
+            sp_name = str(os.path.basename(__file__)).replace(".py", "")
+            self.automation_log = logger.Logger(str(log_dir_path), int(log_file_max_size), sp_name, str(log_ext_name))
+            self.automation_log.log_info(f"Subprocess {sp_name} started")
+            return True
+        else:
+            return False
 
     # Connect to the database
     def db_connect(self):
@@ -56,14 +83,14 @@ class Automation(object):
 
     def get_automation_rule(self):
         datas = self.__client.sh.automations.find_one()
-        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outtempmin'])
+        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outtempmin'], datas['outsummax'])
         i = 0
 
     # Start to automation
     def process_automation(self):
 
         # Get season of today
-        self.season = utils.get_season(datetime.date.today())
+        self.season = sun.get_season(datetime.date.today())
 
         # Get all info (sensor, actuator, rule) by room
         self.get_room()
@@ -72,8 +99,8 @@ class Automation(object):
         self.get_automation_rule()
 
         # Get last weather measures and forecast
-        api_forecast = self.get_api_forecast(True)
-        api_current = self.get_api_current_weather(True)
+        self.weather_forecast = self.get_forecast(False)
+        self.weather_current = self.get_current_weather(False)
 
         # Check if we have room to process automation
         if len(self.rooms) > 0:
@@ -81,19 +108,17 @@ class Automation(object):
             # Walk through all room
             for room in self.rooms:
 
+                # Process blind rule
+                self.process_blinds(room)
+
                 # If True => we can process the room
-                status, temp, measures = self.check_multisensor(room.sensors)
-                if status:
+                multisensor_status, temp, measures = self.check_multisensor(room.sensors)
+                if multisensor_status:
 
-                    # Check if all multisensor dont return false
-                    # True => Someone in the room or (multisensor error/not up to date)
-                    # False => Nobody in the room
-                    motion_status = self.check_motion_all_multisensors_in_room(room.sensors)
-                    if motion_status:
-                        self.process_blinds(room)
+                    # Process valve rule
+                    self.process_valves()
+        i = 0
 
-                self.process_valves()
-            i = 0
 
     # Get all rooms
     # Not disabled & not in error
@@ -168,14 +193,14 @@ class Automation(object):
         return False, None
 
     # Get last forecast from api or db if fail
-    def get_api_forecast(self, local):
+    def get_forecast(self, local):
 
         # Get last forecast from db
         # TODO remove after
         if not local:
 
             # If error we get last data from db
-            status, api_datas = utils.get_forecast()
+            status, api_datas = weather.get_api_forecast()
             if status:
                 self.__client.sh.apiforecast.insert(api_datas)
                 return api_datas
@@ -185,7 +210,7 @@ class Automation(object):
             return self.get_db_forecast()
 
     # Get last current weather from api or db if fail
-    def get_api_current_weather(self, local):
+    def get_current_weather(self, local):
 
         # Get last measures from db
         db_datas = self.get_db_current_weather()
@@ -195,7 +220,7 @@ class Automation(object):
         if not local:
 
             # Get last measures from api
-            status, api_datas = utils.get_current_weather()
+            status, api_datas = weather.get_api_current_weather()
 
             # If get measures from api
             if status:
@@ -236,23 +261,24 @@ class Automation(object):
             if motion_status == 1 or motion_status == -1:
                 motion = True
         return motion
-    # Get last 2 motion measure to check if no one is in the room
+
+    # Get last 4 motion measure to check if no one is in the room
     def check_multisensor_motion(self, dependency, address):
 
         # Date diff to compare the 2 measures up date time
-        diff = datetime.datetime.now() - datetime.timedelta(minutes=15)
+        diff = datetime.datetime.now() - datetime.timedelta(minutes=25)
 
-        # Get last 2 measure (sorted by _id)
-        datas = self.__client.sh.stats.find({'$and': [{"dependency": dependency}, {"address": str(address)}]}).sort([("_id", -1)]).limit(2)
+        # Get last 4 measure (sorted by _id)
+        datas = self.__client.sh.stats.find({'$and': [{"dependency": dependency}, {"address": str(address)}]}).sort([("_id", -1)]).limit(4)
 
         # Return - if not enough data
         # Or dependency name not fount
         # Or address not fount
-        if datas.count() > 2:
+        if datas.count() > 4:
             for data in datas:
 
                 # Return -1 if one of the last timestamp if not up to date
-                # Last 2 measures cannot be taken if => not up to date
+                # Last 4 measures cannot be taken if => not up to date
                 if data['updatetime'] < diff:
                     return -1
                 if data['motion']:
@@ -359,11 +385,54 @@ class Automation(object):
         # If it's night time => close blind
         # Else => process day time rule by room
         night_time_status = self.check_night_time(room.rule['dt'], room.rule['nt'])
-        if not night_time_status:
+        if night_time_status:
             if DEBUG: print(f"Night time")
-            self.process_night_time(room.actuators)
+
+            # Get blind night rule
+            # If 1 => Off
+            # If 2 => On
+            if room.rule['bnr'] == const.night_blind_on:
+                self.close_all_blinds(room.actuators)
         else:
             if DEBUG: print(f"Day time")
+
+            # Check if all multisensor dont return false
+            # True => Someone in the room or (multisensor error/not up to date)
+            # False => Nobody in the room
+            motion_status = self.check_motion_all_multisensors_in_room(room.sensors)
+            if not motion_status:
+
+                # Check if the sun is not visible at all or not
+                sunrise_sunset = self.check_between_sunset_rise()
+                is_cloudy = self.check_cloud()
+
+                # Get what to do with th blind during day time
+                # Get room rule
+                if room.rule['bsr'] != const.day_blind_off:  # not Off
+
+                    if room.rule['bdr'] == const.day_blind_sam:  # Sun and no motion => blind down
+                        status = self.rule_sun_and_no_motion(room, sunrise_sunset, is_cloudy)
+                        if status:
+                            self.close_all_blinds(room.actuators)
+                    elif room.rule['bdr'] == const.day_blind_ram:  # Rain and no motion => blind down
+
+                        # Close all blind if rain
+                        if self.check_rain():
+                            self.close_all_blinds(room.actuators)
+                    elif room.rule['bdr'] == const.day_blind_full: # Rain and no motion and Sun and no motion => blind down
+
+                        # Close all blind if rain
+                        # Else check if sun in the room
+                        if self.check_rain():
+                            self.close_all_blinds(room.actuators)
+                        else:
+                            status = self.rule_sun_and_no_motion(room, sunrise_sunset, is_cloudy)
+                            if status:
+                                self.close_all_blinds(room.actuators)
+
+                    else:
+                        self.automation_log.log_info(f"In function (process_blinds), the rule ({str(room.rule['bdr'])}) is not implemented")
+                        if DEBUG: print(f"Day time rule not implemented")
 
     # Check if we are in night time => close all blinds
     def check_night_time(self, rule_day_time, rule_night_time):
@@ -373,14 +442,38 @@ class Automation(object):
         night_time = datetime.datetime.strptime(f"{rule_night_time}:00", '%H:%M:%S').time()
         day_time = datetime.datetime.strptime(f"{rule_day_time}:00", '%H:%M:%S').time()
 
+        before_midnight = datetime.datetime.strptime(f"23:59:59", '%H:%M:%S').time()
+        midnight = datetime.datetime.strptime(f"00:00:00", '%H:%M:%S').time()
+        after_midnight = datetime.datetime.strptime(f"00:00:01", '%H:%M:%S').time()
+
+        # Sleep 1 sec if 00:00:00
+        if time_now == midnight:
+            time_sleep.sleep(1)
+
+        # We are in new day
+        nt = True
+        if time_now >= after_midnight:
+            if time_now > day_time:
+                nt = False
+            else:
+                nt = True
+
+        elif time_now <= before_midnight:
+            if time_now > night_time:
+                nt = True
+            else:
+                nt = False
+
+        return nt
+
         # If we are during the night period
         # Between => eg: 23:00:00 => 08:00:00
-        if night_time < time_now < day_time:
-            return True
-        return False
+        #if night_time <= time_now <= day_time:
+        #    return True
+        #return False
 
     # Process closing all blind
-    def process_night_time(self, actuators):
+    def close_all_blinds(self, actuators):
 
         # Get all actuator by room
         for actuator in actuators:
@@ -396,14 +489,48 @@ class Automation(object):
     # Close one blind
     def close_one_blind(self, ip, port, address):
 
-        # Gen knx route to close blind => 255
-        route_status, route = const.route_knx_device_value_write(ip, port, address, const.db_devices_sub_type_blind, const.blind_max_value)
-        if route_status:
-            status, result = utils.http_get_request_json(route)
-            if not status:
-                # TODO error (maybe alarm) if we cant do it after 20min
-                # Global var list of error blind
-                if DEBUG: print(f"Cannot write {const.blind_max_value} to blind")
+        # Check if the blind is not already at max => 255
+        # Prevent blind forcing
+        blind_read_status, value = self.get_blind_value(ip, port, address)
+        if blind_read_status:
+            if value != const.blind_max_value:
+
+                # Gen knx route to close blind => 255
+                route_status, write_route = const.route_knx_device_value_write(ip, port, address, const.db_devices_sub_type_blind, const.blind_max_value)
+                if route_status:
+                    status, result = utils.http_get_request_json(write_route)
+                    if not status:
+                        # TODO error (maybe alarm) if we cant do it after 20min
+                        # Global var list of error blind
+                        self.automation_log.log_error(f"In function (close_one_blind), cannot write {const.blind_max_value} to blind")
+
+    # Get value (read) from blind
+    def get_blind_value(self, ip, port, address):
+
+        # Check if the blind is not already at max => 255
+        # Prevent blind forcing
+        read_route = const.route_knx_device_value_read(ip, port, address, const.db_devices_sub_type_blind)
+        status, result = utils.http_get_request_json(read_route)
+        if not status:
+            self.automation_log.log_error(f"In function (close_one_blind), cannot read value from blind")
+        else:
+
+            # Check is result label exist
+            if "status" in result and "result" in result:
+                try:
+
+                    # Parse value to int and check if between 0 and 255
+                    value = int(result['result'])
+                    if const.blind_min_value <= value <= const.blind_max_value:
+                        return True, value
+                    else:
+                        self.automation_log.log_error(f"In function (get_blind_value), the bind value is not between 0 and 255")
+                except ValueError:
+                    self.automation_log.log_error(f"In function (get_blind_value), the bind value is not an int")
+            else:
+                self.automation_log.log_error(f"In function (get_blind_value), result label are not well formatted")
+        return False, None
+
 
     # Get knx dependency device type REST
     # => ip and port
@@ -430,3 +557,125 @@ class Automation(object):
     # Process rule about valves
     def process_valves(self):
         pass
+
+    # Check if the curretn weather from DB/API are good
+    def get_check_current_weather(self):
+
+        # Check if data have been setted
+        if self.weather_current is not None:
+
+            # Get current weather
+            datas = self.weather_current
+            if 'dt' in datas:
+
+                # Check if Weather API/DB return good value
+                now_diff = datetime.datetime.now() - datetime.timedelta(hours=4)
+                if datetime.datetime.fromtimestamp(int(datas['dt'])) > now_diff:
+                    return True, datas
+                else:
+                    self.automation_log.log_error(f"In function (get_check_current_weather) weather API/DB return bad updated value")
+                    return False, None
+            else:
+                self.automation_log.log_error(f"In function (get_check_current_weather) weather data error")
+                return False, None
+        else:
+            self.automation_log.log_error(f"In function (get_check_current_weather) weather data are None")
+            return False, None
+
+    # Check if current time is between sunrise/set
+    def check_between_sunset_rise(self):
+
+        # Get current weather
+        weather_status, datas = self.get_check_current_weather()
+        if weather_status:
+
+            # Check API attr
+            if 'sys' in datas and 'sunset' in datas['sys'] and 'sunrise' in datas['sys']:
+                sunset_time = datetime.datetime.fromtimestamp(int(datas['sys']['sunset']))
+                sunrise_time = datetime.datetime.fromtimestamp(int(datas['sys']['sunrise']))
+
+                # Check if it's today sunset
+                now = datetime.datetime.now()
+                if sunset_time.date() == now.date():
+
+                    # Check if current are between sunset/rise
+                    if sunrise_time < now < sunset_time:
+                        return True
+        return False
+
+    # Check is rain (it check even not heavy rain)
+    def check_rain(self):
+
+        # Get current weather
+        weather_status, datas = self.get_check_current_weather()
+        if weather_status:
+
+            # Check API attr
+            if 'weather' in datas:
+                if len(datas['weather']) > 0:
+                    if 'id' in datas['weather'][0]:
+                        return weather.is_raining_drizzle(str(datas['weather'][0]['id']))
+            self.automation_log.log_error(f"In function (check_rain), API attr error")
+        return False
+
+    # Check if a lot of cloud in the sky
+    # If True => means we cannot see the sun
+    def check_cloud(self):
+
+        # Get current weather
+        weather_status, datas = self.get_check_current_weather()
+        if weather_status:
+
+            # Check API attr
+            if 'weather' in datas:
+                if len(datas['weather']) > 0:
+                    if 'id' in datas['weather'][0]:
+                        return weather.is_cloudy(str(datas['weather'][0]['id']))
+            self.automation_log.log_error(f"In function (check_rain), API attr error")
+        return False
+
+    # Get current temp from API/DB and check if well formatted
+    def get_current_external_temp(self):
+
+        # Get current weather
+        weather_status, datas = self.get_check_current_weather()
+        if weather_status:
+            try:
+                if "main" in datas and "temp" in datas["main"]:
+                    value = weather.get_degree_from_kelvin(float(datas['main']['temp']))
+                    return True, value
+                else:
+                    self.automation_log.log_error(f"In function (get_current_external_temp), API/DB label error")
+            except ValueError:
+                self.automation_log.log_error(f"In function (get_current_external_temp), the temp given by the API/DB is not float")
+        return False, None
+
+    # Rule to close blind when sun and no motion
+    # In addition we add if hot season and height temp
+    def rule_sun_and_no_motion(self, room, sunrise_sunset, is_cloudy):
+
+        # Check if sun anyway
+        if sunrise_sunset:
+
+            # If cloud => no sun
+            if not is_cloudy:
+
+                # Check if sun in the room
+                is_sun, error = sun.is_sun_in_room(room.orientation)
+                if error != -1:
+                    if is_sun:
+                        # During spring and summer the temp can reach height temps
+                        if self.season == sun.season_summer or self.season == sun.season_spring:
+
+                            # Get current external temp
+                            temp_status, current_external_temp = self.get_current_external_temp()
+                            if temp_status:
+
+                                # Check if outside temp is height (base => 25)
+                                if current_external_temp >= self.automation_rule.out_temp_sum_max:
+                                    return True
+                            else:
+                                self.automation_log.log_error(f"In function (rule_sun_and_no_motion), the external temp could not be found")
+                else:
+                    self.automation_log.log_error(f"In function (process_blinds), the room orientation is not valid")
+        return False

@@ -25,6 +25,10 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- END Custom CSS-->
 
+    <!-- BEGIN touchpin -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/forms/spinner/jquery.bootstrap-touchspin.css">
+    <!-- END touchspin -->
+
     <!-- BEGIN datatable -->
     <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/datatables.min.css">
     <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/select.dataTables.min.css">
@@ -130,57 +134,73 @@
                                     <form id="createLocationSubmit" class="form">
                                         <div class="form-body">
                                             <div class="form-group">
-                                                <label for="donationinput2">Location</label>
-                                                <select name="locationCreate" id="locationCreate" class="form-control square" required>
+                                                <label for="">Location</label>
+                                                <select name="locationSelect" id="locationSelect" class="form-control square" required>
                                                     <option value="" selected disabled hidden>Select location</option>
                                                     <option value="Building">Building</option>
                                                     <option value="Floor">Floor</option>
                                                     <option value="Room">Room</option>
-                                                </select>
-                                            </div>
-                                            <div id="buildingDiv" class="form-group">
-                                                <label for="donationinput2">Building
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <input type="text" id="buildingCreate" class="form-control square" placeholder="Building" name="" autocomplete="off">
-                                            </div>
-                                            <div id="floorDiv" class="form-group">
-                                                <label for="donationinput2">Floor
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <input type="text" id="floorCreate" class="form-control square" placeholder="Floor" name="" autocomplete="off">
-                                            </div>
-                                            <div id="roomDiv" class="form-group">
-                                                <label for="donationinput2">Room
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <input type="text" id="roomCreate" class="form-control square" placeholder="Room" name="" autocomplete="off">
-                                            </div>
-                                            <div id="orientationDiv" class="form-group">
-                                                <label for="donationinput2">Orientation
-                                                    <span class="danger">*</span>
-                                                </label>
-                                                <select name="orientationCreate" id="orientationCreate" class="form-control square">
-                                                    <option value="" selected disabled hidden>Select orientation</option>
-                                                    <option value="North">North</option>
-                                                    <option value="South">South</option>
-                                                    <option value="East">East</option>
-                                                    <option value="West">West</option>
                                                     <option value="Corridor">Corridor</option>
-
                                                 </select>
                                             </div>
-                                            <div id="ruleDiv" class="form-group">
-                                                <label for="donationinput2">Rule
+
+                                            <div id="buildingSelDiv" class="form-group">
+                                                <label for="">Building
                                                     <span class="danger">*</span>
                                                 </label>
-                                                <select name="ruleCreate" id="ruleCreate" class="form-control square">
+                                                <select name="buildingSelect" id="buildingSelect" class="form-control square">
+                                                    <option value="" selected disabled hidden>Select building</option>
+                                                </select>
+                                            </div>
+                                            <div id="floorSelDiv" class="form-group">
+                                                <label for="">Floor
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <select name="floorSelect" id="floorSelect" class="form-control square">
+                                                    <option value="" selected disabled hidden>Select floor</option>
+                                                </select>
+                                            </div>
+                                            <div id="buildingInDiv" class="form-group">
+                                                <label for="">Building name
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="text" id="buildingInput" class="form-control square" placeholder="Building name" name="buildingInput" autocomplete="off">
+                                            </div>
+                                            <div id="floorInDiv" class="form-group">
+                                                <label for="">Floor name
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="text" id="floorInput" class="form-control square" placeholder="Floor name" name="floorInput" autocomplete="off">
+                                            </div>
+                                            <div id="roomInDiv" class="form-group">
+                                                <label for="">Room name
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="text" id="roomInput" class="form-control square" placeholder="Room name" name="roomInput" autocomplete="off">
+                                            </div>
+                                            <div id="corridorInDiv" class="form-group">
+                                                <label for="">Corridor name
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="text" id="corridorInput" class="form-control square" placeholder="Corridor name" name="corridorInput" autocomplete="off">
+                                            </div>
+                                            <div id="orientationInDiv" class="form-group">
+                                                <label for="">Orientation</label>
+                                                <div class="input-group bootstrap-touchspin">
+                                                    <input type="text" name="orientationInput" id="orientationInput" class="touchspin form-control" value="1" data-bts-postfix="Deg" data-bts-min="1" data-bts-max="360" autocomplete="off">
+                                                </div>
+                                            </div>
+                                            <div id="ruleSelDiv" class="form-group">
+                                                <label for="">Rule
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <select name="ruleSelect" id="ruleSelect" class="form-control square">
                                                     <option value="" selected disabled hidden>Select rule</option>
                                                 </select>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="donationinput2">Comment</label>
-                                                <input type="text" id="commentCreate" class="form-control square" placeholder="Comment" name="commentCreate" autocomplete="off" >
+                                            <div id="commentInDiv" class="form-group">
+                                                <label for="">Comment</label>
+                                                <input type="text" id="commentInput" class="form-control square" placeholder="Comment" name="commentInput" autocomplete="off" >
                                             </div>
                                         </div>
                                         <div class="form-actions right">
@@ -220,6 +240,11 @@
 <script src="/js/scripts/tables/datatables/datatable-basic.js" type="text/javascript"></script>
 <!-- END datatable -->
 
+<!-- BEGIN touchpin -->
+<script src="/vendors/js/forms/spinner/jquery.bootstrap-touchspin.js" type="text/javascript"></script>
+<script src="/js/scripts/forms/input-groups.min.js" type="text/javascript"></script>
+<!-- END touchspin -->
+
 <!-- BEGIN toastr -->
 <script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
 <script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
@@ -240,12 +265,17 @@
     function onLoad(){
 
         genLocationTable();
+        $("#buildingSelDiv").hide();
+        $("#floorSelDiv").hide();
+        $("#floorInDiv").hide();
+        $("#roomInDiv").hide();
+        $("#corridorInDiv").hide();
+        $("#orientationInDiv").hide();
+        $("#buildingInDiv").hide();
+        $("#ruleSelDiv").hide();
+        $("#commentInDiv").hide();
 
-        $('#buildingDiv').hide();
-        $('#floorDiv').hide();
-        $('#roomDiv').hide();
-        $('#orientationDiv').hide();
-        $('#ruleDiv').hide();
+
 
         loadBuilding('#buildingDevice');
     }
@@ -285,13 +315,13 @@
     // Fill in automation rule name select option
     function loadRules(){
         $.ajax({
-            url: "/automation/listname",
+            url: "/rule/listname",
             type: "get",
             dataType: "json",
             success: function (response) {
-                $('#ruleCreate').append($('<option>', {value: "", text : "Select rule", selected:"", disabled: "", hidden: ""}));
+                $('#ruleSelect').empty().append('<option value="" selected disabled hidden>Select rule</option>');
                 $.each(response.data, function (i, item) {
-                    $('#ruleCreate').append($('<option>', {
+                    $('#ruleSelect').append($('<option>', {
                         value: item.name,
                         text : item.name
                     }));
@@ -387,26 +417,48 @@
     $("#createLocationSubmit").submit(function( event ) {
         event.preventDefault();
         var noError = true;
-        var selectedLocation = $("#locationCreate option:selected").text();
-        var selectedBuilding = $("#buildingCreate option:selected").text();
-        // Select error if not selected
+        var selectedLocation = $("#locationSelect option:selected").text();
+        var selectedBuilding = $("#buildingSelect option:selected").text();
+
+        // Check if select selected and input name not empty
         if(selectedLocation === "Select location") {
             toastr.error("You must choose a location", "error", {closeButton: true});
             noError = false;
+        } else if(selectedLocation === "Building") {
+            if($("#buildingInput").val() === ""){
+                toastr.error("You must choose a building name", "error", {closeButton: true});
+                noError = false;
+            }
         }
-        if(selectedLocation === "Floor") {
+        else if(selectedLocation === "Floor") {
             if(selectedBuilding === "Select building") {
                 toastr.error("You must choose a building location", "error", {closeButton: true});
                 noError = false;
             }
-        }
-        if(selectedLocation === "Room") {
-            if(selectedBuilding === "Select building" || $("#floorCreate option:selected").text() === "Select floor" || $("#ruleCreate option:selected").text() === "Select rule") {
-                toastr.error("You must choose rule, building and floor location", "error", {closeButton: true});
+            if($("#floorInput").val() === ""){
+                toastr.error("You must choose a floor name", "error", {closeButton: true});
                 noError = false;
             }
         }
-
+        else if(selectedLocation === "Room") {
+            if(selectedBuilding === "Select building" || $("#floorSelect option:selected").text() === "Select floor" || $("#ruleSelect option:selected").text() === "Select rule") {
+                toastr.error("You must choose rule, building and floor location", "error", {closeButton: true});
+                noError = false;
+            }
+            if($("#roomInput").val() === ""){
+                toastr.error("You must choose a room name", "error", {closeButton: true});
+                noError = false;
+            }
+        }else if(selectedLocation === "Corridor"){
+            if(selectedBuilding === "Select building" || $("#floorSelect option:selected").text() === "Select floor") {
+                toastr.error("You must choose rule, building and floor location", "error", {closeButton: true});
+                noError = false;
+            }
+            if($("#corridorInput").val() === ""){
+                toastr.error("You must choose a corridor name", "error", {closeButton: true});
+                noError = false;
+            }
+        }
         if(noError) {
             $.ajax({
                 url: "/location/create",
@@ -420,11 +472,11 @@
                     $('#locationTable').DataTable().ajax.reload();
                     onLoad();
                     if (response.status === "success") {
-                        toastr.success(response.message, response.status, {closeButton: true})
+                        toastr.success(response.message, response.status, {closeButton: true});
                     } else if (response.status === "error") {
-                        toastr.error(response.message, response.status, {closeButton: true})
+                        toastr.error(response.message, response.status, {closeButton: true});
                     } else {
-                        toastr.error("Undefined", "error", {closeButton: true})
+                        toastr.error("Undefined success response", "error", {closeButton: true});
                     }
                 }
             });
@@ -433,20 +485,20 @@
 
     // When create dynamic object we must use "on"
     // Fillin floor
-    $(document).on('change', "#buildingCreate", function(){
+    $(document).on('change', "#buildingSelect", function(){
         $.ajax({
             url: "/location/list",
             type: "get",
             dataType: "json",
             success: function (response) {
-                $('#floorCreate').empty().append('<option value="" selected disabled hidden>Select floor</option>');
+                $('#floorSelect').empty().append('<option value="" selected disabled hidden>Select floor</option>');
                 $.each(response.data, function (i, item) {
 
                     if(item.type === "Floor"){
 
                         // Check if parent floor id match with building id
-                        if($("#buildingCreate option:selected" ).val() === item.parent.toString()){
-                            $('#floorCreate').append($('<option>', {value: item.id, text : item.name}));
+                        if($("#buildingSelect option:selected" ).val() === item.parent.toString()){
+                            $('#floorSelect').append($('<option>', {value: item.id, text : item.name}));
                         }
                     }
                 });
@@ -455,46 +507,67 @@
     });
 
     // Location select change
-    $('#locationCreate').change(function(){
-        if($(this).val() === "Building"){
-            $("#buildingCreate").replaceWith('<input type="text" name="buildingCreate" id="buildingCreate" class="form-control square" placeholder="Building" autocomplete="off">');
-            $('#buildingDiv').show();
-            $('#floorDiv').hide();
-            $('#roomDiv').hide();
-            $('#orientationDiv').hide();
-            $('#ruleDiv').hide();
+    $('#locationSelect').change(function(){
 
-        }else if($(this).val() === "Floor"){
-            $("#buildingCreate").replaceWith('<select id="buildingCreate" name="buildingCreate" class="form-control square"></select>');
-            $("#floorCreate").replaceWith('<input type="text" name="floorCreate" id="floorCreate" class="form-control square" placeholder="Floor" autocomplete="off">');
+        // Add or remove select and input in function of location type
+        if($(this).val() === "Building") {
+            $("#buildingSelDiv").hide();
+            $("#floorSelDiv").hide();
+            $("#floorInDiv").hide();
+            $("#roomInDiv").hide();
+            $("#corridorInDiv").hide();
+            $("#orientationInDiv").hide();
+            $("#ruleSelDiv").hide();
+            $("#buildingInDiv").show();
+            $("#commentInDiv").show();
+        }else if($(this).val() === "Floor") {
+            $("#floorSelDiv").hide();
+            $("#roomInDiv").hide();
+            $("#corridorInDiv").hide();
+            $("#buildingInDiv").hide();
+            $("#orientationInDiv").hide();
+            $("#ruleSelDiv").hide();
+            $("#buildingSelDiv").show();
+            $("#floorInDiv").show();
+            $("#commentInDiv").show();
 
-            // Reset building select option
-            $('#buildingCreate').empty().append('<option value="" selected disabled hidden>Select building</option>');
-            loadBuilding('#buildingCreate')
-
-            $('#buildingDiv').show();
-            $('#floorDiv').show();
-            $('#roomDiv').hide();
-            $('#orientationDiv').hide();
-            $('#ruleDiv').hide();
-
+            // Reset building select option and get building in db
+            $('#buildingSelect').empty().append('<option value="" selected disabled hidden>Select building</option>');
+            loadBuilding('#buildingSelect');
         }else if($(this).val() === "Room"){
-            $("#buildingCreate").replaceWith('<select id="buildingCreate" name="buildingCreate" class="form-control square"></select>');
-            $("#floorCreate").replaceWith('<select id="floorCreate" name="floorCreate" class="form-control square"></select>');
-            $("#roomCreate").replaceWith('<input type="text" name="roomCreate" id="roomCreate" class="form-control square" placeholder="Room" autocomplete="off">');
+            $("#floorInDiv").hide();
+            $("#corridorInDiv").hide();
+            $("#buildingInDiv").hide();
+            $("#ruleSelDiv").show();
+            $("#roomInDiv").show();
+            $("#buildingSelDiv").show();
+            $("#floorSelDiv").show();
+            $("#orientationInDiv").show();
+            $("#commentInDiv").show();
 
-            // Reset building and floor select option
-            $('#buildingCreate').empty().append('<option value="" selected disabled hidden>Select building</option>');
-            loadBuilding('#buildingCreate');
-            $('#floorCreate').empty().append('<option value="" selected disabled hidden>Select floor</option>');
-            $('#ruleCreate').empty();
+            // Reset floor value
+            $('#floorSelect').empty().append('<option value="" selected disabled hidden>Select floor</option>');
+
+            // Reset building select option and get building in db
+            $('#buildingSelect').empty().append('<option value="" selected disabled hidden>Select building</option>');
+            loadBuilding('#buildingSelect');
+
+            // Load room rule
             loadRules();
+        }else if($(this).val() === "Corridor") {
+            $("#floorInDiv").hide();
+            $("#buildingInDiv").hide();
+            $("#roomInDiv").hide();
+            $("#orientationInDiv").hide();
+            $("#ruleSelDiv").hide();
+            $("#corridorInDiv").show();
+            $("#buildingSelDiv").show();
+            $("#floorSelDiv").show();
+            $("#commentInDiv").show();
 
-            $('#buildingDiv').show();
-            $('#floorDiv').show();
-            $('#roomDiv').show();
-            $('#orientationDiv').show();
-            $('#ruleDiv').show();
+            // Reset building select option and get building in db
+            $('#buildingSelect').empty().append('<option value="" selected disabled hidden>Select building</option>');
+            loadBuilding('#buildingSelect');
         }
     });
 

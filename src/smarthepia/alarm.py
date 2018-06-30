@@ -4,6 +4,7 @@ import datetime
 from dateutil.tz import gettz
 import requests
 import re
+import os
 
 # MongoDB driver
 import pymongo
@@ -13,6 +14,8 @@ from pymongo.errors import ConnectionFailure
 import utils
 import const
 import datastruct
+import conf
+import logger
 
 
 class Alarm(object):
@@ -25,42 +28,60 @@ class Alarm(object):
         self.alarm = []
         self.popup_id = []
         self.admin_email = []
+        self.alarm_log = None
 
     def run(self):
 
-        # Process alarm
-        while True :
-            print(f"Alarm: {datetime.datetime.now()}")
+        # Check if log are well init
+        if self.log_init():
 
-            # Init MongoDB client, check connection
-            status, self.__client = self.db_connect()
+            # Process alarm
+            while True :
+                print(f"Alarm: {datetime.datetime.now()}")
 
-            # Get admin email
-            self.get_admin_email()
+                # Init MongoDB client, check connection
+                status, self.__client = self.db_connect()
 
-            # Check web server status
-            self.web_server_connect(const.ws_url, const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
+                # Get admin email
+                self.get_admin_email()
 
-            # Check if mongodb has been well init
-            if status:
-                print(f"DB connection ok: {datetime.datetime.now()}")
-                self.process_network()
-                self.__client.close()
-                self.__client = None
-                self.db_status = True
-            else:
+                # Check web server status
+                self.web_server_connect(const.ws_url, const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
 
-                # Check if the last check was false
-                # if false => we dont send the alarm again until the service goes up again
-                # if true => send mail to admin
-                if self.db_status:
+                # Check if mongodb has been well init
+                if status:
+                    print(f"DB connection ok: {datetime.datetime.now()}")
+                    self.process_network()
+                    self.__client.close()
+                    self.__client = None
+                    self.db_status = True
+                else:
 
-                    # Send mail to the admin, manager if the DB is down
-                    self.db_status = False
-                    utils.send_database_alert(const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
+                    # Check if the last check was false
+                    # if false => we dont send the alarm again until the service goes up again
+                    # if true => send mail to admin
+                    if self.db_status:
 
-            # Close connection and wait
-            time.sleep(const.st_alarm)
+                        # Send mail to the admin, manager if the DB is down
+                        self.db_status = False
+                        utils.send_database_alert(const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
+
+                # Close connection and wait
+                time.sleep(const.st_alarm)
+
+    # Init log
+    def log_init(self):
+
+        ldp_status , log_dir_path = conf.get_log_dir_path()
+        len_status, log_ext_name = conf.get_log_ext_name()
+        lfms_status, log_file_max_size = conf.get_log_file_max_size()
+        if ldp_status and len_status and lfms_status:
+            sp_name = str(os.path.basename(__file__)).replace(".py", "")
+            self.alarm_log = logger.Logger(str(log_dir_path), int(log_file_max_size), sp_name, str(log_ext_name))
+            self.alarm_log.log_info(f"Subprocess {sp_name} started")
+            return True
+        else:
+            return False
 
     # Check web server status
     def web_server_connect(self, url, email_from, admin_email, password, subject):
@@ -603,6 +624,11 @@ class Alarm(object):
                 self.admin_email.append(data['email'])
         else:
 
-            # Set as default email if db error
-            self.admin_email = [const.mc_email_to_default]
+            # Get default email from conf file
+            # If db not available
+            status, default_email = conf.get_default_email_address()
+            if status:
+
+                # Set as default email if db error
+                self.admin_email = [default_email]
 
