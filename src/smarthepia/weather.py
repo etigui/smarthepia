@@ -60,13 +60,14 @@ def get_api_current_weather():
 
     # Check if the API return good value
     status, js = utils.http_get_request_json(route_current_weather_coordinates())
-    if int(js['cod']) == return_code_success:
-        if status:
-            return True, js
-        else:
-            return False, None
-    else:
-        return False, None
+    if status:
+        if "cod" in js:
+            try:
+                if int(js['cod']) == return_code_success:
+                    return True, js
+            except ValueError:
+                return False, None
+    return False, None
 
 
 # Get forecast (5 days every 3h)
@@ -74,6 +75,16 @@ def get_api_forecast():
 
     # Check if the API return good value
     status, js = utils.http_get_request_json(route_forecast_coordinates())
+    if status:
+        if "cod" in js:
+            try:
+                if int(js['cod']) == return_code_success:
+                    return True, js
+            except ValueError:
+                return False, None
+    return False, None
+
+
     if int(js['cod']) == return_code_success:
         if status:
             return True, js
@@ -101,8 +112,8 @@ def route_forecast_city():
 
 
 def route_current_weather_coordinates():
-    return f"http://api.openweathermap.org/data/2.5/weather?lat={const.lat}&lon={const.lon}&appid={api_key}"
+    return f"http://api.openweathermap.org/data/2.5/weather?lat={str(const.lat)}&lon={str(const.lon)}&appid={api_key}"
 
 
 def route_forecast_coordinates():
-    return f"http://api.openweathermap.org/data/2.5/forecast?lat={const.lat}&lon={const.lon}&appid={api_key}"
+    return f"http://api.openweathermap.org/data/2.5/forecast?lat={str(const.lat)}&lon={str(const.lon)}&appid={api_key}"

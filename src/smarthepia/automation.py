@@ -19,6 +19,8 @@ import logger
 import conf
 import weather
 import sun
+import heater
+from simple_pid import PID
 
 DEBUG = 1
 
@@ -31,11 +33,15 @@ class Automation(object):
         self.automation_log = None
         self.weather_forecast = None
         self.weather_current = None
+        #self.pids = []
+        self.pids = None
 
     def run(self):
 
         # Check if log are well init
         if self.log_init():
+
+            self.pids = heater.Heater()
 
             # self.close_one_blind("192.168.1.137", "5000", "4/2")
 
@@ -53,6 +59,9 @@ class Automation(object):
 
                     # Start to automation
                     self.process_automation()
+
+                    # Clear room otherwise add many
+                    self.rooms.clear()
 
                     # Close db
                     self.__client.close()
@@ -83,7 +92,7 @@ class Automation(object):
 
     def get_automation_rule(self):
         datas = self.__client.sh.automations.find_one()
-        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outtempmin'], datas['outsummax'])
+        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outtempmin'], datas['outsummax'], datas['kp'],datas['ki'],datas['kd'])
         i = 0
 
     # Start to automation
@@ -99,8 +108,8 @@ class Automation(object):
         self.get_automation_rule()
 
         # Get last weather measures and forecast
-        self.weather_forecast = self.get_forecast(False)
-        self.weather_current = self.get_current_weather(False)
+        self.weather_forecast = self.get_forecast(True)
+        self.weather_current = self.get_current_weather(True)
 
         # Check if we have room to process automation
         if len(self.rooms) > 0:
@@ -116,15 +125,14 @@ class Automation(object):
                 if multisensor_status:
 
                     # Process valve rule
-                    self.process_valves()
-        i = 0
-
+                    self.process_valves(room, temp)
 
     # Get all rooms
     # Not disabled & not in error
     def get_room(self):
         query = {'$and': [{"type": const.db_devices_type_room}, {"enable": True}, {'$or': [{'itemStyle.color': {'$eq': const.device_color_no_error}}, {'itemStyle.color': {'$eq': const.device_color_warning}}]}]}
         datas = self.__client.sh.devices.find(query)
+        print(datas.count())
         for data in datas:
 
             # If we have sensor available add room to check
@@ -135,8 +143,9 @@ class Automation(object):
             sensor_status, sensors = self.get_sensor_by_room(data['id'])
             actuator_status, actuators = self.get_actuator_by_room(data['id'])
             rule = self.get_rules_by_room(data['rules'])
+            room_id = str(data['_id'])
             if sensor_status and actuator_status and rule['active']:
-                self.rooms.append(datastruct.StructAutomation(sensors, actuators, rule, data['orientation']))
+                self.rooms.append(datastruct.StructAutomation(sensors, actuators, rule, data['orientation'], room_id))
 
     # Get rule ba room
     def get_rules_by_room(self, room_rule):
@@ -190,6 +199,7 @@ class Automation(object):
         status, datas = utils.get_mesures(const.route_zwave_device_all_measures(ip, str(port), address))
         if status:
             return True, datas
+        self.automation_log.log_error(f"In function (get_measure_by_multisensor), the multisensor measure could not be given")
         return False, None
 
     # Get last forecast from api or db if fail
@@ -205,6 +215,7 @@ class Automation(object):
                 self.__client.sh.apiforecast.insert(api_datas)
                 return api_datas
             else:
+                self.automation_log.log_error(f"In function (get_forecast), API measure available")
                 return self.get_db_forecast()
         else:
             return self.get_db_forecast()
@@ -233,6 +244,7 @@ class Automation(object):
                 else:
                     return db_datas
             else:
+                self.automation_log.log_error(f"In function (get_current_weather), API measure available")
                 return db_datas
         else:
             return db_datas
@@ -265,7 +277,7 @@ class Automation(object):
     # Get last 4 motion measure to check if no one is in the room
     def check_multisensor_motion(self, dependency, address):
 
-        # Date diff to compare the 2 measures up date time
+        # Date diff to compare the 4 measures up date time
         diff = datetime.datetime.now() - datetime.timedelta(minutes=25)
 
         # Get last 4 measure (sorted by _id)
@@ -289,7 +301,19 @@ class Automation(object):
         return 0
 
     def check_multisensor_time(self, updatetime):
-        return True
+
+        # Check if the last multisensor measure (temp)
+        # are up to date. We check multisensor every 5 min so let say that 6 min is enough
+        # To say if the multisensor is up to date
+        diff = datetime.datetime.now() - datetime.timedelta(minutes=6)
+        measure_update_time = datetime.datetime.fromtimestamp(int(updatetime))
+
+        # Check if the diff is smaller then the current temp
+        if diff < measure_update_time:
+            return True
+        else:
+            self.automation_log.log_error(f"In function (check_multisensor_time), the multisensor is not up to date")
+            return False
 
     # Process automation room by room
     def check_multisensor(self, sensors):
@@ -331,6 +355,9 @@ class Automation(object):
 
                 # Check if at least 2 sensor have the same temp
                 return True, self.check_temp_correl(sensors_td)
+            else:
+                self.automation_log.log_error(f"In function (check_multisensor_temp), no sensor available to give temp")
+                return False, None
         else:
             return False, None
 
@@ -356,6 +383,7 @@ class Automation(object):
 
         if len(sensor_th_check) > 0:
             return True, sensor_th_check
+        self.automation_log.log_error(f"In function (check_threshold_temp), the min or max threshold passed")
         return False, None
 
     # Correlation between all sensor
@@ -378,6 +406,20 @@ class Automation(object):
         if now.day <= start_day and now.month <= start_month and now.day >= stop_day and now.month >= stop_month:
             return True
         return False
+
+    # Process rule about valves
+    def process_valves(self, room, temp):
+
+        self.get_pid_by_room(room, 24)
+
+        # Check if head period
+        hp = self.check_heat_period()
+
+        if hp:
+            pass
+
+        else:
+            pass
 
     # Process rule about blinds
     def process_blinds(self, room):
@@ -408,11 +450,12 @@ class Automation(object):
 
                 # Get what to do with th blind during day time
                 # Get room rule
-                if room.rule['bsr'] != const.day_blind_off:  # not Off
+                if room.rule['bdr'] != const.day_blind_off:  # not Off
 
                     if room.rule['bdr'] == const.day_blind_sam:  # Sun and no motion => blind down
                         status = self.rule_sun_and_no_motion(room, sunrise_sunset, is_cloudy)
                         if status:
+                            if DEBUG: print(f"Sun and !motion => blind down")
                             self.close_all_blinds(room.actuators)
                     elif room.rule['bdr'] == const.day_blind_ram:  # Rain and no motion => blind down
 
@@ -428,6 +471,7 @@ class Automation(object):
                         else:
                             status = self.rule_sun_and_no_motion(room, sunrise_sunset, is_cloudy)
                             if status:
+                                if DEBUG: print(f"Sun and !motion => blind down")
                                 self.close_all_blinds(room.actuators)
 
                     else:
@@ -554,10 +598,6 @@ class Automation(object):
             return False, None, None
         return True, ip, port
 
-    # Process rule about valves
-    def process_valves(self):
-        pass
-
     # Check if the curretn weather from DB/API are good
     def get_check_current_weather(self):
 
@@ -679,3 +719,56 @@ class Automation(object):
                 else:
                     self.automation_log.log_error(f"In function (process_blinds), the room orientation is not valid")
         return False
+
+    # Get =>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    def get_pid_by_room(self, room, indoor_temp):
+
+        # Get all rooms which contains valves
+        # The class heater will delete (pid) if not in list
+        room_ids = self.get_all_rooms()
+
+        # Get consign temp rule
+        rule_temp = int(room.rule['temp'])
+
+        value_status, value, p = self.pids.get_computed_value(room.room_id, room_ids, indoor_temp, rule_temp, self.automation_rule.kp, self.automation_rule.ki, self.automation_rule.kd)
+        print(f"room id:{room.room_id} pid:{id(p)} value:{value}")
+
+        if value_status:
+            pass
+        else:
+            self.automation_log.log_error(f"In function (set_valve), pid by room ({room.room_id}) is not found")
+
+    # Get all rooms which contains valves
+    # Return all the room ids
+    def get_all_rooms(self):
+
+        room_ids = []
+        # Get all rooms
+        query = {"type": const.db_devices_type_room}
+        datas = self.__client.sh.devices.find(query)
+        for data in datas:
+            room_id = data['_id']
+
+            # Check if valve in this room
+            is_valve = self.get_valve_by_room(data['id'])
+            if is_valve:
+
+                # Add room id which contain valve
+                room_ids.append(str(room_id))
+        return room_ids
+
+    # Get actuators by room id
+    def get_valve_by_room(self, room_id):
+        query = {'$and': [{"parent": int(room_id)}, {'subtype': const.db_devices_sub_type_valve}]}
+        datas = self.__client.sh.devices.find(query)
+
+        # Check if there is valve
+        if datas.count() != 0:
+            return True
+        else:
+            return False
+
+
+
+
+

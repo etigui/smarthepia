@@ -27,16 +27,17 @@ class StructAlarm():
 
 # Struct to store automation datas
 class StructAutomation():
-    def __init__(self, sensors, actuators, rule, orientation):
+    def __init__(self, sensors, actuators, rule, orientation, room_id):
         self.sensors = sensors
         self.actuators = actuators
         self.rule = rule
         self.orientation = orientation
+        self.room_id = room_id
 
 
 # Struct to store automation rule
 class StructAutomationRule():
-    def __init__(self, heater_on_start_day, heater_on_start_month, heater_on_stop_day, heater_on_stop_month, heater_on_temp_min, heater_on_temp_max, heater_off_temp_min, heater_off_temp_max, out_temp_min, out_temp_sum_max):
+    def __init__(self, heater_on_start_day, heater_on_start_month, heater_on_stop_day, heater_on_stop_month, heater_on_temp_min, heater_on_temp_max, heater_off_temp_min, heater_off_temp_max, out_temp_min, out_temp_sum_max, kp, ki, kd):
         self.heater_on_start_day = heater_on_start_day
         self.heater_on_start_month = heater_on_start_month
         self.heater_on_stop_day = heater_on_stop_day
@@ -47,4 +48,12 @@ class StructAutomationRule():
         self.heater_off_temp_max = heater_off_temp_max
         self.out_temp_min = out_temp_min
         self.out_temp_sum_max = out_temp_sum_max
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+
+class StructPid():
+    def __init__(self, room_id, pid):
+        self.room_id = room_id
+        self.pid = pid
 

@@ -25,8 +25,8 @@ db_port = 27017
 
 # Set time for each process sleep
 factor = 60
-st_alarm = 1 * factor
-st_automation = 100 * factor
+st_alarm = 0.5 * factor
+st_automation = 1 * factor
 st_measure = 100 * factor
 st_start = 100 * factor
 
