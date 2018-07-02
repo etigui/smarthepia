@@ -44,7 +44,7 @@ router.post('/create', isAuth, function(req, res, next) {
             // Check if the rule rule name already exist
             validation.checkUniqueRule(ruleName, function (matchRule) {
                 if(matchRule){
-                    var newRule = {name:ruleName, active:active, dt:dayTimeStart, nt:nightTimeStart, temp:temps, humidity:humidity, vdr: dayNightValve, vnr:dayNightValve, bdr:dayRulesBlind, bnr: nightRulesBlind};
+                    var newRule = {name:ruleName, active:active, dt:dayTimeStart, nt:nightTimeStart, temp:temps, humidity:humidity, vdnr: dayNightValve, bdr:dayRulesBlind, bnr: nightRulesBlind};
                     Rule.create(newRule, function (error, rule) {
                         if (error) {
                             console.log(error);

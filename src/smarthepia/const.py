@@ -129,13 +129,15 @@ dependency_device_type_rest = "REST/HTTP"
 # Blind min max value
 blind_min_value = 0
 blind_max_value = 255
+valve_min_value = 0
+valve_max_value = 255
 
 # Room angle
 room_azimuth_min = 2
 
 # Rule define valve day time
-day_valve_off = 1
-day_valve_on = 2
+daynight_valve_off = 1
+daynight_valve_on = 2
 
 # Rule define blind day time
 day_blind_off = 1

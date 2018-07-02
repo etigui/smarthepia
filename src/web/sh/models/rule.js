@@ -21,10 +21,7 @@ var RuleSchema = new mongoose.Schema({
     },humidity: {
         type: Number,
         default: 45
-    },vdr: {
-        type: Number,
-        default: 0
-    },vnr: {
+    },vdnr: {
         type: Number,
         default: 0
     },bdr: {

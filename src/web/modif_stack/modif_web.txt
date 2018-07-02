@@ -1,0 +1,35 @@
+Hello Etienne,
+
+Thanks for sharing the details for the issue which you mentioned.
+
+1. I would like to disable the left sliding effect when the page is loading. Is it possible to do it easily ? (Ref : image N°1 and N°2 attached to the ticket).
+
+Apology for the issue caused as we can also able to see that for fraction of second we can able to see the blank left space until the page load.
+
+We have added this issue to our bug list, we will add this bug fix in our next release.
+
+Please use the below quick fix in assets/css/style.css file.
+
+@media only screen and (max-width: 768px) {
+    html body .content.app-content {
+        margin-left: 0 !important;
+    }
+}
+2. In responsive mode only, I would like to know if It's possible to disable the navigation on the "main page" when the menu (on the left) is open and add a gray color in the background with an opacity like 0.5 ?  (Ref : image N°3 attached to the ticket).
+
+You can add the opacity in css while menu is open
+
+@media only screen and (max-width: 768px) {
+vertical-overlay-menu.menu-open{
+    .app-content{
+        background: #3f4e67;
+        opacity: 0.5;
+    }
+}
+3. In responsive mode only, when the menu (on the left) is open, is it possible to let the user close the menu when he touches somewhere else than just the 3 horizontal bars ?
+
+Apology, but this feature is not available as of now, we will consider this inputs for our future updates.
+
+Hope this will work for you.
+
+Thanks,

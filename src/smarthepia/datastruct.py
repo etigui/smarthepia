@@ -37,7 +37,7 @@ class StructAutomation():
 
 # Struct to store automation rule
 class StructAutomationRule():
-    def __init__(self, heater_on_start_day, heater_on_start_month, heater_on_stop_day, heater_on_stop_month, heater_on_temp_min, heater_on_temp_max, heater_off_temp_min, heater_off_temp_max, out_temp_min, out_temp_sum_max, kp, ki, kd):
+    def __init__(self, heater_on_start_day, heater_on_start_month, heater_on_stop_day, heater_on_stop_month, heater_on_temp_min, heater_on_temp_max, heater_off_temp_min, heater_off_temp_max, out_temp_sum_max, kp, ki, kd, out_temp_min, in_temp_min):
         self.heater_on_start_day = heater_on_start_day
         self.heater_on_start_month = heater_on_start_month
         self.heater_on_stop_day = heater_on_stop_day
@@ -46,8 +46,9 @@ class StructAutomationRule():
         self.heater_on_temp_max = heater_on_temp_max
         self.heater_off_temp_min = heater_off_temp_min
         self.heater_off_temp_max = heater_off_temp_max
-        self.out_temp_min = out_temp_min
         self.out_temp_sum_max = out_temp_sum_max
         self.kp = kp
         self.ki = ki
         self.kd = kd
+        self.out_temp_min = out_temp_min
+        self.in_temp_min = in_temp_min
