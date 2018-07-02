@@ -59,3 +59,57 @@ function formatDate(timeLocal){
     month = month < 10 ? '0'+ month : month;
     return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
 }
+
+// Update knx and automation datas status
+function updateStatus(item, span, updateTime){
+
+    // Remove last class => color
+    // Then we can add the new class
+    if(span.hasClass('bg-danger')){
+        span.removeClass("bg-danger");
+    }else if(span.hasClass('bg-warning')){
+        span.removeClass("bg-warning");
+    }else{
+        span.removeClass("bg-success");
+    }
+
+    // Get current datetime and compare with last status
+    // If last status is older then 6 min => error
+    var now = new Date();
+    var subMinutes = now.setMinutes(now.getMinutes() - 6);
+    var lastDate = new Date(item['updatetime']);
+    if (subMinutes > lastDate){
+
+        // Add default => not running
+        span.addClass("bg-danger");
+
+        // Add status message
+        span.text("Not running");
+        updateTime.text("Last update " + item['updatetime']);
+    }else{
+
+        // Add class => color
+        if (item.color === 1) {
+            span.addClass("bg-success");
+        } else if (item.color === 2) {
+            span.addClass("bg-warning");
+        } else {
+            span.addClass("bg-danger");
+        }
+
+        // Add status message
+        span.text(item['status']);
+        updateTime.text("Last update " + item['updatetime']);
+    }
+}
+
+// Process knx and automation datas status
+function updateAllStatus(automation, knx, lastUpdate, data){
+    $.each(data, function (i, item) {
+        if(item['name'] === "knx"){
+            updateStatus(item, knx, lastUpdate);
+        }else if(item['name'] === "automation"){
+            updateStatus(item, automation, lastUpdate);
+        }
+    });
+}

@@ -51,9 +51,3 @@ class StructAutomationRule():
         self.kp = kp
         self.ki = ki
         self.kd = kd
-
-class StructPid():
-    def __init__(self, room_id, pid):
-        self.room_id = room_id
-        self.pid = pid
-

@@ -1,11 +1,9 @@
-import time as time_sleep
-
-from ephem import hours
-from pysolar.solar import *
+import time
 import datetime
 import statistics
 import sys
 import os
+import psutil
 
 # MongoDB driver
 import pymongo
@@ -20,9 +18,7 @@ import conf
 import weather
 import sun
 import heater
-from simple_pid import PID
 
-DEBUG = 1
 
 class Automation(object):
     def __init__(self):
@@ -43,14 +39,12 @@ class Automation(object):
 
             self.pids = heater.Heater()
 
-            # self.close_one_blind("192.168.1.137", "5000", "4/2")
-
             # For first start tempo
             # time.sleep(const.st_start)
 
             # Process automation
             while True :
-                print("Automation")
+                if const.DEBUG: print(f"Automation process: {datetime.datetime.now()}")
 
                 # Init MongoDB client
                 status, self.__client = self.db_connect()
@@ -65,9 +59,11 @@ class Automation(object):
 
                     # Close db
                     self.__client.close()
+                else:
+                    self.automation_log.log_error(f"In function (run), could not connect to the db")
 
-                # Sleep until next time
-                time_sleep.sleep(const.st_automation)
+                # Wait new iter
+                time.sleep(const.st_automation)
 
     # Init log
     def log_init(self):
@@ -116,9 +112,10 @@ class Automation(object):
 
             # Walk through all room
             for room in self.rooms:
+                pass
 
                 # Process blind rule
-                self.process_blinds(room)
+                #self.process_blinds(room)
 
                 # If True => we can process the room
                 multisensor_status, temp, measures = self.check_multisensor(room.sensors)
@@ -132,7 +129,6 @@ class Automation(object):
     def get_room(self):
         query = {'$and': [{"type": const.db_devices_type_room}, {"enable": True}, {'$or': [{'itemStyle.color': {'$eq': const.device_color_no_error}}, {'itemStyle.color': {'$eq': const.device_color_warning}}]}]}
         datas = self.__client.sh.devices.find(query)
-        print(datas.count())
         for data in datas:
 
             # If we have sensor available add room to check
@@ -196,7 +192,9 @@ class Automation(object):
                 port = device['port']
 
         # Get measures by multisensor
-        status, datas = utils.get_mesures(const.route_zwave_device_all_measures(ip, str(port), address))
+        # TODO get_mesures updatted here
+        #status, datas = utils.get_mesures(const.route_zwave_device_all_measures(ip, str(port), address))
+        status, datas = utils.http_get_request_json(const.route_zwave_device_all_measures(ip, str(port), address))
         if status:
             return True, datas
         self.automation_log.log_error(f"In function (get_measure_by_multisensor), the multisensor measure could not be given")
@@ -426,9 +424,9 @@ class Automation(object):
 
         # If it's night time => close blind
         # Else => process day time rule by room
-        night_time_status = self.check_night_time(room.rule['dt'], room.rule['nt'])
+        night_time_status = weather.check_night_time(room.rule['dt'], room.rule['nt'])
         if night_time_status:
-            if DEBUG: print(f"Night time")
+            if const.DEBUG: print(f"Night time")
 
             # Get blind night rule
             # If 1 => Off
@@ -436,7 +434,7 @@ class Automation(object):
             if room.rule['bnr'] == const.night_blind_on:
                 self.close_all_blinds(room.actuators)
         else:
-            if DEBUG: print(f"Day time")
+            if const.DEBUG: print(f"Day time")
 
             # Check if all multisensor dont return false
             # True => Someone in the room or (multisensor error/not up to date)
@@ -455,7 +453,7 @@ class Automation(object):
                     if room.rule['bdr'] == const.day_blind_sam:  # Sun and no motion => blind down
                         status = self.rule_sun_and_no_motion(room, sunrise_sunset, is_cloudy)
                         if status:
-                            if DEBUG: print(f"Sun and !motion => blind down")
+                            if const.DEBUG: print(f"Sun and !motion => blind down")
                             self.close_all_blinds(room.actuators)
                     elif room.rule['bdr'] == const.day_blind_ram:  # Rain and no motion => blind down
 
@@ -471,50 +469,12 @@ class Automation(object):
                         else:
                             status = self.rule_sun_and_no_motion(room, sunrise_sunset, is_cloudy)
                             if status:
-                                if DEBUG: print(f"Sun and !motion => blind down")
+                                if const.DEBUG: print(f"Sun and !motion => blind down")
                                 self.close_all_blinds(room.actuators)
 
                     else:
                         self.automation_log.log_info(f"In function (process_blinds), the rule ({str(room.rule['bdr'])}) is not implemented")
-                        if DEBUG: print(f"Day time rule not implemented")
-
-    # Check if we are in night time => close all blinds
-    def check_night_time(self, rule_day_time, rule_night_time):
-
-        # Get current date and convert day and night time to time()
-        time_now = datetime.datetime.now().time()
-        night_time = datetime.datetime.strptime(f"{rule_night_time}:00", '%H:%M:%S').time()
-        day_time = datetime.datetime.strptime(f"{rule_day_time}:00", '%H:%M:%S').time()
-
-        before_midnight = datetime.datetime.strptime(f"23:59:59", '%H:%M:%S').time()
-        midnight = datetime.datetime.strptime(f"00:00:00", '%H:%M:%S').time()
-        after_midnight = datetime.datetime.strptime(f"00:00:01", '%H:%M:%S').time()
-
-        # Sleep 1 sec if 00:00:00
-        if time_now == midnight:
-            time_sleep.sleep(1)
-
-        # We are in new day
-        nt = True
-        if time_now >= after_midnight:
-            if time_now > day_time:
-                nt = False
-            else:
-                nt = True
-
-        elif time_now <= before_midnight:
-            if time_now > night_time:
-                nt = True
-            else:
-                nt = False
-
-        return nt
-
-        # If we are during the night period
-        # Between => eg: 23:00:00 => 08:00:00
-        #if night_time <= time_now <= day_time:
-        #    return True
-        #return False
+                        if const.DEBUG: print(f"Day time rule not implemented")
 
     # Process closing all blind
     def close_all_blinds(self, actuators):

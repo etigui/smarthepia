@@ -7,6 +7,7 @@ var UserModel = require('../models/user');
 var Devices = require('../models/devices');
 var dateFormat = require('dateformat');
 var Alarm = require('../models/alarm');
+var Status = require('../models/status');
 var Notify = require('../controllers/alarm');
 var router = express.Router();
 
@@ -34,7 +35,7 @@ router.get('/list', isAuth, function(req, res, next) {
         let toRemove = {__v: false, _id: false, address: false};
         Devices.find({}, toRemove, function(err, devices) {
             if (err) {
-                return next(error);
+                return next(err);
             }
             res.type('json');
             return res.json({data: devices});
@@ -66,5 +67,56 @@ router.get('/alarmnotfy', isAuth, function(req, res, next) {
         return res.redirect('/');
     }
 });
+
+// GET /home/statusnotfy
+router.get('/statusnotfy', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+
+            // Send to all client connected the new
+            // status notify change
+            io.emit('statusNotify', "");
+
+            // Response to the automation client
+            res.type('json');
+            return res.json({data: "statusNotify"});
+
+    }else{
+        return res.redirect('/');
+    }
+});
+
+// GET /home/liststatus
+router.get('/liststatus', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+        Status.find({}, function(err, status) {
+            if (err) {
+                return next(err);
+            }
+            res.type('json');
+            return res.json({data: status});
+        });
+    }else{
+        return res.redirect('/');
+    }
+});
+
+
+
+// GET /home/status
+/*router.get('/create', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+
+        var newStatus = {name: "automation", color: 1, status: "Running 4/4", updatetime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy")};
+        Status.create(newStatus, function(err, status) {
+            if (err) {
+                return next(err);
+            }
+            res.type('json');
+            return res.json({status: "success", message: "Floor has been successfully created"});
+        });
+    }else{
+        return res.redirect('/');
+    }
+});*/
 
 module.exports = router;

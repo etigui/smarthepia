@@ -1,3 +1,9 @@
+DEBUG = 1
+
+# Process name
+process_smarthepia = "smarthepia.py"
+process_knxrest = "KNX_REST_Server.py"
+
 # Mail client log TODO move it to class var in the future and get email from db
 mc_host = "localhost:3000"
 mc_url = f"http://{mc_host}"
@@ -11,8 +17,10 @@ ws_notify_host = "localhost:3000"
 ws_notify_email = "notify@gmail.com"
 ws_notify_password = "7scAq08BH3sfh2AFNCjFaztePJ"
 ws_notify_url_post = f"http://{ws_notify_host}"
-ws_notify_url_get = f"http://{ws_notify_host}/home/alarmnotfy"
-ws_notify_response = "alarmNotify"
+ws_alarm_notify_url_get = f"http://{ws_notify_host}/home/alarmnotfy"
+ws_alarm_notify_response = "alarmNotify"
+ws_status_notify_url_get = f"http://{ws_notify_host}/home/statusnotfy"
+ws_status_notify_response = "statusNotify"
 
 # Web server check
 ws_url = "http://localhost:3000"
@@ -26,9 +34,10 @@ db_port = 27017
 # Set time for each process sleep
 factor = 60
 st_alarm = 0.5 * factor
-st_automation = 1 * factor
+st_automation = 2 * factor
 st_measure = 100 * factor
 st_start = 100 * factor
+st_status = 1 * factor
 
 # Device status
 device_color_error = '#FF0000'

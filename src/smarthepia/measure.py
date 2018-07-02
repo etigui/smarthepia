@@ -1,6 +1,4 @@
 import time
-import urllib3
-import json
 import datetime
 import os
 
@@ -26,27 +24,25 @@ class Sensor(object):
         # Check if log are well init
         if self.log_init():
 
-            # For first start tempo
-            #time.sleep(const.st_start)
-
             while True:
 
-                print(f"Sensor: {datetime.datetime.now()}")
+                if const.DEBUG: print(f"Measure process: {datetime.datetime.now()}")
 
                 # Init MongoDB client
                 status, self.__client = self.db_connect()
 
                 # Check if mongodb has been well init
                 if status:
-                    print(f"DB connection ok: {datetime.datetime.now()}")
 
                     # Get all dependency devices and device and add to db
                     self.add_db_measures(self.get_db_dependency_devices())
-                else:
-                    raise NotImplementedError("Error to implemented (mongodb init error)")
 
-                # Close connection and wait
-                self.__client.close()
+                    # Close db
+                    self.__client.close()
+                else:
+                    self.measure_log.log_error(f"In function (run), could not connect to the db")
+
+                # Wait new iter
                 time.sleep(const.st_measure)
 
     # Init log
@@ -70,34 +66,21 @@ class Sensor(object):
 
                 # Predefine route for ip, port and device and get measures
                 route = const.route_zwave_device_all_measures(dependency.ip, dependency.port, device['address'])
-                status, measures = self.get_mesures(route)
-
-                # Add to the db to check if the last record alarady exists
-                ref_time = datetime.datetime.fromtimestamp(measures['updateTime'])
+                status, measures = utils.http_get_request_json(route)
+                # TODO get_mesures updatted here
+                #status, measures = self.get_mesures(route)
 
                 # Check if http error or device address not available or wrong
                 if status:
+
+                    # Add to the db to check if the last record alarady exists
+                    ref_time = datetime.datetime.fromtimestamp(measures['updateTime'])
                     already_exist = self.__client.sh.stats.find({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}, {'reftime': ref_time}]}).count()
                     print(already_exist)
                     if already_exist == 0:
                         self.__client.sh.stats.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
-
-    # Get device measures
-    def get_mesures(self, route):
-        http = urllib3.PoolManager()
-        response = http.request('GET', route)
-
-        # if != 200 => HTTP error
-        if response.status == 200:
-            data = response.data.decode("utf-8")
-            if data != const.wrong_not_available_device:
-                return True, json.loads(data)
-            print(f"Sensor error wrong: {route}")
-            return False, {}
-        else:
-            print("Sensor error 200")
-            return False, {}
-
+                else:
+                    self.measure_log.log_error(f"In function (add_db_measures), the multisensor measure could not be given")
 
     # Build struct with ip, dependency port by device (multisensor)
     # Get dependency devices if method (REST/HTTP) is found
@@ -156,3 +139,5 @@ class Sensor(object):
             return True, pymongo.MongoClient(const.db_host, const.db_port)
         except pymongo.errors.ConnectionFailure as e:
             return False, None
+
+

@@ -44,12 +44,11 @@
         <div class="content-body">
             <!-- advance charts section start -->
             <section id="advance-charts">
-                <!-- Tree Map Chart -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card border-top-primary">
                             <div class="card-header">
-                                <h4 class="card-title">smarthepia status</h4>
+                                <h4 class="card-title">smarthepia devices status</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                                 <div class="heading-elements">
                                     <ul class="list-inline mb-0">
@@ -68,7 +67,46 @@
                         </div>
                     </div>
                 </div>
-
+                <% if((typeof permission !== 'undefined') && permission > 1) {%>
+                <!-- Manager, admin get smarthepia status -->
+                <div class="row justify-content-md-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title" id="from-actions-top-bottom-center">Smarthepia status</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collpase show">
+                                <div class="card-body">
+                                    <p class="card-text">The following table shows all the process,
+                                        instance and program that must run properly to ensure the proper functioning of the application Smarthepia.
+                                        The status is automatically updated every <code>5 minutes</code>.
+                                    </p>
+                                </div>
+                                <li class="list-group-item">
+                                    <span id="automationStatus" class="badge badge-default badge-pill bg-danger float-right">Not running</span> Automation
+                                </li>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <span id="knxrestStatus" class="badge badge-default badge-pill bg-danger float-right">Not running</span> KNX REST server
+                                    </li>
+                                </ul>
+                                <div class="card-body">
+                                    <p id="lastUpdateStatus" class="text-right">Last update: 0.0.0 00:00:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%}%>
             </section>
             <!-- // advance charts section end -->
         </div>
@@ -114,7 +152,7 @@
     option = null;
 
     function onLoad() {
-
+        loadStatus();
     }
 
     function loadGraph(){
@@ -251,6 +289,7 @@
     // Manager, admin receive notif when graph change
     <% if((typeof permission !== 'undefined') && permission > 0) {%>
 
+    // Load and process alarm datas
     function loadBadge(){
         $.ajax({
             url: "/alarm/badge",
@@ -263,15 +302,41 @@
         });
     }
 
+    //Load and process status datas
+    function loadStatus(){
+        $.ajax({
+            url: "/home/liststatus",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+
+                // Update status if 2 data (knx, automation) in db
+                var automation = $('#automationStatus');
+                var knx = $('#knxrestStatus');
+                var lastUpdate = $('#lastUpdateStatus');
+                if(response.data.length === 2){
+                    updateAllStatus(automation, knx, lastUpdate, response.data)
+                }
+            }
+        });
+    }
+
     socket.on('welcome',function(data){
         console.log("Receive welcome");
         loadBadge();
+        loadStatus();
     });
 
     // Manager, admin receive notif when graph change
     socket.on('alarmNotify',function(data){
         console.log("Receive alarmNotify");
         loadBadge();
+    });
+
+    // Manager, admin receive notif when graph change
+    socket.on('statusNotify',function(data){
+        console.log("Receive statusNotify");
+        loadStatus();
     });
 
     <%}%>

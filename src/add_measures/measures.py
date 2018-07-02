@@ -1,5 +1,6 @@
 import time
-import urllib3
+#import urllib3
+import requests
 import json
 import pymongo
 import datetime
@@ -42,19 +43,21 @@ class Sensor(object):
 
                 # Predefine route for ip, port and device and get measures
                 route = const.route_zwave_device_all_measures(dependency.ip, dependency.port, device['address'])
-                status, measures = self.get_mesures(route)
-
-                # Add to the db to check if the last record already exists
-                ref_time = datetime.datetime.fromtimestamp(measures['updateTime'])
+                status, measures = self.http_get_request_json(route)
 
                 # Check if http error or device address not available or wrong
                 if status:
+
+                    # Add to the db to check if the last record already exists
+                    ref_time = datetime.datetime.fromtimestamp(measures['updateTime'])
                     already_exist = self.__client.sh.stats.find({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}, {'reftime': ref_time}]}).count()
                     print(already_exist)
                     if already_exist == 0:
                         self.__client.sh.stats.insert({'name': device['name'],'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
+                else:
+                    print(f"In function (add_db_measures), could not get the last measure (http_get_request_json)")
 
-
+    '''
     # Get device measures
     def get_mesures(self, route):
         http = urllib3.PoolManager()
@@ -70,6 +73,24 @@ class Sensor(object):
         else:
             print("Sensor error 200")
             return False, {}
+    '''
+
+    # Get http request
+    def http_get_request_json(self, url):
+        try:
+            r = requests.get(url, timeout=3)
+            if r.status_code == 200:
+                return True, r.json()
+            else:
+                return False, None
+        except requests.exceptions.HTTPError as errh:
+            return False, None
+        except requests.exceptions.ConnectionError as errc:
+            return False, None
+        except requests.exceptions.Timeout as errt:
+            return False, None
+        except requests.exceptions.RequestException as err:
+            return False, None
 
 
     # Build struct with ip, dependency port by device (sensor)

@@ -37,7 +37,7 @@ class Alarm(object):
 
             # Process alarm
             while True :
-                print(f"Alarm: {datetime.datetime.now()}")
+                if const.DEBUG: print(f"Alarm process: {datetime.datetime.now()}")
 
                 # Init MongoDB client, check connection
                 status, self.__client = self.db_connect()
@@ -66,7 +66,7 @@ class Alarm(object):
                         self.db_status = False
                         utils.send_database_alert(const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
 
-                # Close connection and wait
+                # Wait next iter
                 time.sleep(const.st_alarm)
 
     # Init log
@@ -130,17 +130,23 @@ class Alarm(object):
         # last status (net_status) = false => no error
         # error = false => no error
         # If last status = false & error = false => We dont need to notify cause nothing change between th last time and now
+        notify_status = True
         if not self.net_status and not error:
             self.net_status = False
         elif not self.net_status and error:  # If last status = false & error = true => notify change
             self.net_status = True
-            utils.notify_alarm_change()
+            notify_status = utils.notify_alarm_change(const.ws_alarm_notify_url_get, const.ws_alarm_notify_response)
         elif self.net_status and not error:  # If last status = true & error = false => notify change cause now no error => all green
             self.net_status = False
-            utils.notify_alarm_change()
+            notify_status = utils.notify_alarm_change(const.ws_alarm_notify_url_get, const.ws_alarm_notify_response)
         else:
             self.net_status = True
-            utils.notify_alarm_change()
+            notify_status = utils.notify_alarm_change(const.ws_alarm_notify_url_get, const.ws_alarm_notify_response)
+
+        # Check if the alarm notify has been well sent
+        if not notify_status:
+            self.alarm_log.log_error(f"In function (process_network), the alarm notify could not be sent")
+
 
     # Process all alarm from dependencies and devices
     def process_alarm(self):

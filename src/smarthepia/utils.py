@@ -161,28 +161,28 @@ def send_web_server_alert(email_from, email_to, password, subject):
 # Notify server web when new alarm
 # Then when the web server receive the request
 # it send new alarm in the socket
-def notify_alarm_change():
+def notify_alarm_change(url_get, notify_response):
     try:
         s = requests.Session()
         data = {"email": const.ws_notify_email, "password": const.ws_notify_password}
         s.post(const.ws_notify_url_post, data=data)
-        response = s.get(const.ws_notify_url_get)
+        response = s.get(url_get)
 
-        if response.json() != const.ws_notify_response:
-            # TODO it might be a good idea to notify (mail)
-            # cause web server is down
-            pass
+        if response.json() != notify_response:
+            return True
+        else:
+            return False
     except requests.exceptions.HTTPError as errh:
-        pass
+        return False
     except requests.exceptions.ConnectionError as errc:
-        pass
+        return False
     except requests.exceptions.Timeout as errt:
-        pass
+        return False
     except requests.exceptions.RequestException as err:
-        pass
+        return False
 
 
-# Remove duplicate from list
+    # Remove duplicate from list
 def remove_duplicates(datas):
     output = []
     seen = set()
@@ -195,6 +195,7 @@ def remove_duplicates(datas):
     return output
 
 # Get device measures
+
 def get_mesures(route):
     http = urllib3.PoolManager()
     response = http.request('GET', route)

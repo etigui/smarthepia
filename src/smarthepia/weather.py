@@ -1,5 +1,10 @@
+import time
+import datetime
+
+# Local import
 import utils
 import const
+
 
 # https://openweathermap.org API key
 api_key = "adeaa68b9d2f5a100919934788d350e0"
@@ -20,6 +25,22 @@ condition_rain_id = "500"
 condition_clear_sky_id = "800"
 condition_mist_id = "701"
 condition_clouds_level_id = {"800": 0, "801": 1, "802": 2, "803": 3, "804": 4}
+
+# Openweathermap routes
+def route_current_weather_city():
+    return f"http://api.openweathermap.org/data/2.5/weather?id={city_id_geneva}&appid={api_key}"
+
+
+def route_forecast_city():
+    return f"http://api.openweathermap.org/data/2.5/forecast?id={city_id_geneva}&appid={api_key}"
+
+
+def route_current_weather_coordinates():
+    return f"http://api.openweathermap.org/data/2.5/weather?lat={str(const.lat)}&lon={str(const.lon)}&appid={api_key}"
+
+
+def route_forecast_coordinates():
+    return f"http://api.openweathermap.org/data/2.5/forecast?lat={str(const.lat)}&lon={str(const.lon)}&appid={api_key}"
 
 
 # Check if it's raining
@@ -85,35 +106,50 @@ def get_api_forecast():
     return False, None
 
 
-    if int(js['cod']) == return_code_success:
-        if status:
-            return True, js
-        else:
-            return False, None
-    else:
-        return False, None
-
-
+# Convert fahrenheit to celsius
 def get_degree_from_fahrenheit(fahrenheit: float):
     return (fahrenheit - 32) / 1.8
 
 
+# Convert kelvin to celsius
 def get_degree_from_kelvin(kelvin: float):
     return kelvin - 273.15
 
 
-# Openweathermap routes
-def route_current_weather_city():
-    return f"http://api.openweathermap.org/data/2.5/weather?id={city_id_geneva}&appid={api_key}"
+# Check if we are in night time => close all blinds
+def check_night_time(rule_day_time, rule_night_time):
 
+    # Get current date and convert day and night time to time()
+    time_now = datetime.datetime.now().time()
+    night_time = datetime.datetime.strptime(f"{rule_night_time}:00", '%H:%M:%S').time()
+    day_time = datetime.datetime.strptime(f"{rule_day_time}:00", '%H:%M:%S').time()
 
-def route_forecast_city():
-    return f"http://api.openweathermap.org/data/2.5/forecast?id={city_id_geneva}&appid={api_key}"
+    before_midnight = datetime.datetime.strptime(f"23:59:59", '%H:%M:%S').time()
+    midnight = datetime.datetime.strptime(f"00:00:00", '%H:%M:%S').time()
+    after_midnight = datetime.datetime.strptime(f"00:00:01", '%H:%M:%S').time()
 
+    # Sleep 1 sec if 00:00:00
+    if time_now == midnight:
+        time.sleep(1)
 
-def route_current_weather_coordinates():
-    return f"http://api.openweathermap.org/data/2.5/weather?lat={str(const.lat)}&lon={str(const.lon)}&appid={api_key}"
+    # We are in new day
+    nt = True
+    if time_now >= after_midnight:
+        if time_now > day_time:
+            nt = False
+        else:
+            nt = True
 
+    elif time_now <= before_midnight:
+        if time_now > night_time:
+            nt = True
+        else:
+            nt = False
 
-def route_forecast_coordinates():
-    return f"http://api.openweathermap.org/data/2.5/forecast?lat={str(const.lat)}&lon={str(const.lon)}&appid={api_key}"
+    return nt
+
+    # If we are during the night period
+    # Between => eg: 23:00:00 => 08:00:00
+    #if night_time <= time_now <= day_time:
+    #    return True
+    #return False
