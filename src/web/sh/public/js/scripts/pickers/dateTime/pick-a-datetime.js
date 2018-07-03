@@ -130,7 +130,11 @@
 	});
 
 	// Date Range from & to
-	var from_$input = $('#picker_from').pickadate(),
+	var from_$input = $('#picker_from').pickadate({
+            selectMonths: true,
+            selectYears: false,
+            formatSubmit: 'mm/dd'
+		}),
 	from_picker = from_$input.pickadate('picker');
 
 	var to_$input = $('#picker_to').pickadate(),

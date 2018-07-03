@@ -2,37 +2,48 @@ var mongoose = require('mongoose');
 
 var AutomationSchema = new mongoose.Schema({
 
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    }, active: {
+    hpstartday: {
         type: Number,
-        default: 0
-    },dt: {
-        type: String,
-        default: "08:00"
-    },nt: {
-        type: String,
-        default: "22:00"
-    },temp: {
+        required: true
+    }, hpstartmonth: {
         type: Number,
-        default: 20
-    },humidity: {
+        required: true
+    },hpstopday: {
         type: Number,
-        default: 45
-    },vdr: {
+        required: true
+    },hpstopmonth: {
         type: Number,
-        default: 0
-    },vnr: {
+        required: true
+    },hptempmin: {
         type: Number,
-        default: 0
-    },bdr: {
+        required: true
+    },hptempmax: {
         type: Number,
-        default: 0
-    },bnr: {
+        required: true
+    },nhptempmin: {
         type: Number,
-        default: 0
+        required: true
+    },nhptempmax: {
+        type: Number,
+        required: true
+    },outtempmin: {
+        type: Number,
+        required: true
+    },outsummax: {
+        type: Number,
+        required: true
+    },kp: {
+        type: Number,
+        required: true
+    },ki: {
+        type: Number,
+        required: true
+    },kd: {
+        type: Number,
+        required: true
+    },intempmin: {
+        type: Number,
+        required: true
     }
 });
 

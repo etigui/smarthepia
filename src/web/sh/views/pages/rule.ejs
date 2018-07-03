@@ -39,6 +39,14 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- END Custom CSS-->
 
+    <!-- BEGIN datatable -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/dataTables.colVis.css">
+    <!-- END datatatable -->
+
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
 <% include ../partials/nav %>
@@ -52,13 +60,76 @@
             </div>
         </div>
         <div class="content-body">
-            <!-- advance charts section start -->
+            <section id="advance-charts">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title">Rule list</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="ruleTable" class="table table-striped table-bordered text-inputs-searching table-hover dataTable">
+                                            <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Active</th>
+                                                <th>Day time start</th>
+                                                <th>Night time start</th>
+                                                <th>Temp</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
             <section id=""> <!-- advance-charts -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card border-top-primary">
                             <div class="card-header">
-                                <h4 class="card-title">Rule option</h4>
+                                <h4 class="card-title">Add rule</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                                 <div class="heading-elements">
                                     <ul class="list-inline mb-0">
@@ -71,28 +142,6 @@
                             <div class="card-content collapse show">
                                 <div class="card-body">
                                     <form id="ruleSubmit" class="form form-horizontal">
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label class=" label-control" for="userinput1">Rules action</label>
-                                                    <select name="action" id="action" class="form-control square" required>
-                                                        <option value="" selected="" disabled="" hidden="">Select action</option>
-                                                        <option value="Add">Add</option>
-                                                        <option value="Edit">Edit</option>
-                                                        <option value="Edit">Delete</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div id="rulesDiv" class="form-group">
-                                                    <label class="label-control" for="userinput1">Rules name</label>
-                                                    <!-- <input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off"> -->
-                                                    <select name="rulesName" id="rulesName" class="form-control square" required>
-                                                        <option value="" selected="" disabled="" hidden="">Select rule</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <h4 class="form-section"><i class="ft-settings"></i> General</h4>
                                         <div class="form-group pb-1">
                                             <fieldset>
@@ -101,6 +150,12 @@
                                                     <input type="checkbox" name="active" id="active" data-off-active-cls="btn-danger" data-on-active-cls="btn-success" class="switch hidden" data-on-label="On" data-off-label="Off" data-toggle-key-codes="[32]" checked>
                                                 </div>
                                             </fieldset>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-6 mb-2">
+                                                <label for="">Rule name</label>
+                                                <input type="text" name="ruleName" id="ruleName" class="form-control square" placeholder="Rule name" autocomplete="off" required>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
@@ -122,13 +177,11 @@
                                                 </div>
                                             </div>
                                         </div>
-
-
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
                                                 <label for="userinput2">Temperature</label>
                                                 <div class="input-group bootstrap-touchspin">
-                                                    <input type="text" name="temp" id="temp" class="touchspin form-control" value="20" data-bts-postfix="°C" data-bts-min="18" data-bts-max="30" autocomplete="off" required>
+                                                    <input type="text" name="temp" id="temp" class="touchspin form-control" value="21" data-bts-postfix="°C" data-bts-min="18" data-bts-max="30" autocomplete="off" required>
                                                 </div>
                                             </div>
                                             <div class="form-group col-md-6 mb-2">
@@ -178,7 +231,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="form-actions right">
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="fa fa-check-square-o"></i> Send
@@ -191,6 +243,116 @@
                     </div>
                 </div>
             </section>
+        </div>
+    </div>
+</div>
+
+<!-- BEGIN modal -->
+<div class="modal fade text-left" id="ruleModal" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id=""> Edit rule</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="editRuleSubmit" class="form">
+                <div class="modal-body">
+                    <h4 class="form-section"><i class="ft-settings"></i> General</h4>
+                    <div class="form-group pb-1">
+                        <fieldset>
+                            <div class="float-left sw">
+                                <label for="switchery" class="label-control">Rule&nbsp;active </label>
+                                <input type="checkbox" name="activeEdit" id="activeEdit" data-off-active-cls="btn-danger" data-on-active-cls="btn-success" class="switch hidden" data-on-label="On" data-off-label="Off" data-toggle-key-codes="[32]" checked>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-2">
+                            <label for="">Rule name</label>
+                            <input type="text" name="ruleNameEdit" id="ruleNameEdit" class="form-control square" placeholder="Rule name" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-2">
+                            <label for="">Day time start</label>
+                            <div class="position-relative has-icon-left">
+                                <input type="time" name="dayTimeFromEdit" id="dayTimeFromEdit" class="form-control square" value="08:00" required>
+                                <div class="form-control-position">
+                                    <i class="ft-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6 mb-2">
+                            <label for="">Night time start</label>
+                            <div class="position-relative has-icon-left">
+                                <input type="time" name="nightTimeFromEdit" id="nightTimeFromEdit" class="form-control square" value="22:00" required>
+                                <div class="form-control-position">
+                                    <i class="ft-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-2">
+                            <label for="">Temperature</label>
+                            <div class="input-group bootstrap-touchspin">
+                                <input type="text" name="tempEdit" id="tempEdit" class="touchspin form-control" value="20" data-bts-postfix="°C" data-bts-min="18" data-bts-max="30" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6 mb-2">
+                            <label for="">Humidity</label>
+                            <div class="input-group bootstrap-touchspin">
+                                <input type="text" name="humidityEdit" id="humidityEdit" class="touchspin form-control" value="45" data-bts-postfix="%" data-bts-min="0" data-bts-max="100" autocomplete="off" required>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="form-section"><i class="ft-thermometer"></i> Valve</h4>
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-2">
+                            <div class="form-group">
+                                <label class=" label-control" for="userinput1">Day and night rules</label>
+                                <select name="dnRulesValveEdit" id="dnRulesValveEdit" class="form-control square" required>
+                                    <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                    <option value="1">Off (valve auto)</option>
+                                    <option value="2">On (auto)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="form-section"><i class="ft-menu"></i> Blind</h4>
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-2">
+                            <div class="form-group">
+                                <label class=" label-control" for="userinput1">Day rules</label>
+                                <select name="dayRulesBlindEdit" id="dayRulesBlindEdit" class="form-control square" required>
+                                    <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                    <option value="1">Off (manual)</option>
+                                    <option value="2">1 (sun & not motion)</option>
+                                    <option value="3">2 (rain & not motion)</option>
+                                    <option value="4">Full (1 & 2)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6 mb-2">
+                            <div class="form-group">
+                                <label class=" label-control" for="userinput1">Night rules</label>
+                                <select name="nightRulesBlindEdit" id="nightRulesBlindEdit" class="form-control square" required>
+                                    <option value="" selected="" disabled="" hidden="">Select rule</option>
+                                    <option value="1">Off (manual)</option>
+                                    <option value="2">On (close night time)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" name="idEdit" id="idEdit" hidden>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -210,6 +372,12 @@
 <!-- END STACK JS-->
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN datatable -->
+<script src="/vendors/js/tables/datatable/datatables.min.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-api.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-basic.js" type="text/javascript"></script>
+<!-- END datatable -->
 
 <!-- BEGIN touchpin -->
 <script src="/vendors/js/forms/spinner/jquery.bootstrap-touchspin.js" type="text/javascript"></script>
@@ -241,148 +409,184 @@
         onLoad();
 
         function onLoad(){
-            $('#rulesDiv').hide();
+            //genDeviceTable();
         }
 
-        // When we wanna load the rule info by name
-        $(document).on('change','#rulesName',function(){
+        $('#ruleTable').dataTable({
+            dom: 'Bfrtip',
+            buttons: [{
+                extend: 'collection',
+                text: 'Option',
+                className: 'btn btn-primary',
+                buttons: [
+                    {
+                        extend: 'pdf',
+                        text: "Export as PDF",
+                        exportOptions: {
+                            columns: [0, 1, 2, 3]
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: "Export as CSV",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3]
+                        }
+                    },{
+                        extend: 'excel',
+                        text: "Export as Excel",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3]
 
-            // Check is select => prevent input change
-            if($(this).is("select")){
-                loadRuleInfo();
+                        }
+                    },{
+                        extend: 'copy',
+                        text: "Copy to clipboard",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3]
+
+                        }
+                    }
+                    ,'pageLength','colvis'
+                ]}],
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            autoWidth: false,
+            //destroy: true,
+            searching: true,
+            type: 'GET',
+            ajax: "/rule/listall",
+            columns: [
+                { data: "name"},
+                { data: "active"},
+                { data: "dt"},
+                { data: "nt"},
+                { data: "temp"},
+                {},
+                {data: "_id"},
+                {data: "humidity"},
+                {data: "vdnr"},
+                {data: "bdr"},
+                {data: "bnr"}
+            ], columnDefs: [{
+                targets: 5,
+                searching: false,
+                orderable: false,
+                data: null,
+                className: "text-center align-middle last",
+                render: function (data, type, full, meta){
+                    return '<div class="btn-group">\n' +
+                        '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                        '        Action\n' +
+                        '    </button>\n' +
+                        '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
+                        '        <button id="editRule" class="dropdown-item" type="button" data-toggle="modal" data-target="#ruleModal" >Edit</button>\n' +
+                        '        <button id="deleteRule" class="dropdown-item" type="button">Delete</button>\n' +
+                        '    </div>\n' +
+                        '</div>';
+                }
+            },  {targets: 4, className: "text-center align-middle"},
+                {targets: 3, className: "text-center align-middle"},
+                {targets: 2, className: "text-center align-middle"},
+                {targets: 1, className: "text-center align-middle",
+                    render: function (data, type, full, meta){
+                        if(data === 1){
+                            return "On";
+                        }else{
+                            return "Off";
+                        }
+                    }
+                },
+                {targets: 0, className: "text-center align-middle"},
+                {
+                    "targets": 6,
+                    "visible": false,
+                    "searchable": false
+                },{
+                    "targets": 7,
+                    "visible": false,
+                    "searchable": false
+                },{
+                    "targets": 8,
+                    "visible": false,
+                    "searchable": false
+                },{
+                    "targets": 9,
+                    "visible": false,
+                    "searchable": false
+                },{
+                    "targets": 10,
+                    "visible": false,
+                    "searchable": false
+                }]
+        });
+
+        // Edit rule
+        $("#ruleTable tbody").on("click","#editRule", function () {
+            var nRow = $(this).parents('tr')[0];
+            var oTable = $('#ruleTable').dataTable();
+            var aData = oTable.fnGetData(nRow);
+            $('#dnRulesValveEdit').val(aData.vdnr);
+            $('#dayRulesBlindEdit').val(aData.bdr);
+            $('#nightRulesBlindEdit').val(aData.bnr);
+            $("#idEdit").val(aData._id)
+            $('#tempEdit').val(aData.temp);
+            $('#humidityEdit').val(aData.humidity);
+            $('#ruleNameEdit').val(aData.name);
+            $('#nightTimeFromEdit').val(aData.nt);
+            $('#dayTimeFromEdit').val(aData.dt);
+
+            // Tricks to turn on off the switch
+            if(aData.active){
+                $('#activeEdit').prop('checked', true);
+            }else{
+                $('#activeEdit').prop('checked', false);
             }
         });
 
-        function loadBadge(){
+        // Sens ajax request to add, delete, edit rule
+        function setRule(url, datas){
             $.ajax({
-                url: "/alarm/badge",
-                type: "get",
+                url: url,
+                type: "post",
                 dataType: "json",
+                data: datas,
                 success: function (response) {
-                    var span = $('#alarmBadge');
-                    updateBadge(span, response.atype, response.count);
+                    if (response.status === "success") {
+                        $('#ruleTable').DataTable().ajax.reload();
+                        $("#ruleSubmit").get(0).reset();
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
                 }
             });
         }
 
-        // Check action wanted (edit/add rules)
-        $("#action").change(function() {
-            var selected = $("#action option:selected").text();
-            var name = $("#rulesName");
-            if(selected === "Add"){
-                $('#rulesDiv').show();
-                name.replaceWith('<input type="text" name="rulesName" id="rulesName" class="form-control square" placeholder="Rule name" autocomplete="off" required>');
-            }else if(selected === "Edit" || selected === "Delete"){
-                $('#rulesDiv').show();
-                name.replaceWith('<select name="rulesName" id="rulesName" class="form-control square" required><option value="" selected="" disabled="" hidden="">Select rule</option></select>');
-                name.empty()
-                loadRulesName();
-            }
-        });
-
-        // Submit data to add, edit or delete
-        $( "#ruleSubmit" ).submit(function( event ) {
-            var data = $('#ruleSubmit').serialize();
-            var selected = $("#action option:selected").text();
+        // Submit edit rule
+        $( "#editRuleSubmit" ).submit(function( event ) {
             event.preventDefault();
-            if(selected === "Add"){
-                addEditeRules('create', data);
-            }else if(selected === "Edit"){
-                addEditeRules('edit', data);
-            }else if(selected === "Delete"){
-                removeRuleByName($("#rulesName option:selected").text());
-            } else{
-                toastr.error("You must choose a rule action", "error", {closeButton: true});
-            }
+            var data = $('#editRuleSubmit').serialize();
+            setRule("/rule/edit", data);
+            $("#ruleModal").modal('toggle');
         });
 
-        // Fill in rule rule name select option
-        function loadRulesName(){
-            $.ajax({
-                url: "/rule/listname",
-                type: "get",
-                dataType: "json",
-                success: function (response) {
-                    $('#rulesName').append($('<option>', {value: "", text : "Select rule", selected:"", disabled: "", hidden: ""}));
-                    $.each(response.data, function (i, item) {
-                            $('#rulesName').append($('<option>', {
-                                value: item.name,
-                                text : item.name
-                            }));
-                    });
-                }
-            });
-        }
+        // Submit data to create new rule
+        $( "#ruleSubmit" ).submit(function( event ) {
+            event.preventDefault();
+            var data = $('#ruleSubmit').serialize();
+            setRule("/rule/create", data);
+        });
 
-        function loadRuleInfo(){
-            $.ajax({
-                url: "/rule/list",
-                type: "get",
-                dataType: "json",
-                data: {name: $("#rulesName option:selected").text()},
-                success: function (response) {
-                    $('#dayTimeFrom').val(response.data.dt);
-                    $('#nightTimeFrom').val(response.data.nt);
-                    $('#temp').val(response.data.temp);
-                    $('#humidity').val(response.data.humidity);
-                    $('#dnRulesValve option:eq('+response.data.vdr+')').prop('selected', 'selected');
-                    $('#dayRulesBlind option:eq('+response.data.bdr+')').prop('selected', 'selected');
-                    $('#nightRulesBlind option:eq('+response.data.bnr+')').prop('selected', 'selected');
-
-                    if(response.data.active){
-                        $('#active').prop('checked', true);
-                    }else{
-                        $('#active').prop('checked', false);
-                    }
-                }
-            });
-        }
-
-        function removeRuleByName(name){
-            $.ajax({
-                url: "/rule/delete",
-                type: "post",
-                dataType: "json",
-                data: {name: name},
-                success: function (response) {
-
-                    // Reset to default
-                    $("#ruleSubmit").get(0).reset();
-                    $('#action').prop('selectedIndex',0);
-                    $('#rulesDiv').hide();
-                    if (response.status === "success") {
-                        toastr.success(response.message, response.status, {closeButton: true})
-                    } else if (response.status === "error") {
-                        toastr.error(response.message, response.status, {closeButton: true})
-                    } else {
-                        toastr.error("Undefined", "error", {closeButton: true})
-                    }
-                }
-            });
-        }
-
-        function addEditeRules(action, data){
-            $.ajax({
-                url: "/rule/" + action,
-                type: "post",
-                dataType: "json",
-                data: data,
-                success: function (response) {
-
-                    // Reset to default
-                    $("#ruleSubmit").get(0).reset();
-                    $('#action').prop('selectedIndex',0);
-                    $('#rulesDiv').hide();
-                    if (response.status === "success") {
-                        toastr.success(response.message, response.status, {closeButton: true})
-                    } else if (response.status === "error") {
-                        toastr.error(response.message, response.status, {closeButton: true})
-                    } else {
-                        toastr.error("Undefined", "error", {closeButton: true})
-                    }
-                }
-            });
-        }
+        // Submit data to create new rule
+        $("#ruleTable tbody").on("click","#deleteRule", function () {
+            event.preventDefault();
+            var nRow = $(this).parents('tr')[0];
+            var oTable = $('#ruleTable').dataTable();
+            var aData = oTable.fnGetData(nRow);
+            setRule("/rule/delete", {id: aData.name});
+        });
 
         // BEGIN Server time section /////////////////////////////////////////////////////////////
         // Local and servers time
@@ -400,6 +604,18 @@
         // END Server time section /////////////////////////////////////////////////////////////
 
         <% if((typeof permission !== 'undefined') && permission > 0) {%>
+
+        function loadBadge(){
+            $.ajax({
+                url: "/alarm/badge",
+                type: "get",
+                dataType: "json",
+                success: function (response) {
+                    var span = $('#alarmBadge');
+                    updateBadge(span, response.atype, response.count);
+                }
+            });
+        }
         // BEGIN alarm section ////////////////////////////////////////////////////////////////
         var socket = io.connect();
         socket.on('connect', function () {

@@ -116,7 +116,8 @@ var deviceRouter = require('./routes/device');
 var locationRouter = require('./routes/location');
 var dependencyRouter = require('./routes/dependency');
 var profileRouter = require('./routes/profile');
-var profileLog = require('./routes/log');
+var logRouter = require('./routes/log');
+var automationRouter = require('./routes/automation');
 
 // app.use(ejsLayout);
 app.use(compression());
@@ -134,7 +135,8 @@ app.use('/device', deviceRouter);
 app.use('/location', locationRouter);
 app.use('/dependency', dependencyRouter);
 app.use('/profile', profileRouter);
-app.use('/log', profileLog);
+app.use('/log', logRouter);
+app.use('/automation', automationRouter);
 
 
 // catch 404 and forward to error handler

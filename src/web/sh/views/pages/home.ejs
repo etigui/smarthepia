@@ -152,7 +152,6 @@
     option = null;
 
     function onLoad() {
-        loadStatus();
     }
 
     function loadGraph(){
@@ -265,8 +264,12 @@
 
     // Init the clock on loading of page
     window.onload = function () {
+
         //set the interval so clock ticks
         var timeClock = setInterval("timeTick()", 10);
+
+        //set the interval so clock ticks
+        var timeClockStatus = setInterval("timeStatus()", 30000);
     };
     // END Server time section /////////////////////////////////////////////////////////////
 
