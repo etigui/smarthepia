@@ -55,7 +55,7 @@
                     <div class="col-12">
                         <div class="card border-top-primary">
                             <div class="card-header">
-                                <h4 class="card-title">Inventory</h4>
+                                <h4 class="card-title">Dependency list</h4>
                                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                                 <div class="heading-elements">
                                     <ul class="list-inline mb-0">
@@ -83,6 +83,10 @@
                                             <tbody></tbody>
                                             <tfoot>
                                             <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
                                                 <th rowspan="1" colspan="1">
                                                 </th>
                                                 <th rowspan="1" colspan="1">
@@ -145,7 +149,7 @@
                                                             <input name="depdName" type="text" class="form-control depdName" id="depdName" placeholder="Device name" autocomplete="off" required>
                                                         </div>
                                                         <div class="form-group mb-1 col-sm-12 col-md-2">
-                                                            <label for="pass">IP
+                                                            <label for="pass">IP address
                                                                 <span class="danger">*</span>
                                                             </label>
                                                             <br>
@@ -199,6 +203,62 @@
                     </div>
                 </div>
             </section>
+
+            <!-- BEGIN modal -->
+            <div class="modal fade text-left" id="modalEditDependency" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id=""> Edit dependency</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <form id="editDependencySubmit" class="form">
+                            <div class="modal-body">
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">Device name
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input id="editDeviceName" name="editDeviceName" type="text" class="form-control square" placeholder="Device name" required>
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">IP address
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input id="editIp" name="editIp" type="text" class="form-control square" placeholder="IP address" required>
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">Port
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input id="editPort" name="editPort" type="text" class="form-control square" placeholder="Port" required>
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Method
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <select name="editMethod" id="editMethod" class="form-control square" disabled>
+                                        <option value="" selected="" disabled="" hidden="">Select method</option>
+                                        <option value="Ping">Ping</option>
+                                        <option value="REST/HTTP">REST/HTTP</option>
+                                    </select>
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">Comment</label>
+                                    <input id="editComment" name="editComment" type="text" class="form-control square" placeholder="Comment">
+                                </fieldset>
+                                <input id="editDdId" name="editDdId" type="text" hidden>
+                                <input id="editDId" name="editDId" type="text" hidden>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -316,7 +376,9 @@
                 { data: "port"},
                 { data: "method"},
                 { data: "comment"},
-                {}
+                {},
+                {data: "ddId"},
+                {data: "dId"}
             ], columnDefs: [{
                 targets: 6,
                 searching: false,
@@ -329,8 +391,8 @@
                         '        Action\n' +
                         '    </button>\n' +
                         '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                        '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
-                        '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
+                        '        <button id="editDependency" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditDependency" >Edit</button>\n' +
+                        '        <button id="deleteDependencySubmit" class="dropdown-item" type="button">Delete</button>\n' +
                         '    </div>\n' +
                         '</div>';
                 }
@@ -339,9 +401,73 @@
                 {targets: 2, className: "text-center align-middle"},
                 {targets: 3, className: "text-center align-middle"},
                 {targets: 4, className: "text-center align-middle"},
-                {targets: 5, className: "text-center align-middle"}]
+                {targets: 5, className: "text-center align-middle"},
+                {targets: 7,
+                    "visible": false,
+                    "searchable": false},
+                {targets: 8,
+                    "visible": false,
+                    "searchable": false}]
         });
     }
+
+    // Sens ajax request to add, delete, edit dependency
+    function setDependency(url, datas){
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: datas,
+            success: function (response) {
+                if (response.status === "success") {
+                    $('#dependencyTable').DataTable().ajax.reload();
+                    $("#createDependencySubmit").get(0).reset();
+                    toastr.success(response.message, response.status, {closeButton: true});
+                } else if (response.status === "error") {
+                    toastr.error(response.message, response.status, {closeButton: true});
+                } else {
+                    toastr.error("Undefined", "error", {closeButton: true});
+                }
+            }
+        });
+    }
+
+    // Edit dependency
+    $("#dependencyTable tbody").on("click","#editDependency", function () {
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#dependencyTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        $('#editDdId').val(aData.ddId);
+        $('#editDId').val(aData.dId);
+        $('#editDeviceName').val(aData.divName);
+        $('#editIp').val(aData.ip);
+        $('#editPort').val(aData.port);
+        $('#editMethod').val(aData.method);
+        $('#editComment').val(aData.comment);
+    });
+
+    // Submit data to create new rule
+    $("#dependencyTable tbody").on("click","#deleteDependencySubmit", function () {
+        event.preventDefault();
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#dependencyTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        setDependency("/dependency/delete", {dDid: aData.ddId, dId: aData.dId});
+    });
+
+
+    // Submit edit dependency
+    $( "#editDependencySubmit" ).submit(function( event ) {
+        event.preventDefault();
+        console.log($("#editIp").val());
+        if(validateIP46($("#editIp").val())){
+            var data = $('#editDependencySubmit').serialize();
+            setDependency("/dependency/edit", data);
+        }else{
+            toastr.error("IP must be in IPv4 or IPv6 format", "error", {closeButton: true});
+        }
+        $("#modalEditDependency").modal('toggle');
+    });
 
     // Check ip
     function validateIP46(str){

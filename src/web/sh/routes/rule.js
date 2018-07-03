@@ -38,16 +38,6 @@ router.post('/create', isAuth, function(req, res, next) {
             active = 1;
         }
 
-        console.log("ruleName:" + ruleName);
-        console.log("active:" + active);
-        console.log("dayTimeStart:" + dayTimeStart);
-        console.log("nightTimeStart:" + nightTimeStart);
-        console.log("temps:" + temps);
-        console.log("humidity:" + humidity);
-        console.log("dayNightValve:" + dayNightValve);
-        console.log("dayRulesBlind:" + dayRulesBlind);
-        console.log("nightRulesBlind:" + nightRulesBlind);
-
         // Check rules exist
         if (ruleName && dayTimeStart && nightTimeStart && temps && humidity && dayNightValve && dayRulesBlind && nightRulesBlind) {
 
@@ -94,83 +84,6 @@ router.post('/create', isAuth, function(req, res, next) {
     }
 });
 
-
-/*// GET /rule/listname
-router.get('/listname', isAuth, function(req, res, next) {
-    if(auth.checkPermission(req, auth.getManager())){
-        res.type('json');
-        let toRemove = {__v: false, _id: false, active: false, dt: false, nt: false, temp: false, humidity: false, vdr: false, vnr: false, bdr: false, bnr: false};
-        Rule.find({}, toRemove, function(err, rule) {
-            if (err) {
-                return next(err);
-            }
-            res.type('json');
-            return res.json({data: rule});
-        });
-    }else{
-        return res.redirect('/');
-    }
-});*/
-
-/*// GET /rule/list
-router.get('/list', isAuth, function(req, res, next) {
-    if(auth.checkPermission(req, auth.getManager())){
-        var name = req.query.name;
-        if(name){
-            let toRemove = {__v: false, _id: false};
-            Rule.findOne({name: name}, toRemove, function(err, rule) {
-                if (err) {
-                    return next(err);
-                }
-                res.type('json');
-                return res.json({data: rule});
-            });
-        }else{
-            res.type('json');
-            return res.json({status: "error", message: "All field must be filled"});
-        }
-    }else{
-        return res.redirect('/');
-    }
-});*/
-
-/*// POST /rule/delete
-router.post('/delete', isAuth, function(req, res, next) {
-    if(auth.checkPermission(req, auth.getManager())){
-
-        var ruleName = req.body.name;
-        console.log(ruleName);
-        if(ruleName) {
-
-            // Check if the rule rule name exists
-            validation.checkUniqueRule(ruleName, function (matchRule) {
-                if (!matchRule) {
-
-                    // Remove rule name entree
-                    Rule.remove({name: ruleName}, function (err, rule) {
-                        if (err) {
-                            return next(err);
-                        }
-                        res.type('json');
-                        return res.json({status: "success", message: "Rule " + ruleName + " has been successfully deleted"});
-                    });
-
-                } else {
-                    res.type('json');
-                    return res.json({status: "error", message: "Rule name must exists"});
-                }
-            });
-        }else{
-            res.type('json');
-            return res.json({status: "error", message: "All field must be filled"});
-        }
-    }else{
-        return res.redirect('/');
-    }
-});*/
-
-
-
 // GET /rule/listall
 router.get('/listall', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
@@ -186,7 +99,6 @@ router.get('/listall', isAuth, function(req, res, next) {
         return res.redirect('/');
     }
 });
-
 
 // GET /rule/listall
 router.post('/edit', isAuth, function(req, res, next) {
@@ -277,6 +189,25 @@ router.post('/delete', isAuth, function(req, res, next) {
             res.type('json');
             return res.json({status: "error", message: "All field must be filled"});
         }
+    }else{
+        return res.redirect('/');
+    }
+});
+
+
+// GET /rule/listname
+// Used When add location
+router.get('/listname', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+        res.type('json');
+        let toRemove = {__v: false, _id: false, active: false, dt: false, nt: false, temp: false, humidity: false, vdr: false, vnr: false, bdr: false, bnr: false};
+        Rule.find({}, toRemove, function(err, rule) {
+            if (err) {
+                return next(error);
+            }
+            res.type('json');
+            return res.json({data: rule});
+        });
     }else{
         return res.redirect('/');
     }

@@ -22,13 +22,9 @@ router.post('/create', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
 
         var dictionary = req.body;
-        var length = Object.keys(dictionary.dependency).length -2 ;
+        var length = Object.keys(dictionary.dependency).length ;
         var depName = dictionary.depName;
-        //var max = Object.keys(dictionary.dependency).length -1;
-        //console.log(args);
-        //console.log(max);
-        //console.log(dictionary);
-
+        var deviceDependencyError = false;
         if(depName && length){
 
             // Check if the dependency name already exist
@@ -38,27 +34,54 @@ router.post('/create', isAuth, function(req, res, next) {
                     // Empty array to store dependency device
                     var newDevice = [];
 
+                    // !!!!!!! TO MODYFY HERE
+                    // In the actual implementation you must add one REST/HTTP method
+                    var checkMethodRest = [];
+
                     // Add dico data to list
-                    //var length = max / 5;
-
                     dictionary.dependency.forEach(function(dep) {
-                        console.log(dep.depdName);
-                        newDevice.push({name: dep.depdName, ip: dep.depdIp, port: dep.depdPort, comment: dep.depdComment ? dep.depdComment : "", method: dep.depdMethod});
+
+                        if(dep.depdName && dep.depdIp && dep.depdMethod && dep.depdPort >= 0) {
+
+                            // !!!!!!! TO MODYFY HERE
+                            // In the actual implementation you must add one REST/HTTP method
+                            if(dep.depdMethod === "REST/HTTP"){
+                                checkMethodRest.push(dep.depdMethod);
+                            }
+                            newDevice.push({
+                                name: dep.depdName,
+                                ip: dep.depdIp,
+                                port: dep.depdPort,
+                                comment: dep.depdComment ? dep.depdComment : "",
+                                method: dep.depdMethod
+                            });
+                        }else{
+                            deviceDependencyError = true;
+                        }
                     });
 
-                    /*for (var i = 0; i < length; i++){
-                        //console.log();
-                        newDevice.push({name: dictionary['dependency['+i+'][depdName]'], ip: dictionary['dependency['+i+'][depdIp]'], port: dictionary['dependency['+i+'][depdPort]'], comment: dictionary['dependency['+i+'][depdComment]'], method: dictionary['dependency['+i+'][depdMethod]']});
-                    }*/
-                    var newDependency = {depname: depName, devices: newDevice};
-                    Dependency.create(newDependency, function (error, user) {
-                        if (error) {
-                            console.log(error);
-                            return next(error);
+                    // !!!!!!! TO MODYFY HERE
+                    // In the actual implementation you must add one REST/HTTP method
+                    if(checkMethodRest.length === 1){
+
+                        // Check if all dependency device are well added
+                        if(deviceDependencyError){
+                            res.type('json');
+                            return res.json({status: "error", message: "All field must be filled"});
+                        }else{
+                            var newDependency = {depname: depName, devices: newDevice};
+                            Dependency.create(newDependency, function (err, user) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Dependency " + depName + " has been successfully created"});
+                            });
                         }
+                    }else{
                         res.type('json');
-                        return res.json({status: "success", message: "Dependency has been successfully created"});
-                    });
+                        return res.json({status: "error", message: "Due to the actual implementation you must add only one REST/HTTP method"});
+                    }
                 }else{
                     res.type('json');
                     return res.json({status: "error", message: "Dependency name must be unique"});
@@ -68,19 +91,19 @@ router.post('/create', isAuth, function(req, res, next) {
             res.type('json');
             return res.json({status: "error", message: "All field must be filled"});
         }
-
     }else{
         return res.redirect('/');
     }
 });
 
+// GET /dependency/list
 router.get('/list', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
         let toRemove = {__v: false, _id: false, devices: false};
         Dependency.find({}, toRemove, function(err, dependency) {
             if (err) {
-                return next(error);
+                return next(err);
             }
             return res.json({"data": dependency});
         });
@@ -90,13 +113,14 @@ router.get('/list', isAuth, function(req, res, next) {
     }
 });
 
+// GET /dependency/listall
 router.get('/listall', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         res.type('json');
-        let toRemove = {__v: false, _id: false};
+        let toRemove = {__v: false};
         Dependency.find({}, toRemove, function(err, dependency) {
             if (err) {
-                return next(error);
+                return next(err);
             }
             return res.json({"data": createNewData(dependency)});
         });
@@ -108,7 +132,7 @@ router.get('/listall', isAuth, function(req, res, next) {
 
 // To solve the sub dict
 function createNewData(data){
-    var newData = []
+    var newData = [];
     for (i = 0; i < data.length; i++) {
         for (j = 0; j < data[i].devices.length; j++) {
             newData.push({
@@ -117,11 +141,87 @@ function createNewData(data){
                 ip: data[i].devices[j].ip,
                 port: data[i].devices[j].port,
                 method: data[i].devices[j].method,
-                comment: data[i].devices[j].comment
+                comment: data[i].devices[j].comment,
+                ddId: data[i].devices[j]._id,
+                dId: data[i]._id,
             });
         }
     }
     return newData;
 }
+
+// POST /dependency/delete
+router.post('/delete', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+        var dDid = req.body.dDid;
+        var dId = req.body.dId;
+
+        // Check not empty
+        if(dDid && dId){
+
+            Dependency.findOne({_id: dId}, {}, function(err, div) {
+                if (err) {
+                    return next(err);
+                }
+
+                // If rest one device dependency we can delete the whole dependency
+                // Else just de device dependency
+                if(div.devices.length === 1){
+                    Dependency.remove({_id: dId}, function(err, dependency) {
+                        if (err) {
+                            console.log(err);
+                            return next(err);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Dependency has been successfully deleted"});
+                    });
+                }else{
+                    Dependency.update({_id: dId},{ $pull: { 'devices': {_id: dDid } } }, function(err, dependency) {
+                        if (err) {
+                            console.log(err);
+                            return next(err);
+                        }
+                        res.type('json');
+                        return res.json({status: "success", message: "Device dependency has been successfully deleted"});
+                    });
+                }
+            });
+        }else{
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
+    }else{
+        return res.redirect('/');
+    }
+});
+
+// POST /dependency/edit
+router.post('/edit', isAuth, function(req, res, next) {
+    if(auth.checkPermission(req, auth.getManager())){
+        var editDeviceName = req.body.editDeviceName;
+        var editIp = req.body.editIp;
+        var editPort = req.body.editPort;
+        var editComment = req.body.editComment;
+        var editDdId = req.body.editDdId;
+        var editDId = req.body.editDId;
+
+        // Check if all data are not empty
+        if(editDeviceName && editIp && editDdId && editDId){
+            var set = {$set: {"devices.$.name": editDeviceName, "devices.$.ip": editIp, "devices.$.port": editPort, "devices.$.comment": editComment ? editComment : ""}};
+            Dependency.findOneAndUpdate({_id: editDId, "devices._id": editDdId}, set, function(err, dependency) {
+                if (err) {
+                    return next(err);
+                }
+                res.type('json');
+                return res.json({status: "success", message: "Dependency " + editDeviceName + " has been successfully edited"});
+            });
+        }else{
+            res.type('json');
+            return res.json({status: "error", message: "All field must be filled"});
+        }
+    }else{
+        return res.redirect('/');
+    }
+});
 
 module.exports = router;

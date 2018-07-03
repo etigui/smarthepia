@@ -249,7 +249,7 @@
 
 <!-- BEGIN modal -->
 <div class="modal fade text-left" id="ruleModal" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id=""> Edit rule</h3>
@@ -554,11 +554,11 @@
                     if (response.status === "success") {
                         $('#ruleTable').DataTable().ajax.reload();
                         $("#ruleSubmit").get(0).reset();
-                        toastr.success(response.message, response.status, {closeButton: true})
+                        toastr.success(response.message, response.status, {closeButton: true});
                     } else if (response.status === "error") {
-                        toastr.error(response.message, response.status, {closeButton: true})
+                        toastr.error(response.message, response.status, {closeButton: true});
                     } else {
-                        toastr.error("Undefined", "error", {closeButton: true})
+                        toastr.error("Undefined", "error", {closeButton: true});
                     }
                 }
             });
@@ -576,6 +576,7 @@
         $( "#ruleSubmit" ).submit(function( event ) {
             event.preventDefault();
             var data = $('#ruleSubmit').serialize();
+            console.log(data);
             setRule("/rule/create", data);
         });
 
