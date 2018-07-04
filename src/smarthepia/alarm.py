@@ -492,9 +492,9 @@ class Alarm(object):
         # Check what kind of type (radiator/store)
         type = ""
         if device['subtype'] == "Blind":
-            type = "store"
+            type = "blind"
         elif device['subtype'] == "Valve":
-            type = "radiator"
+            type = "valve"
         else:
             self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm,"severity": const.severity_high, "message": "Wrong actuator type"}))
             return

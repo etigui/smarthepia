@@ -33,11 +33,11 @@ db_port = 27017
 
 # Set time for each process sleep
 factor = 60
-st_alarm = 0.5 * factor
-st_automation = 2 * factor
-st_measure = 100 * factor
-st_start = 100 * factor
-st_status = 1 * factor
+st_alarm = 5 * factor
+st_automation = 1 * factor
+st_measure = 5 * factor
+st_start = 1 * factor
+st_status = 4 * factor
 
 # Device status
 device_color_error = '#FF0000'
@@ -70,12 +70,12 @@ def route_zwave_device_list(ip, port):
 
 
 def route_zwave_device_all_measures(ip, port, address):
-    return f"http://{ip}:{port}/sensors/{address}/get_all_measures"
+    return f"http://{ip}:{str(port)}/sensors/{address}/get_all_measures"
 
 
 # Routes KNX
 def route_knx_device_value_read(ip, port, address, ttype):
-    return f"http://{ip}:{port}/v0/{str(ttype).lower()}/read/{address}"
+    return f"http://{ip}:{str(port)}/v0/{str(ttype).lower()}/read/{address}"
 
 
 def route_knx_device_value_write(ip, port, address, ttype, value):
@@ -84,7 +84,7 @@ def route_knx_device_value_write(ip, port, address, ttype, value):
     if blind_min_value < value <= blind_max_value:
         floor = address.split("/")[0]
         id = address.split("/")[1]
-        return True, f"http://{ip}:{port}/v0/{str(ttype).lower()}/write/{floor}/{id}/{value}"
+        return True, f"http://{ip}:{str(port)}/v0/{str(ttype).lower()}/write/{floor}/{id}/{value}"
     return False, None
 
 

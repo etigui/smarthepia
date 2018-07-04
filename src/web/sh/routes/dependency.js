@@ -4,6 +4,7 @@ var dateFormat = require('dateformat');
 var Dependency = require('../models/dependency');
 var auth = require('../controllers/auth');
 var validation = require('../controllers/validation');
+var Devices = require('../models/devices');
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
@@ -155,25 +156,38 @@ router.post('/delete', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
         var dDid = req.body.dDid;
         var dId = req.body.dId;
+        var depName = req.body.name;
+
+        console.log(depName);
 
         // Check not empty
-        if(dDid && dId){
+        if(dDid && dId && depName){
 
             Dependency.findOne({_id: dId}, {}, function(err, div) {
-                if (err) {
-                    return next(err);
-                }
+            if (err) {
+                return next(err);
+            }
 
                 // If rest one device dependency we can delete the whole dependency
                 // Else just de device dependency
                 if(div.devices.length === 1){
-                    Dependency.remove({_id: dId}, function(err, dependency) {
-                        if (err) {
-                            console.log(err);
-                            return next(err);
+
+                    // Check if device depend to that dependency
+                    Devices.find({dependency: depName}, function(err, deviceParent) {
+
+                        // Check device by dependency
+                        if(deviceParent.length > 0){
+                            res.type('json');
+                            return res.json({status: "error", message: "There are device which belong to that dependency. You must deleted them before to delete the dependency."});
+                        }else{
+                            Dependency.remove({_id: dId}, function(err, dependency) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Dependency has been successfully deleted"});
+                            });
                         }
-                        res.type('json');
-                        return res.json({status: "success", message: "Dependency has been successfully deleted"});
                     });
                 }else{
                     Dependency.update({_id: dId},{ $pull: { 'devices': {_id: dDid } } }, function(err, dependency) {

@@ -175,7 +175,7 @@
                                                         <div class="form-group mb-1 col-sm-12 col-md-2">
                                                             <label for="bio" class="cursor-pointer">Comment</label>
                                                             <br>
-                                                            <textarea name="depdComment" class="form-control" id="bio" rows="1" placeholder="Comment" autocomplete="off" ></textarea>
+                                                            <input name="depdComment" class="form-control" id="bio" rows="1" placeholder="Comment" autocomplete="off" >
                                                         </div>
                                                         <div class="form-group col-sm-12 col-md-2 text-center mt-2">
                                                             <button type="button" class="btn btn-danger" data-repeater-delete=""> <i class="ft-x"></i> Delete</button>
@@ -220,24 +220,22 @@
                                     <label for="">Device name
                                         <span class="danger">*</span>
                                     </label>
-                                    <input id="editDeviceName" name="editDeviceName" type="text" class="form-control square" placeholder="Device name" required>
+                                    <input id="editDeviceName" name="editDeviceName" type="text" class="form-control square" placeholder="Device name" required autocomplete="off">
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="">IP address
                                         <span class="danger">*</span>
                                     </label>
-                                    <input id="editIp" name="editIp" type="text" class="form-control square" placeholder="IP address" required>
+                                    <input id="editIp" name="editIp" type="text" class="form-control square" placeholder="IP address" required autocomplete="off">
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="">Port
                                         <span class="danger">*</span>
                                     </label>
-                                    <input id="editPort" name="editPort" type="text" class="form-control square" placeholder="Port" required>
+                                    <input id="editPort" name="editPort" type="text" class="form-control square" placeholder="Port" required autocomplete="off">
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
-                                    <label for="title">Method
-                                        <span class="danger">*</span>
-                                    </label>
+                                    <label for="title">Method</label>
                                     <select name="editMethod" id="editMethod" class="form-control square" disabled>
                                         <option value="" selected="" disabled="" hidden="">Select method</option>
                                         <option value="Ping">Ping</option>
@@ -246,7 +244,7 @@
                                 </fieldset>
                                 <fieldset class="form-group floating-label-form-group">
                                     <label for="">Comment</label>
-                                    <input id="editComment" name="editComment" type="text" class="form-control square" placeholder="Comment">
+                                    <input id="editComment" name="editComment" type="text" class="form-control square" placeholder="Comment" autocomplete="off">
                                 </fieldset>
                                 <input id="editDdId" name="editDdId" type="text" hidden>
                                 <input id="editDId" name="editDId" type="text" hidden>
@@ -446,13 +444,13 @@
         $('#editComment').val(aData.comment);
     });
 
-    // Submit data to create new rule
+    // Submit data to delete dependency
     $("#dependencyTable tbody").on("click","#deleteDependencySubmit", function () {
         event.preventDefault();
         var nRow = $(this).parents('tr')[0];
         var oTable = $('#dependencyTable').dataTable();
         var aData = oTable.fnGetData(nRow);
-        setDependency("/dependency/delete", {dDid: aData.ddId, dId: aData.dId});
+        setDependency("/dependency/delete", {dDid: aData.ddId, dId: aData.dId, name: aData.depName});
     });
 
 

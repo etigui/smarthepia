@@ -1,0 +1,46 @@
+[18:51:31 04-07-2018];info;Subprocess automation started
+[18:51:34 04-07-2018];error;In function (get_blind_value), cannot read value from blind
+[18:51:34 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[18:51:34 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[18:51:34 04-07-2018];error;In function (check_multisensor_time), the multisensor is not up to date
+[18:54:42 04-07-2018];info;Subprocess automation started
+[18:56:25 04-07-2018];info;Subprocess automation started
+[18:57:51 04-07-2018];info;Subprocess automation started
+[18:58:11 04-07-2018];info;Subprocess automation started
+[19:09:31 04-07-2018];info;Subprocess automation started
+[19:09:35 04-07-2018];error;In function (get_blind_value), cannot read value from blind
+[19:09:35 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[19:09:35 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[19:09:35 04-07-2018];error;In function (check_multisensor_time), the multisensor is not up to date
+[19:34:51 04-07-2018];info;Subprocess automation started
+[19:34:51 04-07-2018];error;In function (check_multisensor_time), the multisensor is not up to date
+[19:37:33 04-07-2018];info;Subprocess automation started
+[19:39:56 04-07-2018];info;Subprocess automation started
+[19:40:07 04-07-2018];info;Subprocess automation started
+[19:40:18 04-07-2018];info;Subprocess automation started
+[19:49:44 04-07-2018];info;Subprocess automation started
+[19:49:47 04-07-2018];error;In function (get_blind_value), cannot read value from blind
+[19:50:32 04-07-2018];info;Subprocess automation started
+[19:50:32 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[19:50:32 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[19:50:32 04-07-2018];error;In function (get_blind_value), the bind value is not an int
+[19:51:12 04-07-2018];info;Subprocess automation started
+[19:52:46 04-07-2018];info;Subprocess automation started
+[19:55:07 04-07-2018];info;Subprocess automation started
+[19:55:50 04-07-2018];info;Subprocess automation started
+[19:56:13 04-07-2018];info;Subprocess automation started
+[19:57:00 04-07-2018];info;Subprocess automation started
+[19:57:15 04-07-2018];info;Subprocess automation started
+[19:57:28 04-07-2018];info;Subprocess automation started
+[19:58:03 04-07-2018];info;Subprocess automation started
+[20:00:06 04-07-2018];error;In function (get_blind_value), cannot read value from blind
+[20:00:09 04-07-2018];error;In function (get_blind_value), cannot read value from blind
+[20:00:12 04-07-2018];error;In function (get_blind_value), cannot read value from blind
+[20:15:27 04-07-2018];info;Subprocess automation started
+[20:15:56 04-07-2018];info;Subprocess automation started
+[20:17:58 04-07-2018];info;Subprocess automation started
+[20:26:57 04-07-2018];info;Subprocess automation started
+[20:27:44 04-07-2018];info;Subprocess automation started
+[20:27:59 04-07-2018];info;Subprocess automation started
+[20:28:07 04-07-2018];info;Subprocess automation started
+[20:49:43 04-07-2018];info;Subprocess automation started

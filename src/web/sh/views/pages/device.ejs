@@ -73,9 +73,10 @@
                                             <tr>
                                                 <th>Name</th>
                                                 <th>Type</th>
+                                                <th>Subtype</th>
                                                 <th>Address</th>
                                                 <th>Dpenedency</th>
-                                                <th>Parent</th>
+                                                <th>Relation</th>
                                                 <th>Enable</th>
                                                 <th>Comment</th>
                                                 <th>Action</th>
@@ -84,6 +85,14 @@
                                             <tbody></tbody>
                                             <tfoot>
                                             <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
                                                 <th rowspan="1" colspan="1">
                                                 </th>
                                                 <th rowspan="1" colspan="1">
@@ -223,6 +232,57 @@
         </div>
     </div>
 </div>
+<!-- BEGIN modal edit -->
+
+<div class="modal fade text-left" id="modalEditDevice" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id=""> Edit Device</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="editDeviceSubmit" class="form">
+                <div class="modal-body">
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="email">Device name</label>
+                        <input id="deviceNameEdit" name="deviceNameEdit" type="text" class="form-control square" placeholder="Device name" disabled>
+                    </fieldset>
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="email">Address
+                            <span class="danger">*</span>
+                        </label>
+                        <input id="addressEdit" name="addressEdit" type="text" class="form-control square" placeholder="Address" autocomplete="off">
+                    </fieldset>
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="title">Enable
+                            <span class="danger">*</span>
+                        </label>
+                        <select id="enableEdit" name="enableEdit" class="form-control square" required>
+                            <option value="true">true</option>
+                            <option value="false">false</option>
+                        </select>
+
+                    </fieldset>
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="title">Comment</label>
+                        <input id="commentEdit" name="commentEdit" type="text" class="form-control square" placeholder="Comment" autocomplete="off">
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+                <input id="nameEdit" name="nameEdit" type="text" hidden>
+                <input id="idEdit" name="idEdit" type="text" hidden>
+                <input id="parentEdit" name="parentEdit" type="text" hidden>
+                <input id="dependencyEdit" name="dependencyEdit" type="text" hidden>
+                <input id="subtypeEdit" name="subtypeEdit" type="text" hidden>
+            </form>
+        </div>
+    </div>
+</div>
 <% include ../partials/footer %>
 
 <!-- BEGIN VENDOR JS-->
@@ -346,6 +406,60 @@
         });
     }
 
+    // Sens ajax request to add, delete, edit device
+    function setDevice(url, datas){
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: datas,
+            success: function (response) {
+                if (response.status === "success") {
+                    $('#deviceTable').DataTable().ajax.reload();
+                    toastr.success(response.message, response.status, {closeButton: true});
+                } else if (response.status === "error") {
+                    toastr.error(response.message, response.status, {closeButton: true});
+                } else {
+                    toastr.error("Undefined", "error", {closeButton: true});
+                }
+            }
+        });
+    }
+
+    // Edit device
+    $("#deviceTable tbody").on("click","#editDevice", function () {
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#deviceTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        $('#nameEdit').val(aData.name);
+        $('#idEdit').val(aData._id);
+        $('#addressEdit').val(aData.address);
+        $('#commentEdit').val(aData.comment);
+        $('#enableEdit').val(aData.enable ? "true": "false");
+        $('#dependencyEdit').val(aData.dependency);
+        $('#parentEdit').val(aData.parent);
+        $('#subtypeEdit').val(aData.subtype);
+
+
+    });
+
+    // Submit edit device
+    $( "#editDeviceSubmit" ).submit(function( event ) {
+        event.preventDefault();
+        var data = $('#editDeviceSubmit').serialize();
+        setDevice("/device/edit", data);
+        $("#modalEditDevice").modal('toggle');
+    });
+
+    // Submit data delete device
+    $("#deviceTable tbody").on("click","#deleteDeviceSubmit", function () {
+        event.preventDefault();
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#deviceTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        setDevice("/device/delete", {name: aData.name, id: aData._id});
+    });
+
     function genDeviceTable(){
 
         $('#deviceTable').dataTable({
@@ -397,14 +511,19 @@
             columns: [
                 { data: "name"},
                 { data: "type"},
+                { data: "subtype"},
                 { data: "address"},
                 { data: "dependency"},
-                { data: "parent"},
+                { data: "parentrelation"},
                 { data: "enable"},
                 { data: "comment"},
-                {}
+                {},
+                { data: "parent"},
+                { data: "_id"},
+                { data: "subtype"}
+
             ], columnDefs: [{
-                targets: 7,
+                targets: 8,
                 searching: false,
                 orderable: false,
                 data: null,
@@ -415,8 +534,8 @@
                         '        Action\n' +
                         '    </button>\n' +
                         '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                        '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
-                        '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
+                        '        <button id="editDevice" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditDevice" >Edit</button>\n' +
+                        '        <button id="deleteDeviceSubmit" class="dropdown-item" type="button">Delete</button>\n' +
                         '    </div>\n' +
                         '</div>';
                 }
@@ -426,7 +545,11 @@
                 {targets: 1, className: "text-center align-middle"},
                 {targets: 0, className: "text-center align-middle"},
                 {targets: 5, className: "text-center align-middle"},
-                {targets: 6, className: "text-center align-middle"}]
+                {targets: 6, className: "text-center align-middle"},
+                {targets: 7, className: "text-center align-middle"},
+                {targets: 9, "visible": false, "searchable": false},
+                {targets: 10, "visible": false, "searchable": false},
+                {targets: 11, "visible": false, "searchable": false}]
         });
     }
 
@@ -490,11 +613,12 @@
         }else if($("#typeDevice option:selected").text() === "Select type") {
             toastr.error("You must choose a type", "error", {closeButton: true});
         }else{
+            var parentRelation = {"buildingName": $("#buildingDevice option:selected").text(), "floorName": $("#floorDevice option:selected").text(),"roomName": $("#roomDevice option:selected").text()};
             $.ajax({
                 url: "/device/create",
                 type: "post",
                 dataType: "json",
-                data: $('#createDeviceSubmit').serialize(),
+                data: $('#createDeviceSubmit').serialize() + "&" + jQuery.param(parentRelation),
                 success: function (response) {
 
                     // TODO reload dependency inventory

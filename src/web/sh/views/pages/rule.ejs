@@ -153,13 +153,17 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
-                                                <label for="">Rule name</label>
+                                                <label for="">Rule name
+                                                    <span class="danger">*</span>
+                                                </label>
                                                 <input type="text" name="ruleName" id="ruleName" class="form-control square" placeholder="Rule name" autocomplete="off" required>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
-                                                <label for="userinput1">Day time start</label>
+                                                <label for="userinput1">Day time start
+                                                    <span class="danger">*</span>
+                                                </label>
                                                 <div class="position-relative has-icon-left">
                                                     <input type="time" name="dayTimeFrom" id="dayTimeFrom" class="form-control square" value="08:00" required>
                                                     <div class="form-control-position">
@@ -168,7 +172,9 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col-md-6 mb-2">
-                                                <label for="userinput1">Night time start</label>
+                                                <label for="userinput1">Night time start
+                                                    <span class="danger">*</span>
+                                                </label>
                                                 <div class="position-relative has-icon-left">
                                                     <input type="time" name="nightTimeFrom" id="nightTimeFrom" class="form-control square" value="22:00" required>
                                                     <div class="form-control-position">
@@ -179,13 +185,17 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
-                                                <label for="userinput2">Temperature</label>
+                                                <label for="userinput2">Temperature
+                                                    <span class="danger">*</span>
+                                                </label>
                                                 <div class="input-group bootstrap-touchspin">
                                                     <input type="text" name="temp" id="temp" class="touchspin form-control" value="21" data-bts-postfix="°C" data-bts-min="18" data-bts-max="30" autocomplete="off" required>
                                                 </div>
                                             </div>
                                             <div class="form-group col-md-6 mb-2">
-                                                <label for="userinput2">Humidity</label>
+                                                <label for="userinput2">Humidity
+                                                    <span class="danger">*</span>
+                                                </label>
                                                 <div class="input-group bootstrap-touchspin">
                                                     <input type="text" name="humidity" id="humidity" class="touchspin form-control" value="45" data-bts-postfix="%" data-bts-min="0" data-bts-max="100" autocomplete="off" required>
                                                 </div>
@@ -197,7 +207,9 @@
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
                                                 <div class="form-group">
-                                                    <label class=" label-control" for="userinput1">Day and night rules</label>
+                                                    <label class=" label-control" for="userinput1">Day and night rules
+                                                        <span class="danger">*</span>
+                                                    </label>
                                                     <select name="dnRulesValve" id="dnRulesValve" class="form-control square" required>
                                                         <option value="" selected="" disabled="" hidden="">Select rule</option>
                                                         <option value="1">Off (valve auto)</option>
@@ -210,7 +222,9 @@
                                         <div class="row">
                                             <div class="form-group col-md-6 mb-2">
                                                 <div class="form-group">
-                                                    <label class=" label-control" for="userinput1">Day rules</label>
+                                                    <label class=" label-control" for="userinput1">Day rules
+                                                        <span class="danger">*</span>
+                                                    </label>
                                                     <select name="dayRulesBlind" id="dayRulesBlind" class="form-control square" required>
                                                         <option value="" selected="" disabled="" hidden="">Select rule</option>
                                                         <option value="1">Off (manual)</option>
@@ -222,7 +236,9 @@
                                             </div>
                                             <div class="form-group col-md-6 mb-2">
                                                 <div class="form-group">
-                                                    <label class=" label-control" for="userinput1">Night rules</label>
+                                                    <label class=" label-control" for="userinput1">Night rules
+                                                        <span class="danger">*</span>
+                                                    </label>
                                                     <select name="nightRulesBlind" id="nightRulesBlind" class="form-control square" required>
                                                         <option value="" selected="" disabled="" hidden="">Select rule</option>
                                                         <option value="1">Off (manual)</option>
@@ -247,7 +263,7 @@
     </div>
 </div>
 
-<!-- BEGIN modal -->
+<!-- BEGIN edit modal -->
 <div class="modal fade text-left" id="ruleModal" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -271,12 +287,14 @@
                     <div class="row">
                         <div class="form-group col-md-6 mb-2">
                             <label for="">Rule name</label>
-                            <input type="text" name="ruleNameEdit" id="ruleNameEdit" class="form-control square" placeholder="Rule name" autocomplete="off" required>
+                            <input type="text" name="ruleNameEdit" id="ruleNameEdit" class="form-control square" placeholder="Rule name" autocomplete="off" disabled>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6 mb-2">
-                            <label for="">Day time start</label>
+                            <label for="">Day time start
+                                <span class="danger">*</span>
+                            </label>
                             <div class="position-relative has-icon-left">
                                 <input type="time" name="dayTimeFromEdit" id="dayTimeFromEdit" class="form-control square" value="08:00" required>
                                 <div class="form-control-position">
@@ -285,7 +303,9 @@
                             </div>
                         </div>
                         <div class="form-group col-md-6 mb-2">
-                            <label for="">Night time start</label>
+                            <label for="">Night time start
+                                <span class="danger">*</span>
+                            </label>
                             <div class="position-relative has-icon-left">
                                 <input type="time" name="nightTimeFromEdit" id="nightTimeFromEdit" class="form-control square" value="22:00" required>
                                 <div class="form-control-position">
@@ -296,13 +316,17 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6 mb-2">
-                            <label for="">Temperature</label>
+                            <label for="">Temperature
+                                <span class="danger">*</span>
+                            </label>
                             <div class="input-group bootstrap-touchspin">
                                 <input type="text" name="tempEdit" id="tempEdit" class="touchspin form-control" value="20" data-bts-postfix="°C" data-bts-min="18" data-bts-max="30" autocomplete="off" required>
                             </div>
                         </div>
                         <div class="form-group col-md-6 mb-2">
-                            <label for="">Humidity</label>
+                            <label for="">Humidity
+                                <span class="danger">*</span>
+                            </label>
                             <div class="input-group bootstrap-touchspin">
                                 <input type="text" name="humidityEdit" id="humidityEdit" class="touchspin form-control" value="45" data-bts-postfix="%" data-bts-min="0" data-bts-max="100" autocomplete="off" required>
                             </div>
@@ -312,7 +336,9 @@
                     <div class="row">
                         <div class="form-group col-md-6 mb-2">
                             <div class="form-group">
-                                <label class=" label-control" for="userinput1">Day and night rules</label>
+                                <label class=" label-control" for="userinput1">Day and night rules
+                                    <span class="danger">*</span>
+                                </label>
                                 <select name="dnRulesValveEdit" id="dnRulesValveEdit" class="form-control square" required>
                                     <option value="" selected="" disabled="" hidden="">Select rule</option>
                                     <option value="1">Off (valve auto)</option>
@@ -325,7 +351,9 @@
                     <div class="row">
                         <div class="form-group col-md-6 mb-2">
                             <div class="form-group">
-                                <label class=" label-control" for="userinput1">Day rules</label>
+                                <label class=" label-control" for="userinput1">Day rules
+                                    <span class="danger">*</span>
+                                </label>
                                 <select name="dayRulesBlindEdit" id="dayRulesBlindEdit" class="form-control square" required>
                                     <option value="" selected="" disabled="" hidden="">Select rule</option>
                                     <option value="1">Off (manual)</option>
@@ -337,7 +365,9 @@
                         </div>
                         <div class="form-group col-md-6 mb-2">
                             <div class="form-group">
-                                <label class=" label-control" for="userinput1">Night rules</label>
+                                <label class=" label-control" for="userinput1">Night rules
+                                    <span class="danger">*</span>
+                                </label>
                                 <select name="nightRulesBlindEdit" id="nightRulesBlindEdit" class="form-control square" required>
                                     <option value="" selected="" disabled="" hidden="">Select rule</option>
                                     <option value="1">Off (manual)</option>

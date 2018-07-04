@@ -78,14 +78,15 @@ module.exports = {
                 return callback(true);
             }
         });
-    },checkUniqueDevice : function(parent, name, address,dependency, callback) {
-        Devices.find({$or: [{$and: [{address: address}, {dependency: dependency}]}, {$and: [{name: name}, {parent: parent}]}]}).exec(function (err, devices) {
-            if (err) {
-                return callback(err)
+    },checkUniqueDevice : function(subtype, parent, name, address, dependency, callback) {
+        //Devices.find({$or: [{$and: [{address: address}, {dependency: dependency}]}, {$and: [{name: name}, {parent: parent}]}, {name: name}]}).exec(function (err, devices) {
+        Devices.find({$or: [{$and: [{parent: parent},{subtype: subtype},{address: address}, {dependency: dependency}]}, {$and: [{subtype: subtype},{address: address}, {dependency: dependency}]} ,{name: name}]}).exec(function (err, devices) {
+        if (err) {
+                return callback(err, "")
             } else if (devices.length > 0) {
-                return callback(false);
+                return callback(false, devices);
             } else {
-                return callback(true);
+                return callback(true, devices);
             }
         });
     }

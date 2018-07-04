@@ -4,6 +4,7 @@ var auth = require('../controllers/auth');
 var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
 var Rule = require('../models/rule');
+var Devices = require('../models/devices');
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
@@ -171,19 +172,28 @@ router.post('/delete', isAuth, function(req, res, next) {
             validation.checkUniqueRule(ruleName, function (matchRule) {
                 if (!matchRule) {
 
-                    // Remove rule name entree
-                    Rule.remove({name: ruleName}, function (err, rule) {
-                        if (err) {
-                            return next(err);
-                        }
-                        res.type('json');
-                        return res.json({status: "success", message: "Rule " + ruleName + " has been successfully deleted"});
-                    });
+                    // Check if there is location attached to that rule
+                    // If not delete it, otherwise error => location belong to.....
+                    Devices.find({rules: ruleName}, function(err, rule) {
+                        if(rule.length > 0){
+                            res.type('json');
+                            return res.json({status: "error", message: "There are location which belong to that rule. You must deleted them before to delete the rule."});
+                        }else{
 
-                } else {
-                    res.type('json');
-                    return res.json({status: "error", message: "Rule name not exists"});
-                }
+                            // Remove rule name entree
+                            Rule.remove({name: ruleName}, function (err, rule) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                res.type('json');
+                                return res.json({status: "success", message: "Rule " + ruleName + " has been successfully deleted"});
+                            });
+                        }
+                    });
+            } else {
+                res.type('json');
+                return res.json({status: "error", message: "Rule name not exists"});
+            }
             });
         }else{
             res.type('json');

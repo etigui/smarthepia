@@ -38,7 +38,6 @@ def close_one_blind(log, ip, port, address):
                     # Global var list of error blind
                     log.log_error(f"In function (close_one_blind), cannot write {const.blind_max_value} to blind")
 
-
 # Get value (read) from blind
 def get_blind_value(log, ip, port, address):
 
@@ -55,6 +54,7 @@ def get_blind_value(log, ip, port, address):
             try:
 
                 # Parse value to int and check if between 0 and 255
+                print(f"result: {result['result']}")
                 value = int(result['result'])
                 if const.blind_min_value <= value <= const.blind_max_value:
                     return True, value

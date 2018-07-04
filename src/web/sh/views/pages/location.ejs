@@ -79,7 +79,7 @@
                                                 <th>Type</th>
                                                 <th>Orientation</th>
                                                 <th>Rule</th>
-                                                <th>Parent</th>
+                                                <th>Relation</th>
                                                 <th>Enable</th>
                                                 <th>Comment</th>
                                                 <th>Action</th>
@@ -88,6 +88,12 @@
                                             <tbody></tbody>
                                             <tfoot>
                                             <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
                                                 <th rowspan="1" colspan="1">
                                                 </th>
                                                 <th rowspan="1" colspan="1">
@@ -218,6 +224,66 @@
         </div>
     </div>
 </div>
+
+<!-- BEGIN modal edit -->
+
+<div class="modal fade text-left" id="modalEditLocation" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id=""> Edit Location</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="editLocationSubmit" class="form">
+                <div class="modal-body">
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="email">Location name</label>
+                        <input id="locationNameEdit" name="locationNameEdit" type="text" class="form-control square" placeholder="Location name" disabled>
+                    </fieldset>
+                    <div id="divOrientationEdit" class="form-group">
+                        <label for="">Orientation
+                            <span class="danger">*</span>
+                        </label>
+                        <div class="input-group bootstrap-touchspin">
+                            <input type="text" name="orientationEdit" id="orientationEdit" class="touchspin form-control" value="1" data-bts-postfix="Deg" data-bts-min="1" data-bts-max="360" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="title">Enable
+                            <span class="danger">*</span>
+                        </label>
+                        <select id="enableEdit" name="enableEdit" class="form-control square" required>
+                            <option value="true">true</option>
+                            <option value="false">false</option>
+                        </select>
+
+                    </fieldset>
+                    <fieldset id="divRuleEdit" class="form-group floating-label-form-group">
+                        <label for="title">Rule
+                            <span class="danger">*</span>
+                        </label>
+                        <select id="ruleEdit" name="ruleEdit" class="form-control square">
+                        </select>
+                    </fieldset>
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="title">Comment</label>
+                        <input id="commentEdit" name="commentEdit" type="text" class="form-control square" placeholder="Comment" autocomplete="off">
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+                <input id="nameEdit" name="nameEdit" type="text" hidden>
+                <input id="idEdit" name="idEdit" type="text" hidden>
+                <input id="typeEdit" name="typeEdit" type="text" hidden>
+            </form>
+        </div>
+    </div>
+</div>
+
 <% include ../partials/footer %>
 
 <!-- BEGIN VENDOR JS-->
@@ -263,7 +329,6 @@
     onLoad();
 
     function onLoad(){
-
         genLocationTable();
         $("#buildingSelDiv").hide();
         $("#floorSelDiv").hide();
@@ -274,9 +339,6 @@
         $("#buildingInDiv").hide();
         $("#ruleSelDiv").hide();
         $("#commentInDiv").hide();
-
-
-
         loadBuilding('#buildingDevice');
     }
 
@@ -330,6 +392,90 @@
         });
     }
 
+    function loadRulesEdit(){
+        $.ajax({
+            url: "/rule/listname",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $.each(response.data, function (i, item) {
+                    $('#ruleEdit').append($('<option>', {
+                        value: item.name,
+                        text : item.name
+                    }));
+                });
+            }
+        });
+    }
+
+    // Sens ajax request to add, delete, edit rule
+    function setLocation(url, datas){
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: datas,
+            success: function (response) {
+                if (response.status === "success") {
+                    $('#locationTable').DataTable().ajax.reload();
+                    toastr.success(response.message, response.status, {closeButton: true});
+                } else if (response.status === "error") {
+                    toastr.error(response.message, response.status, {closeButton: true});
+                } else {
+                    toastr.error("Undefined", "error", {closeButton: true});
+                }
+            }
+        });
+    }
+
+    // Edit rule
+    $("#locationTable tbody").on("click","#editLocation", function () {
+        $('#ruleEdit').empty();
+        loadRulesEdit();
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#locationTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        $('#nameEdit').val(aData.name);
+        $('#idEdit').val(aData._id);
+        $('#typeEdit').val(aData.type);
+
+
+        // Add oprientation and rule if room
+        if(aData.type === "Room"){
+            $('#divOrientationEdit').show();
+            $('#divRuleEdit').show();
+            $('#locationNameEdit').val(aData.name);
+            $('#orientationEdit').val(aData.orientation);
+            $('#enableEdit').val(aData.enable ? "true": "false");
+            $('#ruleEdit').val(aData.rules);
+            $('#commentEdit').val(aData.comment);
+        }else{
+
+            $('#divOrientationEdit').hide();
+            $('#divRuleEdit').hide();
+            $('#commentEdit').val(aData.comment);
+            $('#locationNameEdit').val(aData.name);
+        }
+    });
+
+    // Submit edit location
+    $( "#editLocationSubmit" ).submit(function( event ) {
+        event.preventDefault();
+        var data = $('#editLocationSubmit').serialize();
+        setLocation("/location/edit", data);
+        $("#modalEditLocation").modal('toggle');
+    });
+
+    // Submit data delete location
+    $("#locationTable tbody").on("click","#deleteLocationSubmit", function () {
+        event.preventDefault();
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#locationTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        setLocation("/location/delete", {name: aData.name, id: aData._id, childId: aData.id});
+    });
+
+    // Load datatable
     function genLocationTable(){
         $('#locationTable').dataTable({
             dom: 'Bfrtip',
@@ -382,10 +528,14 @@
                 { data: "type"},
                 { data: "orientation"},
                 { data: "rules"},
-                { data: "parent"},
+                { data: "parentrelation"},
                 { data: "enable"},
                 { data: "comment"},
-                {}
+                {},
+                { data: "parent"},
+                { data: "_id"},
+                { data: "id"}
+
             ], columnDefs: [{
                 targets: 7,
                 searching: false,
@@ -398,8 +548,8 @@
                         '        Action\n' +
                         '    </button>\n' +
                         '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
-                        '        <button id="editUser" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditUser" >Edit</button>\n' +
-                        '        <button id="deleteUserSubmit" class="dropdown-item" type="button">Delete</button>\n' +
+                        '        <button id="editLocation" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditLocation" >Edit</button>\n' +
+                        '        <button id="deleteLocationSubmit" class="dropdown-item" type="button">Delete</button>\n' +
                         '    </div>\n' +
                         '</div>';
                 }
@@ -409,7 +559,10 @@
                 {targets: 1, className: "text-center align-middle"},
                 {targets: 0, className: "text-center align-middle"},
                 {targets: 5, className: "text-center align-middle"},
-                {targets: 6, className: "text-center align-middle"}]
+                {targets: 6, className: "text-center align-middle"},
+                {targets: 8, "visible": false, "searchable": false},
+                {targets: 9, "visible": false, "searchable": false},
+                {targets: 10, "visible": false, "searchable": false}]
         });
     }
 
@@ -419,18 +572,22 @@
         var noError = true;
         var selectedLocation = $("#locationSelect option:selected").text();
         var selectedBuilding = $("#buildingSelect option:selected").text();
+        var selectedFloor = $("#floorSelect option:selected").text();
+        var parentRelation = {};
 
         // Check if select selected and input name not empty
         if(selectedLocation === "Select location") {
             toastr.error("You must choose a location", "error", {closeButton: true});
             noError = false;
         } else if(selectedLocation === "Building") {
+            parentRelation = {"buildingName": "-", "floorName": "No floor"};
             if($("#buildingInput").val() === ""){
                 toastr.error("You must choose a building name", "error", {closeButton: true});
                 noError = false;
             }
         }
         else if(selectedLocation === "Floor") {
+            parentRelation = {"buildingName": selectedBuilding, "floorName": "No floor"};
             if(selectedBuilding === "Select building") {
                 toastr.error("You must choose a building location", "error", {closeButton: true});
                 noError = false;
@@ -441,6 +598,7 @@
             }
         }
         else if(selectedLocation === "Room") {
+            parentRelation = {"buildingName": selectedBuilding, "floorName": selectedFloor};
             if(selectedBuilding === "Select building" || $("#floorSelect option:selected").text() === "Select floor" || $("#ruleSelect option:selected").text() === "Select rule") {
                 toastr.error("You must choose rule, building and floor location", "error", {closeButton: true});
                 noError = false;
@@ -450,6 +608,7 @@
                 noError = false;
             }
         }else if(selectedLocation === "Corridor"){
+            parentRelation = {"buildingName": selectedBuilding, "floorName": selectedFloor};
             if(selectedBuilding === "Select building" || $("#floorSelect option:selected").text() === "Select floor") {
                 toastr.error("You must choose rule, building and floor location", "error", {closeButton: true});
                 noError = false;
@@ -464,7 +623,7 @@
                 url: "/location/create",
                 type: "post",
                 dataType: "json",
-                data:  $('#createLocationSubmit').serialize(),
+                data:  $('#createLocationSubmit').serialize() + "&" + jQuery.param(parentRelation),
                 success: function (response) {
 
                     // TODO reload dependency inventory
@@ -482,6 +641,7 @@
             });
         }
     });
+
 
     // When create dynamic object we must use "on"
     // Fillin floor

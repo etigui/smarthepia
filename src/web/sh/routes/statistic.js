@@ -3,7 +3,7 @@ var router = express.Router();
 var auth = require('../controllers/auth');
 var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
-var Statistic = require('../models/statistic');
+var Statistic = require('../models/stat');
 
 // Module variables
 var isAuth = require('../controllers/isAuth');

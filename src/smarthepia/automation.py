@@ -33,16 +33,17 @@ class Automation(object):
         self.weather_forecast = None
         self.weather_current = None
         self.pids = None
+        self.night_dismissed = False
 
     def run(self):
+
+        # For first start tempo
+        #time.sleep(const.st_start)
 
         # Check if log are well init
         if self.log_init():
 
             self.pids = heater.Heater()
-
-            # For first start tempo
-            # time.sleep(const.st_start)
 
             # Process automation
             while True :
@@ -114,11 +115,12 @@ class Automation(object):
                 self.process_blinds(room)
 
                 # If True => we can process the room
-                multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)
-                if multisensor_status:
+                #multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)
+                #if multisensor_status:
 
                     # Process valve rule
-                    self.process_valves(room, temp)
+                    #self.process_valves(room, temp)
+                self.process_valves(room, 26)
 
     # Get automation rule
     def get_automation_rule(self):
@@ -201,16 +203,24 @@ class Automation(object):
         # If it's night time => close blind
         # Else => process day time rule by room
         night_time_status = weather.check_night_time(room.rule['dt'], room.rule['nt'])
-        if night_time_status:
-            if const.DEBUG: print(f"Night time")
+        if not night_time_status:
 
-            # Get blind night rule
-            # If 1 => Off
-            # If 2 => On
-            if room.rule['bnr'] == const.night_blind_on:
-                blind.close_all_blinds(self.automation_log, self.__client, room.actuators)
+            # Close only one time the blind
+            # At day time the value will be setted to False again
+            if not self.night_dismissed:
+                if const.DEBUG: print(f"Night time")
+                self.night_dismissed = True
+
+                # Get blind night rule
+                # If 1 => Off
+                # If 2 => On
+                if room.rule['bnr'] == const.night_blind_on:
+                    blind.close_all_blinds(self.automation_log, self.__client, room.actuators)
+            else:
+                if const.DEBUG: print(f"Night time dismissed")
         else:
             if const.DEBUG: print(f"Day time")
+            night_dismissed = False
 
             # Check if all multisensor dont return false
             # True => Someone in the room or (multisensor error/not up to date)
