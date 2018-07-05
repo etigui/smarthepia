@@ -83,6 +83,18 @@ class Alarm(object):
         else:
             return False
 
+    # Connect to the database
+    def db_connect(self):
+        try:
+            client = pymongo.MongoClient(const.db_host, const.db_port, serverSelectionTimeoutMS=1)
+            client.server_info()
+            if client is not None:
+                return True, client
+            else:
+                return False, None
+        except pymongo.errors.ConnectionFailure as e:
+            return False, None
+
     # Check web server status
     def web_server_connect(self, url, email_from, admin_email, password, subject):
 
@@ -608,13 +620,6 @@ class Alarm(object):
                 dependencies.append(item['dependency'])
                 dependencies_set.add(item['dependency'])
         return dependencies
-
-    # Connect to the database
-    def db_connect(self):
-        try:
-            return True, pymongo.MongoClient(const.db_host, const.db_port)
-        except pymongo.errors.ConnectionFailure as e:
-            return False, None
 
     # Get admin user email to send critical error
     def get_admin_email(self):

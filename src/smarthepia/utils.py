@@ -5,7 +5,7 @@ import os
 import subprocess
 import datetime
 import json
-import urllib3
+#import urllib3
 
 # Client SMTP
 import smtplib
@@ -13,9 +13,6 @@ import email.message
 
 # Local import
 import const
-
-# Astral calc
-import ephem
 
 # HTML mail
 from html import database
@@ -195,7 +192,7 @@ def remove_duplicates(datas):
     return output
 
 # Get device measures
-
+'''
 def get_mesures(route):
     http = urllib3.PoolManager()
     response = http.request('GET', route)
@@ -208,7 +205,7 @@ def get_mesures(route):
         return False, None
     else:
         return False, None
-
+'''
 
 # Get http request
 def http_get_request_json(url):

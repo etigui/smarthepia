@@ -1,3 +1,4 @@
+#!/usr/bin/env nodejs
 'use strict';
 
 // Module dependencies

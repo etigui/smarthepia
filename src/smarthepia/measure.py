@@ -62,6 +62,18 @@ class Sensor(object):
         else:
             return False
 
+    # Connect to the database
+    def db_connect(self):
+        try:
+            client = pymongo.MongoClient(const.db_host, const.db_port, serverSelectionTimeoutMS=1)
+            client.server_info()
+            if client is not None:
+                return True, client
+            else:
+                return False, None
+        except pymongo.errors.ConnectionFailure as e:
+            return False, None
+
     # Add measures from devices to db
     def add_db_measures(self, db_sensors):
         for dependency in db_sensors:
@@ -135,12 +147,3 @@ class Sensor(object):
                 dependencies.append(item['dependency'])
                 dependencies_set.add(item['dependency'])
         return dependencies
-
-    # Connect to the database
-    def db_connect(self):
-        try:
-            return True, pymongo.MongoClient(const.db_host, const.db_port)
-        except pymongo.errors.ConnectionFailure as e:
-            return False, None
-
-

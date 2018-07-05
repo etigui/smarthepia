@@ -63,7 +63,12 @@ class Status(object):
     # Connect to the database
     def db_connect(self):
         try:
-            return True, pymongo.MongoClient(const.db_host, const.db_port)
+            client = pymongo.MongoClient(const.db_host, const.db_port, serverSelectionTimeoutMS=1)
+            client.server_info()
+            if client is not None:
+                return True, client
+            else:
+                return False, None
         except pymongo.errors.ConnectionFailure as e:
             return False, None
 
