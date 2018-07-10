@@ -5,25 +5,32 @@ process_smarthepia = "smarthepia.py"
 process_knxrest = "KNX_REST_Server.py"
 
 # Mail client log TODO move it to class var in the future and get email from db
-mc_host = "localhost:3000"
-mc_url = f"http://{mc_host}"
+#mc_host = "localhost:3000"
+mc_host = "localhost"
+#mc_url = f"http://{mc_host}"
+mc_url = f"https://{mc_host}"
 mc_email_from = "smarthepia@gmail.com"
 mc_password = "rvfkEvXg_f0qm5K49_7scAq08BH32AFNCjFaztePJ_Es6YEty8p"
 #mc_email_to_default = "smarthepia@gmail.com"
 mc_subject = "Smarthepia network notification"
 
 # Web server notify login
-ws_notify_host = "localhost:3000"
+#ws_notify_host = "localhost:3000"
+ws_notify_host = "localhost"
 ws_notify_email = "notify@gmail.com"
 ws_notify_password = "7scAq08BH3sfh2AFNCjFaztePJ"
-ws_notify_url_post = f"http://{ws_notify_host}"
-ws_alarm_notify_url_get = f"http://{ws_notify_host}/home/alarmnotfy"
+#ws_notify_url_post = f"http://{ws_notify_host}"
+ws_notify_url_post = f"https://{ws_notify_host}"
+#ws_alarm_notify_url_get = f"http://{ws_notify_host}/home/alarmnotfy"
+ws_alarm_notify_url_get = f"https://{ws_notify_host}/home/alarmnotfy"
 ws_alarm_notify_response = "alarmNotify"
-ws_status_notify_url_get = f"http://{ws_notify_host}/home/statusnotfy"
+#ws_status_notify_url_get = f"http://{ws_notify_host}/home/statusnotfy"
+ws_status_notify_url_get = f"https://{ws_notify_host}/home/statusnotfy"
 ws_status_notify_response = "statusNotify"
 
 # Web server check
-ws_url = "http://localhost:3000"
+#ws_url = "http://localhost:3000"
+ws_url = "https://localhost"
 ws_help = f"{ws_url}/help"
 ws_profile = f"{ws_url}/profile"
 
@@ -34,7 +41,7 @@ db_port = 27017
 # Set time for each process sleep
 factor = 60
 st_alarm = 5 * factor
-st_automation = 1 * factor
+st_automation = 14 * factor
 st_measure = 5 * factor
 st_start = 1 * factor
 st_status = 4 * factor
@@ -81,7 +88,8 @@ def route_knx_device_value_read(ip, port, address, ttype):
 def route_knx_device_value_write(ip, port, address, ttype, value):
 
     # Check if the value is between 0 and 255
-    if blind_min_value < value <= blind_max_value:
+    #if blind_min_value < value <= blind_max_value:
+    if blind_min_value <= value <= blind_max_value:
         floor = address.split("/")[0]
         id = address.split("/")[1]
         return True, f"http://{ip}:{str(port)}/v0/{str(ttype).lower()}/write/{floor}/{id}/{value}"

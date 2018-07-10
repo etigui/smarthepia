@@ -216,7 +216,7 @@ def get_current_weather(db, log, local):
 def get_check_current_weather(log, weather_current):
 
     # Check if data have been setted
-    if weather_current is not None:
+    if weather_current:
 
         # Get current weather
         datas = weather_current
@@ -259,6 +259,48 @@ def check_between_sunset_rise(log, weather_current):
     return False
 
 
+# Check if there is rain during the day
+def check_rain_day(log, weather_current):
+    rain = check_rain_in_day(log, weather_current)
+    for r in rain:
+        if r:
+            return True
+    return False
+
+
+# Check if the forecast weather from DB/API are good
+def check_rain_in_day(log, weather_current):
+    rain = []
+    if weather_current:
+
+        # Check API attr
+        if 'list' in weather_current:
+            for weather in weather_current['list']:
+
+                # Check API attr
+                if 'dt' in weather:
+                    forecast_day = datetime.datetime.fromtimestamp(int(weather['dt']))
+                    if forecast_day.date() == datetime.datetime.now().date():
+
+                        # Check API attr
+                        if 'weather' in weather:
+                            if len(weather['weather']) > 0:
+                                if 'id' in weather['weather'][0]:
+                                    rain.append(is_raining_drizzle(str(weather['weather'][0]['id'])))
+                                else:
+                                    log.log_error(f"In function (check_rain_in_day), API attr (id) error")
+                        else:
+                            log.log_error(f"In function (check_rain_in_day), API attr (weather) error")
+                else:
+                    log.log_error(f"In function (check_rain_in_day), API attr (dt) error")
+        else:
+            log.log_error(f"In function (check_rain_in_day), API attr (list) error")
+
+    else:
+        log.log_error(f"In function (check_rain_in_day), API not return forecast")
+    return rain
+
+
 # Check is rain (it check even not heavy rain)
 def check_rain(log, weather_current):
 
@@ -271,7 +313,10 @@ def check_rain(log, weather_current):
             if len(datas['weather']) > 0:
                 if 'id' in datas['weather'][0]:
                     return is_raining_drizzle(str(datas['weather'][0]['id']))
-        log.log_error(f"In function (check_rain), API attr error")
+                else:
+                    log.log_error(f"In function (check_rain), API attr (id) error")
+        else:
+            log.log_error(f"In function (check_rain), API attr (weather) error")
     return False
 
 

@@ -43,23 +43,9 @@ def send_ping(host):
 
         # Check if ping error (r==0=>ok;r==2=>no_reponse;else=>failed)
         command = ['ping', '-c', '1', host]
-        if not system_call(command, stdout=open(os.devnull, 'wb')) != 0:
+        if system_call(command, stdout=open(os.devnull, 'wb')) != 0:
             return False
     return True
-    '''
-    # Check OS type
-    if system_name().lower() == 'windows':
-        send_ping_win(host)
-        #command = ['ping', '-n', '1', host]
-    else:
-        command = ['ping', '-c', '1', host]
-
-    # Check if ping error (r==0=>ok;r==2=>no_reponse;else=>failed)
-    if system_call(command, stdout=open(os.devnull, 'wb')) != 0:
-        return False
-    return True
-    '''
-
 
 # Get http request
 def get_http(url):
@@ -68,16 +54,16 @@ def get_http(url):
         r.raise_for_status()
         return True
     except requests.exceptions.HTTPError as errh:
-        print("Http Error:", errh)
+        if const.DEBUG: print("Http Error:", errh)
         return False
     except requests.exceptions.ConnectionError as errc:
-        print("Error Connecting:", errc)
+        if const.DEBUG: print("Error Connecting:", errc)
         return False
     except requests.exceptions.Timeout as errt:
-        print("Timeout Error:", errt)
+        if const.DEBUG: print("Timeout Error:", errt)
         return False
     except requests.exceptions.RequestException as err:
-        print("OOps: Something Else", err)
+        if const.DEBUG: print("OOps: Something Else", err)
         return False
 
 
@@ -137,7 +123,7 @@ def send_mail(email_from, email_to, password, message, subject):
     # Send and quit
     client.sendmail(msg['From'], [msg['To']], msg.as_string())
     client.quit()
-    print(f"successfully sent html to {msg['To']}")
+    if const.DEBUG: print(f"successfully sent html to {msg['To']}")
 
 
 # Send mail if the database is down

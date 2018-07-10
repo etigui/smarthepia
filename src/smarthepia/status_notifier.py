@@ -19,6 +19,9 @@ class Status(object):
     def __init__(self):
         self.__client = None
         self.status_log = None
+        self.ws_status = True
+        self.db_status = True
+        self.admin_email = []
 
     def run(self):
 
@@ -31,7 +34,15 @@ class Status(object):
 
                 # Init MongoDB client
                 status, self.__client = self.db_connect()
+
+                # Get admin email
+                self.get_admin_email()
+
+                # Check web server status
+                self.web_server_connect(const.ws_url, const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
+
                 if status:
+                    if const.DEBUG: print(f"DB connection ok: {datetime.datetime.now()}")
 
                     # Update every 5 min the status of KNX REST and automation
                     notify_status = self.check_sh_status()
@@ -40,8 +51,20 @@ class Status(object):
 
                     # Close db
                     self.__client.close()
+                    self.__client = None
+                    self.db_status = True
                 else:
                     self.status_log.log_error(f"In function (run), could not connect to the db")
+
+
+                    # Check if the last check was false
+                    # if false => we dont send the alarm again until the service goes up again
+                    # if true => send mail to admin
+                    if self.db_status:
+
+                        # Send mail to the admin, manager if the DB is down
+                        self.db_status = False
+                        utils.send_database_alert(const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
 
                 # Wait nest iter
                 time.sleep(const.st_status)
@@ -134,3 +157,45 @@ class Status(object):
                     if process_name in p.cmdline():
                         count += 1
         return count
+
+    # Check web server status
+    def web_server_connect(self, url, email_from, admin_email, password, subject):
+
+        # HTTP request on web server
+        if not utils.get_http(url):
+
+            # Check if the last check was false
+            # if false => we dont send the alarm again until the service goes up again
+            # if true => send mail to admin
+            if self.ws_status:
+                self.ws_status = False
+
+                # Send email to all admin
+                for email_to in admin_email:
+                    utils.send_web_server_alert(email_from, email_to, password, subject)
+        else:
+            if const.DEBUG: print(f"Web server connection ok: {datetime.datetime.now()}")
+            self.ws_status = True
+
+    # Get admin user email to send critical error
+    def get_admin_email(self):
+
+        # If database error
+        if self.__client:
+            self.admin_email.clear()
+            query = {'$and': [{"enable": True}, {"permissions": {'$eq': 2}}]}
+            datas = self.__client.sh.users.find(query)
+
+            # Get all devices
+            for data in datas:
+                self.admin_email.append(data['email'])
+        else:
+
+            # Get default email from conf file
+            # If db not available
+            status, default_email = conf.get_default_email_address()
+            if status:
+
+                # Set as default email if db error
+                self.admin_email = [default_email]
+

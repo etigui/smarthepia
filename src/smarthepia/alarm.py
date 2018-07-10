@@ -22,12 +22,9 @@ class Alarm(object):
 
     def __init__(self):
         self.__client = None
-        self.ws_status = True
-        self.db_status = True
         self.net_status = False
         self.alarm = []
         self.popup_id = []
-        self.admin_email = []
         self.alarm_log = None
 
     def run(self):
@@ -42,29 +39,14 @@ class Alarm(object):
                 # Init MongoDB client, check connection
                 status, self.__client = self.db_connect()
 
-                # Get admin email
-                self.get_admin_email()
-
-                # Check web server status
-                self.web_server_connect(const.ws_url, const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
-
                 # Check if mongodb has been well init
                 if status:
-                    print(f"DB connection ok: {datetime.datetime.now()}")
+
                     self.process_network()
                     self.__client.close()
                     self.__client = None
-                    self.db_status = True
                 else:
-
-                    # Check if the last check was false
-                    # if false => we dont send the alarm again until the service goes up again
-                    # if true => send mail to admin
-                    if self.db_status:
-
-                        # Send mail to the admin, manager if the DB is down
-                        self.db_status = False
-                        utils.send_database_alert(const.mc_email_from, self.admin_email, const.mc_password, const.mc_subject)
+                    self.alarm_log.log_error(f"In function (run), could not connect to the db")
 
                 # Wait next iter
                 time.sleep(const.st_alarm)
@@ -95,24 +77,7 @@ class Alarm(object):
         except pymongo.errors.ConnectionFailure as e:
             return False, None
 
-    # Check web server status
-    def web_server_connect(self, url, email_from, admin_email, password, subject):
 
-        # HTTP request on web server
-        if not utils.get_http(url):
-
-            # Check if the last check was false
-            # if false => we dont send the alarm again until the service goes up again
-            # if true => send mail to admin
-            if self.ws_status:
-                self.ws_status = False
-
-                # Send email to all admin
-                for email_to in admin_email:
-                    utils.send_web_server_alert(email_from, email_to, password, subject)
-        else:
-            print(f"Web server connection ok: {datetime.datetime.now()}")
-            self.ws_status = True
 
     # Process all the device attached to Smarthepia network
     def process_network(self):
@@ -177,6 +142,7 @@ class Alarm(object):
             elif alarm.type == const.alarm_type_dependency:
                 alarm_dependencies.append(alarm)
             else:
+                self.alarm_log.log_error(f"In function (process_alarm), alarm type ({alarm.type}) not defined")
                 print(f"Alarm type ({alarm.type}) not defined")
 
         # Reset graph
@@ -455,6 +421,7 @@ class Alarm(object):
                     error = True
                     self.alarm.append(datastruct.StructAlarm(const.alarm_type_dependency, 0, dependency['name'], dependency_name, {"type": const.error_alarm, "severity": const.severity_high, "message": "No response"}))
             else:
+                self.alarm_log.log_error(f"In function (check_network_dependency), dependency method ({dependency['method']}) not implemented")
                 print(f"Dependency method ({dependency['method']}) not implemented")
 
         # Check if dependency error
@@ -490,8 +457,10 @@ class Alarm(object):
                     # Check if actuator are available
                     self.check_network_actuator(device, dependency_ip, dependency_port)
                 else:
+                    self.alarm_log.log_error(f"In function (check_network_devices), address ({device['address']}) not implemented")
                     print(f"Address ({device['address']}) not implemented")
             else:
+                self.alarm_log.log_error(f"In function (check_network_devices), device type ({device['type']}) or/and subtype ({device['subtype']}) not implemented")
                 print(f"Device type ({device['type']}) or/and subtype ({device['subtype']}) not implemented")
 
     # Check device with the label type => actuator
@@ -522,7 +491,7 @@ class Alarm(object):
 
             # If return != 200 means that server internal error (5xx)
             if r.status_code != 200:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Actuator id malformed"}))
+                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Id malformed"}))
         else:
             result = r.json()
             if result.get('result'):
@@ -545,7 +514,7 @@ class Alarm(object):
             if r.status_code == 200 and r.text == const.wrong_not_available_device:
                 self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Sensor not exists"}))
             else:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong sensor id"}))
+                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong id"}))
         else:
 
             # We sub 2h to now
@@ -554,7 +523,7 @@ class Alarm(object):
             diff = datetime.datetime.now() + datetime.timedelta(hours=(-2))
             device_update_time = datetime.datetime.fromtimestamp(int(result['updateTime']))
             if device_update_time < diff:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Device value are not updated"}))
+                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Measures are not up-to-date"}))
             elif int(result['battery']) < const.battery_min_warning:
                 self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.warning_alarm, "severity": const.severity_medium, "message": "Battery less than 10%"}))
             elif int(result['battery']) < const.battery_min_info:
@@ -620,26 +589,3 @@ class Alarm(object):
                 dependencies.append(item['dependency'])
                 dependencies_set.add(item['dependency'])
         return dependencies
-
-    # Get admin user email to send critical error
-    def get_admin_email(self):
-
-        # If database error
-        if self.__client:
-            self.admin_email.clear()
-            query = {'$and': [{"enable": True}, {"permissions": {'$eq': 2}}]}
-            datas = self.__client.sh.users.find(query)
-
-            # Get all devices
-            for data in datas:
-                self.admin_email.append(data['email'])
-        else:
-
-            # Get default email from conf file
-            # If db not available
-            status, default_email = conf.get_default_email_address()
-            if status:
-
-                # Set as default email if db error
-                self.admin_email = [default_email]
-

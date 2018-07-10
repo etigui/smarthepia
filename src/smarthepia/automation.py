@@ -85,8 +85,10 @@ class Automation(object):
     # Connect to the database
     def db_connect(self):
         try:
-            client = pymongo.MongoClient(const.db_host, const.db_port, serverSelectionTimeoutMS=1)
-            client.server_info()
+            #, serverSelectionTimeoutMS=10, connectTimeoutMS=20000
+            client = pymongo.MongoClient(const.db_host, const.db_port)
+            info = client.server_info()
+            #client.admin.command('ismaster')
             if client is not None:
                 return True, client
             else:
@@ -104,33 +106,44 @@ class Automation(object):
         self.get_room()
 
         # Get automation rule
-        self.get_automation_rule()
+        auto_rule_status, self.automation_rule = self.get_automation_rule()
+        if auto_rule_status:
 
-        # Get last weather measures and forecast
-        self.weather_forecast = weather.get_forecast(self.__client, self.automation_log, True)
-        self.weather_current = weather.get_current_weather(self.__client, self.automation_log, True)
+            # Get last weather measures and forecast
+            self.weather_forecast = weather.get_forecast(self.__client, self.automation_log, False)
+            self.weather_current = weather.get_current_weather(self.__client, self.automation_log, True)
+            if self.weather_forecast and self.weather_current:
 
-        # Check if we have room to process automation
-        if len(self.rooms) > 0:
+                # Check if we have room to process automation
+                # Useless check
+                if len(self.rooms) > 0:
 
-            # Walk through all room
-            for room in self.rooms:
+                    # Walk through all room
+                    for room in self.rooms:
+                        pass
 
-                # Process blind rule
-                self.process_blinds(room)
+                        # Process blind rule
+                        #self.process_blinds(room)
 
-                # If True => we can process the room
-                #multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)
-                #if multisensor_status:
+                        # If True => we can process the room
+                        #multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)
+                        #if multisensor_status:
 
-                    # Process valve rule
-                    #self.process_valves(room, temp)
-                self.process_valves(room, 26)
+                            # Process valve rule
+                            #self.process_valves(room, temp)
+                            #self.process_valves(room, 26)
+                    i = 0
+            else:
+                self.automation_log.log_error(f"In function (process_automation), could not get weather or forecast")
 
     # Get automation rule
     def get_automation_rule(self):
         datas = self.__client.sh.automations.find_one()
-        self.automation_rule = datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outsummax'], datas['kp'],datas['ki'],datas['kd'], datas['outtempmin'], datas['intempmin'])
+        if datas:
+            return True, datastruct.StructAutomationRule(datas['hpstartday'], datas['hpstartmonth'], datas['hpstopday'], datas['hpstopmonth'], datas['hptempmin'], datas['hptempmax'], datas['nhptempmin'], datas['nhptempmax'], datas['outsummax'], datas['kp'],datas['ki'],datas['kd'], datas['outtempmin'], datas['intempmin'])
+        else:
+            self.automation_log.log_error(f"In function (get_automation_rule), could not get automation rule")
+            return False, None
 
     # Get all rooms
     # Not disabled & not in error
@@ -146,15 +159,24 @@ class Automation(object):
             # If rule automation by room is disable => no automation.
             sensor_status, sensors = multisensor.get_multisensor_by_room(self.__client, data['id'])
             actuator_status, actuators = self.get_actuator_by_room(data['id'])
-            rule = self.get_rules_by_room(data['rules'])
-            room_id = str(data['_id'])
-            if sensor_status and actuator_status and rule['active']:
-                self.rooms.append(datastruct.StructAutomation(sensors, actuators, rule, data['orientation'], room_id))
+
+            # Check if no error with room rule
+            rule_status, rule = self.get_rules_by_room(data['rules'])
+            if rule_status:
+
+                room_id = str(data['_id'])
+                if sensor_status and actuator_status and rule['active']:
+                    self.rooms.append(datastruct.StructAutomation(sensors, actuators, rule, data['orientation'], room_id, rule['active']))
 
     # Get rule ba room
     def get_rules_by_room(self, room_rule):
         query = {"name": room_rule}
-        return self.__client.sh.rules.find_one(query)
+        datas = self.__client.sh.rules.find_one(query)
+        if datas:
+            return True, datas
+        else:
+            self.automation_log.log_error(f"In function (get_rules_by_room), could not get room rule")
+            return False, None
 
     # Get actuators by room id
     def get_actuator_by_room(self, room_id):
@@ -198,7 +220,11 @@ class Automation(object):
                     if indoor_temp <= self.automation_rule.in_temp_min and self.automation_rule.out_temp_min <= current_external_temp:
 
                         # Get pid value for the current room to set to valve
-                        valve.set_all_valves(self.pids, self.__client, self.automation_log, self.automation_rule, room,indoor_temp)
+                        valve.set_all_valves(self.pids, self.__client, self.automation_log, self.automation_rule, room, indoor_temp)
+                    else:
+
+                        # Close all valve cause not heating period => prevent hot room if heater still open
+                        valve.close_all_valves(self.__client, self.automation_log, room)
                 else:
                     self.automation_log.log_error(f"In function (process_valves), the temp given by the API/DB is not available")
 
@@ -249,13 +275,13 @@ class Automation(object):
                     elif room.rule['bdr'] == const.day_blind_ram:  # Rain and no motion => blind down
 
                         # Close all blind if rain
-                        if weather.check_rain(self.automation_log, self.weather_current):
+                        if weather.check_rain(self.automation_log, self.weather_current) or weather.check_rain_day(self.automation_log, self.weather_forecast):
                             blind.close_all_blinds(self.automation_log, self.__client, room.actuators)
                     elif room.rule['bdr'] == const.day_blind_full: # Rain and no motion and Sun and no motion => blind down
 
                         # Close all blind if rain
                         # Else check if sun in the room
-                        if weather.check_rain(self.automation_log, self.weather_current):
+                        if weather.check_rain(self.automation_log, self.weather_current) or weather.check_rain_day(self.automation_log, self.weather_forecast):
                             blind.close_all_blinds(self.automation_log, self.__client, room.actuators)
                         else:
                             status = blind.rule_sun_and_no_motion(self.season, self.automation_rule, self.automation_log, self.weather_current, room, sunrise_sunset, is_cloudy)

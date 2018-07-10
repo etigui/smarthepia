@@ -3,6 +3,38 @@ import const
 import utils
 
 
+# Close all valve => value = 0
+def close_all_valves(db, log, room):
+    # Get all actuator by room
+    for actuator in room.actuators:
+
+        # Check if blind
+        if actuator['subtype'] == const.db_devices_sub_type_valve:
+
+            # Get ip and port for this actuator
+            actuator_status, ip, port = get_knx_network_by_device(db, actuator['dependency'])
+            if actuator_status:
+                close_one_valve(log, ip, port, actuator['address'])
+
+
+# Close one valve => value = 0
+def close_one_valve(log, ip, port, address):
+
+    # Check if the valve is not already close => 0
+    # Prevent blind forcing
+    valve_read_status, value = get_valve_value(log, ip, port, address)
+    if valve_read_status:
+        if value != const.valve_min_value:
+
+            # Gen knx route to close valve => 255
+            route_status, write_route = const.route_knx_device_value_write(ip, port, address, const.db_devices_sub_type_valve, const.valve_min_value)
+            if route_status:
+                status, result = utils.http_get_request_json(write_route)
+                if not status:
+                    # TODO error (maybe alarm) if we cant do it after 20min
+                    # Global var list of error blind
+                    log.log_error(f"In function (close_one_valve), cannot write pid value ({const.valve_min_value}) to valve")
+
 # Set the pid computed value for each valve in the room
 def set_all_valves(pids, db, log, automation_rule, room, indoor_temp):
 
@@ -27,7 +59,7 @@ def set_all_valves(pids, db, log, automation_rule, room, indoor_temp):
 # Set on valve with pid value
 def set_one_valve(log, ip, port, address, pid_computed_value):
 
-    # Check if the blind is not already at max => 255
+    # Check if the valve is not already at pid value
     # Prevent blind forcing
     valve_read_status, value = get_valve_value(log, ip, port, address)
     if valve_read_status:
@@ -51,7 +83,7 @@ def get_valve_value(log, ip, port, address):
     read_route = const.route_knx_device_value_read(ip, port, address, const.db_devices_sub_type_valve)
     status, result = utils.http_get_request_json(read_route)
     if not status:
-        log.log_error(f"In function (get_valve_value), cannot read value from valve")
+        log.log_error(f"In function (get_valve_value), cannot read value from valve (result={result})")
     else:
 
         # Check is result label exist
@@ -77,20 +109,22 @@ def get_knx_network_by_device(db, dependency_device_name):
     # Get dependency
     query = {'$and': [{'depname': dependency_device_name}, {'devices.method': {'$eq': const.dependency_device_type_rest}}]}
     devices = db.sh.dependencies.find_one(query)
+    if devices:
 
-    # Get REST server ip and port
-    ip = ""
-    port = 0
-    for device in devices['devices']:
-        if device['method'] == const.dependency_device_type_rest:
-            ip = device['ip']
-            port = device['port']
+        # Get REST server ip and port
+        ip = ""
+        port = 0
+        for device in devices['devices']:
+            if device['method'] == const.dependency_device_type_rest:
+                ip = device['ip']
+                port = device['port']
 
-    # Check if ip and port not empty
-    # => Can be an error if not ip and port
-    if ip == "" or port == 0:
-        return False, None, None
-    return True, ip, port
+        # Check if ip and port not empty
+        # => Can be an error if not ip and port
+        if ip == "" or port == 0:
+            return False, None, None
+        return True, ip, port
+    return False, None, None
 
 
 # Get all rooms which contains valves

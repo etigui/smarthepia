@@ -70,23 +70,25 @@ def get_blind_value(log, ip, port, address):
 # Get knx dependency device type REST
 # => ip and port
 def get_knx_network_by_device(db, dependency_device_name):
+
     # Get dependency
     query = {'$and': [{'depname': dependency_device_name}, {'devices.method': {'$eq': const.dependency_device_type_rest}}]}
     devices = db.sh.dependencies.find_one(query)
+    if devices:
+        # Get REST server ip and port
+        ip = ""
+        port = 0
+        for device in devices['devices']:
+            if device['method'] == const.dependency_device_type_rest:
+                ip = device['ip']
+                port = device['port']
 
-    # Get REST server ip and port
-    ip = ""
-    port = 0
-    for device in devices['devices']:
-        if device['method'] == const.dependency_device_type_rest:
-            ip = device['ip']
-            port = device['port']
-
-    # Check if ip and port not empty
-    # => Can be an error if not ip and port
-    if ip == "" or port == 0:
-        return False, None, None
-    return True, ip, port
+        # Check if ip and port not empty
+        # => Can be an error if not ip and port
+        if ip == "" or port == 0:
+            return False, None, None
+        return True, ip, port
+    return False, None, None
 
 
 # Rule to close blind when sun and no motion

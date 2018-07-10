@@ -94,12 +94,12 @@ function timeStatus(){
         // Add default knx => not running
         // Add status message
         knx.addClass("bg-danger");
-        knx.text("Not running");
+        knx.text("Not up-to-date");
 
         // Add default automation => not running
         // Add status message
         automation.addClass("bg-danger");
-        automation.text("Not running");
+        automation.text("Not up-to-date");
     }
 }
 
@@ -127,7 +127,7 @@ function updateStatus(item, span, updateTime){
         span.addClass("bg-danger");
 
         // Add status message
-        span.text("Not running");
+        span.text("Not up-to-date");
         updateTime.text("Last update " + item['updatetime']);
     }else{
 
