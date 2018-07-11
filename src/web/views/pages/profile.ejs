@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <title>Smarthepia - Profile</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/vendors.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/ui/prism.min.css">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN STACK CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <!-- END STACK CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/css/core/colors/palette-gradient.css">
+    <!-- END Page Level CSS-->
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <!-- END Custom CSS-->
+
+    <!-- BEGIN toastr -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
+    <!-- END toastr -->
+
+</head>
+<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<% include ../partials/nav %>
+<% include ../partials/menu %>
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-6 col-12 mb-1">
+                <h3 class="content-header-title">Profile</h3>
+                <span id="serverTime"></span>
+            </div>
+        </div>
+        <div class="content-body">
+
+            <div class="row justify-content-md-center">
+                <div class="col-md-5">
+                    <div class="card card border-top-primary">
+                        <div class="text-center">
+                            <div class="card-body">
+                                <img src="/images/logo/smarthepia_baset_128.png" class="rounded-circle  height-150" alt="Card image">
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title"><%= typeof fullName!='undefined' ? fullName : 'undefined' %></h4>
+                                <h6 class="card-subtitle text-muted"><%= typeof perm!='undefined' ? perm : 'undefined' %></h6>
+                            </div>
+
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Last connection
+                                <span class="float-right"><%= typeof lastConnection!='undefined' ? lastConnection : 'undefined' %></span>
+                            </li>
+
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic form layout section start -->
+            <section id="basic-form-layouts">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title" id="basic-layout-square-controls">Personal informations</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <form id="editUser" class="form">
+                                        <div class="form-body">
+                                            <div class="form-group">
+                                                <label for="donationinput2">Email</label>
+                                                <input type="email" id="email" class="form-control square" placeholder="email" name="email" autocomplete="off" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="donationinput2">First name</label>
+                                                <input type="text" id="fname" class="form-control square" placeholder="First name" name="fname" autocomplete="off" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="donationinput2">Last name</label>
+                                                <input type="text" id="lname" class="form-control square" placeholder="Last name" name="lname" autocomplete="off" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-actions right">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Save
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title" id="basic-layout-square-controls">Change password</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <form id="editPassword" class="form">
+                                        <div class="form-body">
+                                            <div class="form-group">
+                                                <label for="donationinput2">Current password
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="password" id="cpassword" class="form-control square form-control position-maxlength" placeholder="password" name="cpassword" maxlength="30" aria-invalid="true" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="donationinput2">New password
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="password" id="npassword" class="form-control square form-control position-maxlength" placeholder="password" name="npassword" maxlength="30" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="donationinput2">Confirme new password
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="password" id="cnpassword" class="form-control square form-control position-maxlength" placeholder="password" name="cnpassword" maxlength="30" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-actions right">
+                                            <button type="reset" class="btn btn-warning mr-1">Reset
+                                                <i class="fa fa-refresh position-right"></i>
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Save
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- // Basic form layout section end -->
+        </div>
+    </div>
+</div>
+<% include ../partials/footer %>
+
+<!-- BEGIN VENDOR JS-->
+<script src="/vendors/js/vendors.min.js" type="text/javascript"></script>
+<!-- BEGIN VENDOR JS-->
+<!-- BEGIN PAGE VENDOR JS-->
+<script type="text/javascript" src="/vendors/js/ui/prism.min.js"></script>
+<!-- END PAGE VENDOR JS-->
+<!-- BEGIN STACK JS-->
+<script src="/js/core/app-menu.js" type="text/javascript"></script>
+<script src="/js/core/app.js" type="text/javascript"></script>
+<script src="/js/scripts/customizer.js" type="text/javascript"></script>
+<!-- END STACK JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+<!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN PASSWORD LENGTH -->
+<script src="/vendors/js/forms/extended/maxlength/bootstrap-maxlength.js" type="text/javascript"></script>
+<script src="/js/scripts/forms/extended/form-maxlength.js" type="text/javascript"></script>
+<!-- END PASSWORD LENGTH -->
+
+<!-- BEGIN toastr -->
+<script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
+<script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
+<!-- END toastr -->
+
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
+<script>
+
+    onLoad();
+
+    function onLoad(){
+        userInfo();
+    }
+
+    function userInfo(){
+        $.ajax({
+            url: "/profile/load",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                if(response.email && response.firstName && response.lastName){
+                    $("#email").val(response.email);
+                    $("#fname").val(response.firstName);
+                    $("#lname").val(response.lastName);
+                    $("#superLastname").text(response.lastName);
+                }
+            }
+        });
+    }
+
+    $("#editUser").submit(function( event ) {
+        event.preventDefault();
+        emailUser = $("#email").val();
+        firstnameUser = $("#fname").val();
+        lastnameUser = $("#lname").val();
+
+        if (emailUser && firstnameUser && lastnameUser) {
+            $.ajax({
+                url: "/profile/edit/user",
+                type: "post",
+                data: {
+                    email: emailUser,
+                    firstname: firstnameUser,
+                    lastname: lastnameUser
+                },
+                dataType: "json",
+                success: function (response) {
+                    userInfo();
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }
+    });
+
+    $("#editPassword").submit(function( event ) {
+        event.preventDefault();
+        currentPass = $("#cpassword").val();
+        newPass = $("#npassword").val();
+        confirmNewPass = $("#cnpassword").val();
+        if (currentPass && newPass && confirmNewPass) {
+            $.ajax({
+                url: "/profile/edit/password",
+                type: "post",
+                data: {
+                    cpass: currentPass,
+                    npass: newPass,
+                    cnpass: confirmNewPass
+                },
+                dataType: "json",
+                success: function (response) {
+                    userInfo();
+                    $("#editPassword")[0].reset();
+                    if (response.status === "success") {
+                        toastr.success(response.message, response.status, {closeButton: true})
+                    } else if (response.status === "error") {
+                        toastr.error(response.message, response.status, {closeButton: true})
+                    } else {
+                        toastr.error("Undefined", "error", {closeButton: true})
+                    }
+                }
+            });
+        }
+    });
+
+    // BEGIN alarm section ////////////////////////////////////////////////////////////////
+    var socket = io.connect();
+    socket.on('connect', function () {
+        console.log('Socket connected');
+    });
+
+    // Manager, admin receive notif when alarm change
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                updateBadge(span, response.atype, response.count);
+            }
+        });
+    }
+
+    socket.on('welcome',function(data){
+        console.log("Receive welcome");
+        loadBadge();
+    });
+
+    // Manager, admin receive notif when graph change
+    socket.on('alarmNotify',function(data){
+        console.log("Receive alarmNotify");
+        loadBadge();
+    });
+
+    <%}%>
+    // END alarm section /////////////////////////////////////////////////////////////////
+
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    //Users time
+    var timeLocal = new Date();
+    //Servers time
+    var timeServer = new Date("<%= dateTime %>");
+
+    //Calculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    //initalize the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+
+    function formatDate(timeLocal){
+        var hour = timeLocal.getHours();
+        var min = timeLocal.getMinutes();
+        var sec = timeLocal.getSeconds();
+        var day = timeLocal.getDate();
+        var month = (timeLocal.getMonth() + 1);
+        var year = timeLocal.getFullYear();
+        hour = hour < 10 ? '0'+ hour : hour;
+        min= min < 10 ? '0'+ min : min;
+        sec = sec < 10 ? '0'+ sec : sec;
+        day = day < 10 ? '0'+ day : day;
+        month = month < 10 ? '0'+ month : month;
+        return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
+    }
+
+    //The ticking clock function
+    function timeTick(){
+        //grab updated time
+        timeLocal = new Date();
+        //add time difference
+        timeLocal.setMilliseconds(timeLocal.getMilliseconds() - millDiff);
+        //display the value
+
+        document.getElementById("serverTime").innerHTML = formatDate(timeLocal);
+    }
+    // END Server time section /////////////////////////////////////////////////////////////
+
+
+</script>
+</body>
+</html>

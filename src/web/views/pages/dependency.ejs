@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <title>Smarthepia - Dependency</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/vendors.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/ui/prism.min.css">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN STACK CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <!-- END STACK CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/css/core/colors/palette-gradient.css">
+    <!-- END Page Level CSS-->
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <!-- END Custom CSS-->
+
+    <!-- BEGIN datatable -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/dataTables.colVis.css">
+    <!-- END datatatable -->
+
+    <!-- BEGIN toastr -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
+    <!-- END toastr -->
+
+</head>
+<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<% include ../partials/nav %>
+<% include ../partials/menu %>
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-6 col-12 mb-1">
+                <h3 class="content-header-title">Dependency</h3>
+                <span id="serverTime"></span>
+            </div>
+        </div>
+        <div class="content-body">
+            <section id="advance-charts">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title">Dependency list</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="dependencyTable" class="table table-striped table-bordered text-inputs-searching table-hover dataTable">
+                                            <thead>
+                                            <tr>
+                                                <th>Dep. name</th>
+                                                <th>Div. name</th>
+                                                <th>IP</th>
+                                                <th>Port</th>
+                                                <th>Method</th>
+                                                <th>Comment</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                                <th rowspan="1" colspan="1">
+                                                </th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="form-repeater">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title" id="repeat-form">Add devices dependency</h4>
+                                <a class="heading-elements-toggle"><i class="icon-ellipsis font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <form id="createDependencySubmit" class="form">
+                                        <div class="row">
+                                            <div class="form-group col-sm-12 col-md-2" style="">
+                                                <label for="donationinput2">Dependency name
+                                                    <span class="danger">*</span>
+                                                </label>
+                                                <input type="text" id="depName" name="depName" class="form-control square" placeholder="Dependency name" autocomplete="off" required>
+                                            </div>
+                                        </div>
+                                        <div class="repeater-default">
+                                            <div data-repeater-list="dependency">
+                                                <div data-repeater-item="" style="">
+                                                    <div class="row">
+                                                        <div class="form-group mb-1 col-sm-12 col-md-2">
+                                                            <label for="email-addr">Device name
+                                                                <span class="danger">*</span>
+                                                            </label>
+                                                            <br>
+                                                            <input name="depdName" type="text" class="form-control depdName" id="depdName" placeholder="Device name" autocomplete="off" required>
+                                                        </div>
+                                                        <div class="form-group mb-1 col-sm-12 col-md-2">
+                                                            <label for="pass">IP address
+                                                                <span class="danger">*</span>
+                                                            </label>
+                                                            <br>
+                                                            <input name="depdIp" type="text" class="form-control depdIp" id="depdIp" placeholder="IP address" autocomplete="off" required>
+                                                        </div>
+                                                        <div class="skin skin-flat form-group mb-1 col-sm-12 col-md-2">
+                                                            <label for="tel-input">Port (0=no port)
+                                                                <span class="danger">*</span>
+                                                            </label>
+                                                            <br>
+                                                            <input name="depdPort" class="form-control" type="number" value="0" id="depdPort" placeholder="Port" autocomplete="off" required>
+                                                        </div>
+                                                        <div class="form-group mb-1 col-sm-12 col-md-2">
+                                                            <label for="donationinput2">Method
+                                                                <span class="danger">*</span>
+                                                            </label>
+                                                            <select name="depdMethod" id="depdMethod" class="form-control square">
+                                                                <option value="" selected="" disabled="" hidden="">Select method</option>
+                                                                <option value="Ping">Ping</option>
+                                                                <option value="REST/HTTP">REST/HTTP</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group mb-1 col-sm-12 col-md-2">
+                                                            <label for="bio" class="cursor-pointer">Comment</label>
+                                                            <br>
+                                                            <input name="depdComment" class="form-control" id="bio" rows="1" placeholder="Comment" autocomplete="off" >
+                                                        </div>
+                                                        <div class="form-group col-sm-12 col-md-2 text-center mt-2">
+                                                            <button type="button" class="btn btn-danger" data-repeater-delete=""> <i class="ft-x"></i> Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+
+                                                <button type="button" data-repeater-create="" class="btn btn-primary">
+                                                    <i class="ft-plus"></i> Add
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-actions right">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Send
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BEGIN modal -->
+            <div class="modal fade text-left" id="modalEditDependency" tabindex="-1" role="dialog" aria-labelledby="" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id=""> Edit dependency</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <form id="editDependencySubmit" class="form">
+                            <div class="modal-body">
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">Device name
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input id="editDeviceName" name="editDeviceName" type="text" class="form-control square" placeholder="Device name" required autocomplete="off">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">IP address
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input id="editIp" name="editIp" type="text" class="form-control square" placeholder="IP address" required autocomplete="off">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">Port
+                                        <span class="danger">*</span>
+                                    </label>
+                                    <input id="editPort" name="editPort" type="text" class="form-control square" placeholder="Port" required autocomplete="off">
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="title">Method</label>
+                                    <select name="editMethod" id="editMethod" class="form-control square" disabled>
+                                        <option value="" selected="" disabled="" hidden="">Select method</option>
+                                        <option value="Ping">Ping</option>
+                                        <option value="REST/HTTP">REST/HTTP</option>
+                                    </select>
+                                </fieldset>
+                                <fieldset class="form-group floating-label-form-group">
+                                    <label for="">Comment</label>
+                                    <input id="editComment" name="editComment" type="text" class="form-control square" placeholder="Comment" autocomplete="off">
+                                </fieldset>
+                                <input id="editDdId" name="editDdId" type="text" hidden>
+                                <input id="editDId" name="editDId" type="text" hidden>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<% include ../partials/footer %>
+
+<!-- BEGIN VENDOR JS-->
+<script src="/vendors/js/vendors.min.js" type="text/javascript"></script>
+<!-- BEGIN VENDOR JS-->
+<!-- BEGIN PAGE VENDOR JS-->
+<script type="/text/javascript" src="vendors/js/ui/prism.min.js"></script>
+<!-- END PAGE VENDOR JS-->
+<!-- BEGIN STACK JS-->
+<script src="/js/core/app-menu.js" type="text/javascript"></script>
+<script src="/js/core/app.js" type="text/javascript"></script>
+<script src="/js/scripts/customizer.js" type="text/javascript"></script>
+<!-- END STACK JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+<!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN form reapter -->
+<script src="/vendors/js/forms/repeater/jquery.repeater.min.js" type="text/javascript"></script>
+<script src="/js/scripts/forms/form-repeater.js" type="text/javascript"></script>
+<!-- ENG form repeter -->
+
+<!-- BEGIN datatable -->
+<script src="/vendors/js/tables/datatable/datatables.min.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-api.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-basic.js" type="text/javascript"></script>
+<!-- END datatable -->
+
+<!-- BEGIN toastr -->
+<script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
+<script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
+<!-- END toastr -->
+
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
+<script>
+
+    onLoad();
+
+    function onLoad(){
+        genDepenedencyTable();
+    }
+
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                updateBadge(span, response.atype, response.count);
+            }
+        });
+    }
+
+    function genDepenedencyTable(){
+        $('#dependencyTable').dataTable({
+            dom: 'Bfrtip',
+            buttons: [{
+                extend: 'collection',
+                text: 'Option',
+                className: 'btn btn-primary',
+                buttons: [
+                    {
+                        extend: 'pdf',
+                        text: "Export as PDF",
+                        exportOptions: {
+
+                            columns: [0, 1, 2, 3, 4, 5 ]
+
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: "Export as CSV",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5 ]
+
+                        }
+                    },{
+                        extend: 'excel',
+                        text: "Export as Excel",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5 ]
+
+                        }
+                    },{
+                        extend: 'copy',
+                        text: "Copy to clipboard",
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5 ]
+
+                        }
+                    }
+                    ,'pageLength','colvis'
+                ]}],
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            autoWidth: false,
+            destroy: true,
+            searching: true,
+            type: 'GET',
+            ajax: "/dependency/listall",
+            columns: [
+                { data: "depName"},
+                { data: "divName"},
+                { data: "ip"},
+                { data: "port"},
+                { data: "method"},
+                { data: "comment"},
+                {},
+                {data: "ddId"},
+                {data: "dId"}
+            ], columnDefs: [{
+                targets: 6,
+                searching: false,
+                orderable: false,
+                data: null,
+                className: "text-center align-middle last",
+                render: function (data, type, full, meta){
+                    return '<div class="btn-group" >\n' +
+                        '    <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                        '        Action\n' +
+                        '    </button>\n' +
+                        '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
+                        '        <button id="editDependency" class="dropdown-item" type="button" data-toggle="modal" data-target="#modalEditDependency" >Edit</button>\n' +
+                        '        <button id="deleteDependencySubmit" class="dropdown-item" type="button">Delete</button>\n' +
+                        '    </div>\n' +
+                        '</div>';
+                }
+            }, {targets: 0, className: "text-center align-middle"},
+                {targets: 1, className: "text-center align-middle"},
+                {targets: 2, className: "text-center align-middle"},
+                {targets: 3, className: "text-center align-middle"},
+                {targets: 4, className: "text-center align-middle"},
+                {targets: 5, className: "text-center align-middle"},
+                {targets: 7,
+                    "visible": false,
+                    "searchable": false},
+                {targets: 8,
+                    "visible": false,
+                    "searchable": false}]
+        });
+    }
+
+    // Sens ajax request to add, delete, edit dependency
+    function setDependency(url, datas){
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: datas,
+            success: function (response) {
+                if (response.status === "success") {
+                    $('#dependencyTable').DataTable().ajax.reload();
+                    $("#createDependencySubmit").get(0).reset();
+                    toastr.success(response.message, response.status, {closeButton: true});
+                } else if (response.status === "error") {
+                    toastr.error(response.message, response.status, {closeButton: true});
+                } else {
+                    toastr.error("Undefined", "error", {closeButton: true});
+                }
+            }
+        });
+    }
+
+    // Edit dependency
+    $("#dependencyTable tbody").on("click","#editDependency", function () {
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#dependencyTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        $('#editDdId').val(aData.ddId);
+        $('#editDId').val(aData.dId);
+        $('#editDeviceName').val(aData.divName);
+        $('#editIp').val(aData.ip);
+        $('#editPort').val(aData.port);
+        $('#editMethod').val(aData.method);
+        $('#editComment').val(aData.comment);
+    });
+
+    // Submit data to delete dependency
+    $("#dependencyTable tbody").on("click","#deleteDependencySubmit", function () {
+        event.preventDefault();
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#dependencyTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        setDependency("/dependency/delete", {dDid: aData.ddId, dId: aData.dId, name: aData.depName});
+    });
+
+
+    // Submit edit dependency
+    $( "#editDependencySubmit" ).submit(function( event ) {
+        event.preventDefault();
+        console.log($("#editIp").val());
+        if(validateIP46($("#editIp").val())){
+            var data = $('#editDependencySubmit').serialize();
+            setDependency("/dependency/edit", data);
+        }else{
+            toastr.error("IP must be in IPv4 or IPv6 format", "error", {closeButton: true});
+        }
+        $("#modalEditDependency").modal('toggle');
+    });
+
+    // Check ip
+    function validateIP46(str){
+
+        // IPV6 and IPV4 with hostname
+        //return /((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))|(^\s*((?=.{1,255}$)(?=.*[A-Za-z].*)[0-9A-Za-z](?:(?:[0-9A-Za-z]|\b-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|\b-){0,61}[0-9A-Za-z])?)*)\s*$)/.test(str);
+        // IPV6 and IPV4 without hostname
+        return /((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))/.test(str);
+    }
+
+    // Create new dependency device
+    $("#createDependencySubmit").submit(function( event ) {
+        event.preventDefault();
+
+        // Check if all the IP are valid
+        var validIp = true;
+        $('.depdIp').each(function(i, obj) {
+            if(!validateIP46($(this).val())){
+                validIp = false;
+            }
+        });
+
+        // If on or more IP are in error
+        if (!validIp) {
+            toastr.error("IP must be in IPv4 or IPv6 format", "error", {closeButton: true});
+        } else {
+
+            // Select error if not selected
+            if($("#depdMethod option:selected").text() === "Select method") {
+                toastr.error("You must choose a method", "error", {closeButton: true});
+            }else {
+
+                $.ajax({
+                    url: "/dependency/create",
+                    type: "post",
+                    dataType: "json",
+                    data: $('#createDependencySubmit').serialize(),
+                    success: function (response) {
+
+                        // TODO reload dependency inventory
+                        $('#dependencyTable').DataTable().ajax.reload();
+                        if (response.status === "success") {
+                            $("#createDependencySubmit").get(0).reset();
+                            toastr.success(response.message, response.status, {closeButton: true})
+                        } else if (response.status === "error") {
+                            toastr.error(response.message, response.status, {closeButton: true})
+                        } else {
+                            toastr.error("Undefined", "error", {closeButton: true})
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    // Local and servers time
+    var timeLocal = new Date();
+    var timeServer = new Date("<%= dateTime %>");
+
+    //C alculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    // Init the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+    // END Server time section /////////////////////////////////////////////////////////////
+
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+    // BEGIN alarm section ////////////////////////////////////////////////////////////////
+    var socket = io.connect();
+    socket.on('connect', function () {
+        console.log('Socket connected');
+    });
+
+    socket.on('welcome',function(data){
+        console.log("Receive welcome");
+        loadBadge();
+    });
+
+    // Manager, admin receive notif when graph change
+    socket.on('alarmNotify',function(data){
+        console.log("Receive alarmNotify");
+        loadBadge();
+    });
+    // END alarm section /////////////////////////////////////////////////////////////////
+    <%}%>
+
+</script>
+
+
+</body>
+</html>

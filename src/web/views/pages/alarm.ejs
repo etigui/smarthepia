@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <title>smarthepia - manager</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/vendors.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/ui/prism.min.css">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN STACK CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <!-- END STACK CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/css/core/colors/palette-gradient.css">
+    <!-- END Page Level CSS-->
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <!-- END Custom CSS-->
+
+    <!-- BEGIN datatable -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/select.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/tables/extensions/dataTables.colVis.css">
+    <!-- END datatatable -->
+
+    <!-- BEGIN toastr -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
+    <!-- END toastr -->
+
+
+</head>
+<body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<% include ../partials/nav %>
+<% include ../partials/menu %>
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-6 col-12 mb-1">
+                <h3 class="content-header-title">Alarm</h3>
+                <span id="serverTime"></span>
+            </div>
+        </div>
+        <div class="content-body">
+            <!-- advance charts section start -->
+            <section id="advance-charts">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title">Alarm</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="alarmTable" class="table table-striped table-bordered text-inputs-searching dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Detail</th>
+                                                    <th>Div. name</th>
+                                                    <th>Div. type</th>
+                                                    <th>Type</th>
+                                                    <th>Severity</th>
+                                                    <th>Count</th>
+                                                    <th>Start</th>
+                                                    <th>Message</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="appendHere">
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                    <th rowspan="1" colspan="1">
+                                                    </th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<div class="modal fade text-left" id="modalAssignAlarm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel35" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Assign alarm</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="assignAlarmSubmit" class="form">
+                <div class="modal-body">
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="title">User</label>
+                        <select id="userEmail" class="form-control square">
+                        </select>
+                    </fieldset>
+                    <input id="alarmIdAssign" value=""  type="hidden">
+                    <input id="alarmManyAssign" value=""  type="hidden">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="modalAckAlarm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel35" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Ack alarm</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="alarmAckSubmit" class="form">
+                <div class="modal-body">
+                    <fieldset class="form-group floating-label-form-group">
+                        <label for="commentAck">Comment</label>
+                        <textarea class="form-control" id="commentAck" rows="3" placeholder="Comment"></textarea>
+                    </fieldset>
+                    <input id="alarmIdAck" value=""  type="hidden">
+                    <input id="alarmManyAck" value=""  type="hidden">
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-warning mr-1" data-dismiss="modal"><i class="ft-x"></i> Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<% include ../partials/footer %>
+
+<!-- BEGIN VENDOR JS-->
+<script src="/vendors/js/vendors.min.js" type="text/javascript"></script>
+<!-- BEGIN VENDOR JS-->
+<!-- BEGIN PAGE VENDOR JS-->
+<script type="/text/javascript" src="vendors/js/ui/prism.min.js"></script>
+<!-- END PAGE VENDOR JS-->
+<!-- BEGIN STACK JS-->
+<script src="/js/core/app-menu.js" type="text/javascript"></script>
+<script src="/js/core/app.js" type="text/javascript"></script>
+<script src="/js/scripts/customizer.js" type="text/javascript"></script>
+<!-- END STACK JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+<!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN datatable -->
+<script src="/vendors/js/tables/datatable/datatables.min.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-api.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables/datatable-basic.js" type="text/javascript"></script>
+<script src="/js/scripts/tables/datatables-extensions/datatable-select.js" type="text/javascript"></script>
+<!-- END datatable -->
+
+<!-- BEGIN toastr -->
+<script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
+<script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
+<!-- END toastr -->
+
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
+
+<script>
+    onLoad();
+
+    function onLoad(){
+    }
+
+    function loadUserEmail(){
+        $.ajax({
+            url: "/alarm/email",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                $('#userEmail').empty().append('<option value="" selected disabled hidden>Select user</option>');
+                $.each(response.data, function (i, item) {
+                    $('#userEmail').append($('<option>', {value: item.email, text : item.email}));
+                });
+                $('#userEmail').append($('<option>', {value: "anyone", text : "anyone"}));
+            }, error: function (response) {
+                toastr.error("Ajax request error", "error", {closeButton: true});
+            }
+        });
+    }
+
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                $('#alarmTable').DataTable().ajax.reload();
+                updateBadge(span, response.atype, response.count);
+            }, error: function (response) {
+                toastr.error("Ajax request error", "error", {closeButton: true});
+            }
+        });
+    }
+
+    $('#alarmTable').dataTable({
+        order: [[2,'desc'], [3,'asc']],
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                text: 'Ack sel.',
+                className: 'btn btn-primary ackMany',
+                key: '1',
+                action: function ( e, dt, node, config ) {
+
+                    // Error if nothing selected
+                    if (!dt.rows('.selected').data().length) {
+                        toastr.error("Select at least one row", "error", {closeButton: true});
+                    }else{
+                    }
+                }
+            },
+            {
+                text: 'Assign sel.',
+                className: 'btn btn-primary assMany',
+                key: '2',
+                action: function ( e, dt, node, config ) {
+
+                    // Error if nothing selected
+                    if (!dt.rows('.selected').data().length) {
+                        toastr.error("Select at least one row", "error", {closeButton: true});
+                    }else{
+
+                    }
+                }
+            },
+            {
+                text: 'Select all',
+                className: 'btn btn-primary',
+                key: '1',
+                action: function ( e, dt, node, config ) {
+                    dt.rows().select();
+                    $('.ackMany').removeClass('disabled');
+                    $('.assMany').removeClass('disabled');
+                    $('.selNone').removeClass('disabled');
+                }
+            },
+            {
+                text: 'Select none',
+                className: 'btn btn-primary selNone',
+                key: '2',
+                action: function ( e, dt, node, config ) {
+                    dt.rows().deselect();
+                    $('.ackMany').addClass('disabled');
+                    $('.assMany').addClass('disabled');
+                    $('.selNone').addClass('disabled');
+                }
+            },{
+            extend: 'collection',
+            text: 'Option',
+            className: 'btn btn-primary',
+
+
+        buttons: [
+            {
+                extend: 'pdf',
+                text: "Export as PDF",
+                exportOptions: {
+
+                    columns: [ 1, 2, 3, 4, 5, 6, 7 ]
+
+                }
+            },
+            {
+                extend: 'csv',
+                text: "Export as CSV",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7 ]
+
+                }
+            },{
+                extend: 'excel',
+                text: "Export as Excel",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7 ]
+
+                }
+            },{
+                extend: 'copy',
+                text: "Copy to clipboard",
+                exportOptions: {
+                    columns: [ 1, 2, 3, 4, 5, 6, 7 ]
+
+                }
+            }
+            ,'pageLength','colvis'
+
+
+        ]}],
+        //select: true,
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        autoWidth: false,
+        destroy: true,
+        searching: true,
+        type: 'get',
+        ajax: "/alarm/listall",
+        columns: [
+            {
+                className:      'details-control',
+                orderable:      false,
+                data:           null,
+                defaultContent: ''
+            },
+            { data: "name"},
+            { data: "dtype"},
+            { data: "atype"},
+            { data: "aseverity"},
+            { data: "count"},
+            { data: "dstart"},
+            { data: "amessage"},
+            {},
+            {data: "_id"}
+        ],
+        aoColumnDefs: [{
+        targets: 3,
+        sType: "typeSort",
+        bSortable: true,
+        data: null,
+        className: "text-center align-middle",
+        render: function (data, type, full, meta){
+
+            var color = "danger";
+            if(data === "3"){
+                color =  "info";
+                data = "Info";
+            }else if(data === "2"){
+                color =  "warning";
+                data = "Warning";
+            }else if(data === "1"){
+                data = "Error";
+                color =  "danger";
+            }
+            return '<div class="badge badge-'+color+'" style="line-height: 1.5; display: block;">'+data+'</div>';
+        }
+        }, {
+            targets: 8,
+            searching: false,
+            orderable: false,
+            data: null,
+            className: "text-center align-middle last",
+            render: function (data, type, full, meta) {
+                return '<div class="btn-group">\n' +
+                    '    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+                    '        Action\n' +
+                    '    </button>\n' +
+                    '    <div class="dropdown-menu" x-placement="bottom-start">\n' +
+                    '        <button id="ackSumbit" data-toggle="modal" data-target="#modalAckAlarm" class="dropdown-item ack" type="button" >Ack</button>\n' +
+                    //'        <button id="postponeAlarm" class="dropdown-item" type="button">Postpone</button>\n' +
+                    '        <button id="assignAlarm" class="dropdown-item" data-toggle="modal" data-target="#modalAssignAlarm" type="button">Assign</button>\n' +
+                    '    </div>\n' +
+                    '</div>';
+            }
+        }, {
+            targets: 4,
+            data: null,
+            className: "text-center align-middle",
+            render: function (data, type, full, meta) {
+
+                var percent = 0;
+                if (data === 3) {
+                    percent = 100;
+                } else if (data === 1) {
+                    percent = 33;
+                } else if (data === 2) {
+                    percent = 66;
+                } else {
+                    data = "";
+                }
+                return '<div class="progress" style="margin-top: auto; margin-bottom:auto; ">\n' +
+                    '<div class="progress-bar" role="progressbar" aria-valuemax="100" style="width:' + percent + '%" aria-describedby="example-caption-2">' + data + '</div>\n' +
+                    ' </div>';
+            }
+        },
+            {targets: 0, className: "text-center align-middle"},
+            {targets: 2, className: "text-center align-middle"},
+            {targets: 1, className: "text-center align-middle"},
+            {targets: 5, className: "text-center align-middle"},
+            {targets: 6,
+                data: null,
+                className: "text-center align-middle",
+                render: function (data, type, full, meta) {
+                    date = new Date(data);
+                    return formatDate(date);
+                }
+            },
+            {targets: 7, className: "text-center align-middle"},
+            {
+                "targets": 9,
+                "visible": false,
+                "searchable": false
+            }]
+    });
+
+    // Disable button at start
+    $('.ackMany').addClass('disabled');
+    $('.assMany').addClass('disabled');
+    $('.selNone').addClass('disabled');
+
+    $('#alarmTable tbody').on('click', 'tr', function() {
+
+        // Get table and toggle class selected
+        var tableAlarm = $('#alarmTable').DataTable();
+        $(this).toggleClass('selected');
+
+        // Enable or disable if row selected
+        if (!tableAlarm.rows('.selected').data().length) {
+            $('.ackMany').addClass('disabled');
+            $('.assMany').addClass('disabled');
+            $('.selNone').addClass('disabled');
+        }else{
+            $('.ackMany').removeClass('disabled');
+            $('.assMany').removeClass('disabled');
+            $('.selNone').removeClass('disabled');
+        }
+    });
+
+    function customSort(type){
+        var sortedType = 0;
+        if(type === '<div class="badge badge-danger" style="line-height: 1.5; display: block;">Error</div>'){
+            sortedType = 0;
+        }else if(type === '<div class="badge badge-warning" style="line-height: 1.5; display: block;">Warning</div>'){
+            sortedType = 1;
+        }else if(type === '<div class="badge badge-info" style="line-height: 1.5; display: block;">Info</div>'){
+            sortedType = 2;
+        }else{
+            sortedType = 3;
+        }
+        return sortedType;
+    }
+
+    jQuery.fn.dataTableExt.oSort["typeSort-desc"] = function (x, y) {
+        return customSort(x) < customSort(y);
+    };
+    jQuery.fn.dataTableExt.oSort["typeSort-asc"] = function (x, y) {
+        return customSort(x) > customSort(y);
+    }
+
+    // Formatting function for row details
+    function format (d) {
+        var trs='';
+        $.each($(d.detail),function(key,value){
+            date = new Date(value);
+            trs+='<tr><td style="border: none !important;">'+key+'</td><td style="border: none !important;">'+formatDate(date)+'</td></tr>';
+        })
+        // `d` is the original data object for the row
+        return '<table class="table table-striped"  cellpadding="5" cellspacing="0" border="0" style="background-color: #FFFFFF; width: auto;  margin-bottom: 0px;">'+
+            '<tbody>' + trs + '</tbody></table>';
+    }
+
+
+    // Call modal to select the person to assign the alarm
+    // Toggle modal and add 2 => means many assign
+    $(".assMany").on('click', function () {
+        loadUserEmail();
+        $("#alarmManyAssign").val(2);
+        $('#modalAssignAlarm').modal('toggle');
+    });
+
+    // Call modal to select the person to ack the alarm
+    // Toggle modal and add 2 => means many ack
+    $(".ackMany").on('click', function () {
+        $("#commentAck").val("");
+        $("#alarmManyAck").val(2);
+        $('#modalAckAlarm').modal('toggle');
+    });
+
+
+    // Add event listener for opening and closing details
+    $('#alarmTable tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var table = $('#alarmTable').DataTable();
+        var row =  table.row( tr );
+
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    });
+
+    // END Server time section /////////////////////////////////////////////////////////////
+
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+    // BEGIN alarm section ////////////////////////////////////////////////////////////////
+    var socket = io.connect();
+    socket.on('connect', function () {
+        console.log('Socket connected');
+    });
+
+    socket.on('welcome',function(data){
+        console.log("Receive welcome");
+        loadBadge();
+    });
+
+    // Manager, admin receive notif when graph change
+    socket.on('alarmNotify',function(data){
+        console.log("Receive alarmNotify");
+        loadBadge();
+    });
+    // END alarm section /////////////////////////////////////////////////////////////////
+    <%}%>
+
+    function send_alarm(url, type, datas, modalToggleId){
+        $.ajax({
+            url: url,
+            type: type,
+            data: datas,
+            dataType: "json",
+            success: function (response) {
+                $(modalToggleId).modal('toggle');
+                if (response.status === "success") {
+                    toastr.success(response.message, response.status, {closeButton: true});
+                } else if (response.status === "error") {
+                    toastr.error(response.message, response.status, {closeButton: true});
+                } else {
+                    toastr.error("Undefined", "error", {closeButton: true});
+                }
+            }, error: function (response) {
+                $(modalToggleId).modal('toggle');
+                toastr.error("Ajax request error", "error", {closeButton: true});
+            }
+        });
+    }
+
+    $("#assignAlarmSubmit").submit(function( event ) {
+        event.preventDefault();
+        var emailUser = $("#userEmail").val();
+        var alarmId = $("#alarmIdAssign").val();
+        var many = $("#alarmManyAssign").val();
+        if (emailUser && many){
+
+            // 1 => one assign
+            // 2 => one or more assign
+            if(many === "1"){
+
+                if(alarmId){
+                    var datas = {email: emailUser, many: many, id: alarmId}
+                    send_alarm("/alarm/assign", "get", datas, "#modalAssignAlarm")
+                }else{
+                    toastr.error("The alarm could not be assign to the user", "error", {closeButton: true});
+                }
+            }else if(many === "2"){
+
+                var ids = []
+                var table = $('#alarmTable').DataTable();
+                $.each(table.rows('.selected').data(), function( key, value ) {
+                    ids.push(value)
+                });
+                var datas = {email: emailUser, many: many, id: ids}
+                send_alarm("/alarm/assign", "get", datas, "#modalAssignAlarm")
+            }else{
+                $("#modalAssignAlarm").modal('toggle');
+                toastr.error("The alarm could not be assign to the user", "error", {closeButton: true});
+            }
+        }else{
+            $("#modalAssignAlarm").modal('toggle');
+            toastr.error("The alarm could not be assign to the user", "error", {closeButton: true});
+        }
+    });
+
+
+    // Set hidden id by alarm id for ack alarm
+    $("#alarmTable tbody").on('click',"#assignAlarm", function () {
+        loadUserEmail();
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#alarmTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        var id = aData._id;
+        $("#alarmIdAssign").val(id);
+        $("#alarmManyAssign").val(1);
+    });
+
+    // Submit and add comment for ack alarm
+    $("#alarmAckSubmit").submit(function(event) {
+        event.preventDefault();
+
+        var comment = $("#commentAck").val();
+        var id = $("#alarmIdAck").val();
+        var many = $("#alarmManyAck").val();
+        if (many){
+
+            // 1 => one assign
+            // 2 => one or more assign
+            if(many === "1"){
+                if(id){
+                    var datas = {many: many, id: id, comment: comment}
+                    send_alarm("/alarm/ack", "get", datas, "#modalAckAlarm");
+                }else{
+                    $("#modalAckAlarm").modal('toggle');
+                    toastr.error("The alarm could not be ack", "error", {closeButton: true});
+                }
+            }else if (many === "2"){
+
+                var ids = []
+                var table = $('#alarmTable').DataTable();
+                $.each(table.rows('.selected').data(), function( key, value ) {
+                    ids.push(value)
+                });
+                var datas = {many: many, id: ids, comment: comment}
+                send_alarm("/alarm/ack", "get", datas, "#modalAckAlarm");
+            }else{
+                $("#modalAckAlarm").modal('toggle');
+                toastr.error("The alarm could not be ack", "error", {closeButton: true});
+            }
+        } else{
+            $("#modalAckAlarm").modal('toggle');
+            toastr.error("The alarm could not be ack", "error", {closeButton: true});
+        }
+    });
+
+    // Set hidden id to assign person by alarm id
+    $("#alarmTable tbody").on("click","#ackSumbit", function () {
+        $("#commentAck").val("");
+        var nRow = $(this).parents('tr')[0];
+        var oTable = $('#alarmTable').dataTable();
+        var aData = oTable.fnGetData(nRow);
+        var id =  aData._id;
+        $("#alarmManyAck").val(1);
+        $("#alarmIdAck").val(id);
+    });
+
+
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    // Local and servers time
+    var timeLocal = new Date();
+    var timeServer = new Date("<%= dateTime %>");
+
+    //C alculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    // Init the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+
+
+</script>
+
+</body>
+</html>
