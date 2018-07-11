@@ -1,14 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var auth = require('../controllers/auth');
+var passport = require('../controllers/passport');
 var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
 var Devices = require('../models/devices');
 var Statistic = require('../models/stat');
 const request = require('request');
 
+
 // Module variables
 var isAuth = require('../controllers/isAuth');
+
+// Middleware
+//router.use(passport.initialize());
+router.use(passport.session());
 
 // GET /device
 router.get('/', isAuth, function(req, res, next) {

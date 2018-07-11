@@ -108,7 +108,7 @@ io.use(function (socket, next) {
 // Define routes file
 var indexRouter = require('./routes/index');
 var homeRouter = require('./routes/home');
-var statisticRouter = require('./routes/statistic');
+//var statisticRouter = require('./routes/statistic');
 var ruleRouter = require('./routes/rule');
 var userRouter = require('./routes/user');
 var alarmRouter = require('./routes/alarm');
@@ -118,6 +118,8 @@ var dependencyRouter = require('./routes/dependency');
 var profileRouter = require('./routes/profile');
 var logRouter = require('./routes/log');
 var automationRouter = require('./routes/automation');
+var multisensorRouter = require('./routes/multisensor');
+var actuatorRouter = require('./routes/actuator');
 
 // app.use(ejsLayout);
 app.use(compression());
@@ -127,7 +129,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set route path(url) to route file
 app.use('/', indexRouter);
 app.use('/home', homeRouter);
-app.use('/statistic', statisticRouter);
+//app.use('/statistic', statisticRouter);
 app.use('/rule', ruleRouter);
 app.use('/user', userRouter);
 app.use('/alarm', alarmRouter);
@@ -137,6 +139,8 @@ app.use('/dependency', dependencyRouter);
 app.use('/profile', profileRouter);
 app.use('/log', logRouter);
 app.use('/automation', automationRouter);
+app.use('/multisensor', multisensorRouter);
+app.use('/actuator', actuatorRouter);
 
 
 // catch 404 and forward to error handler

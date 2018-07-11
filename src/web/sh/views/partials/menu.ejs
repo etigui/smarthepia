@@ -8,7 +8,7 @@
                 <li class="nav-item <%= page=='home'?'active':'' %>"><a href="/home"><i class="ft-home"></i><span class="menu-title" data-i18n="">Home</span></a></li>
             <% } %>
             <% if(permission>=0) {%>
-                <li class="nav-item <%= page=='statistic'?'active':'' %>"><a href="/statistic"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Statistics</span></a></li>
+                <!--<li class="nav-item <%= page=='statistic'?'active':'' %>"><a href="/statistic"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Statistics</span></a></li>-->
             <% } %>
             <% if(permission>=1) {%>
                 <li class="nav-item <%= page=='rule'?'active':'' %>"><a href="/rule"><i class="ft-sliders"></i><span class="menu-title" data-i18n="">Rule</span></a></li>
@@ -19,6 +19,17 @@
             <% if(permission==2) {%>
                 <li class="nav-item <%= page=='user'?'active':'' %>"><a href="/user"><i class="ft-user"></i><span class="menu-title" data-i18n="">Users</span></a></li>
             <% } %>
+            <% if(permission>=0) {%>
+            <li class="navigation-header"><span>Statistics</span><i class="ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
+            <% } %>
+            <% if(permission>=0) {%>
+            <li class="nav-item <%= page=='multisensor'?'active':'' %>"><a href="/multisensor"><i class="ft-trending-up"></i><span class="menu-title" data-i18n="">Multisensor</span></a></li>
+            <% } %>
+            <% if(permission>=0) {%>
+            <li class="nav-item <%= page=='actuator'?'active':'' %>"><a href="/actuator"><i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="">Actuator</span></a></li>
+            <% } %>
+
+
             <% if(permission>=1) {%>
                 <li class="navigation-header"><span>Inventory</span><i class="ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="Apps"></i></li>
             <% } %>

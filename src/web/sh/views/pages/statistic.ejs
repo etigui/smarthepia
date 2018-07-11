@@ -56,7 +56,79 @@
                             </div>
                             <div class="card-content collapse show">
                                 <div class="card-body">
-
+                                    <form id="createDeviceSubmit" class="form">
+                                        <div class="row">
+                                            <div class="col-xl-6 col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="">Date time from
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <input type="text" name="" id="" class="form-control square" placeholder="Device name" name="email" autocomplete="off" required>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="">Room
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="roomSel" id="roomSel" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select room</option>
+                                                    </select>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="">Device
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="deviceSel" id="deviceSel" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select device</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="donationinput2">Date time to
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <input type="text" name="" id="" class="form-control square" placeholder="Device name" name="email" autocomplete="off" required>
+                                                </div>
+                                                <div id="orientationDiv" class="form-group">
+                                                    <label for="">Device type
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="deviceTypeSel" id="deviceTypeSel" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select type</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-actions right">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Send
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="advance-charts">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title">Statistic</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <div id="graphTemp" class="height-400 echart-container"></div>
                                 </div>
                             </div>
                         </div>
@@ -80,7 +152,12 @@
 <script src="/js/scripts/customizer.js" type="text/javascript"></script>
 <!-- END STACK JS-->
 <!-- BEGIN PAGE LEVEL JS-->
-<!-- END PAGE LEVEL JS-->$
+<!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN libs for echarts -->
+<script type="text/javascript" src="/test/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.4.1/math.min.js"></script>
+<!-- END libs for echarts -->
 
 <!-- BEGIN websocket -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
@@ -92,6 +169,167 @@
 
 
 <script>
+
+    onLoad();
+    function onLoad(){
+        loadRooms();
+        loadGraph();
+    }
+
+    
+    $('#roomSel').change(function(){
+
+    });
+
+    $('#deviceSel').change(function(){
+
+    });
+
+    $('#deviceTypeSel').change(function(){
+
+    });
+
+
+    var dom = document.getElementById("graphTemp");
+    var myChart = echarts.init(dom);
+    myChart.showLoading();
+    var app = {};
+    option = null;
+
+    function loadGraph(){
+
+        // Get devices list (devices and location)
+        $.get('/statistic/mst').done(function (data) {
+
+            //console.log(data.data);
+
+            function getDateG(datas){
+                var out = []
+                for(var d in datas) {
+                    var new_val = new Date(datas[d].updatetime);
+                    out.push(new_val);
+                }
+                return out;
+            }
+            function getValueG(datas){
+                var out = []
+                for(var d in datas) {
+                    out.push(datas[d].address);
+                }
+                return out;
+            }
+
+            function testt(d){
+                var out = []
+                for(var xx in d) {
+
+                    var ds = new Date(d[xx].updatetime);
+                    console.log(d[xx]);
+                    //console.log();
+                    let new_val = {name: ds, value: [d[xx].updatetime, d[xx].temperature]};
+                    console.log(new_val);
+                    out.push(new_val);
+
+                }
+                return out;
+            }
+
+            // Function to link id and parent
+            /*function getNestedChildren(arr, parent) {
+
+                var out = []
+                for(var i in arr) {
+                    if(arr[i].parent === parent) {
+                        var children = getNestedChildren(arr, arr[i].id)
+                        if(children.length) {
+                            arr[i].children = children
+                        }
+                        out.push(arr[i])
+                    }
+                }
+                return out
+            }*/
+
+            myChart.setOption(option = {
+                title: {
+                    text: '',
+                    subtext: '',
+                    left: 'leafDepth'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        params = params[0];
+                        var date = new Date(params.name);
+
+                        return "Date: " +date.getHours() + ":" + date.getMinutes() +":"+ date.getSeconds() + " " +date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "</br> Temp: " + params.value[1];
+                        //return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+                    },
+                    axisPointer: {
+                        animation: false
+                    }
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: {
+                        show: false
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    boundaryGap: [0, '100%'],
+                    splitLine: {
+                        show: false
+                    }
+                },
+                series: [{
+                    name: 'hepia',
+                    type: 'line',
+                    roam: false,
+                    selectedMode: false,
+                    data: testt(data.data),
+                    breadcrumb: {show: true, textStyle: {fontSize: 100}},
+                }]
+            })
+
+
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+            myChart.hideLoading();
+        });
+    }
+
+    function loadRooms(){
+        $.ajax({
+            url: "/statistic/room",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+
+                var selRoom = $('#roomSel');
+                selRoom.empty().append('<option value="" selected disabled hidden>Select room</option>');
+                $.each(response.data, function (i, item) {
+                    selRoom.append($('<option>', {
+                        value: item.id,
+                        text : item.name
+                    }));
+                });
+            }
+        });
+    }
+
+    function loadCharts(){
+        $.ajax({
+            url: "/statistic/mst",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                //console.log(response.data);
+            }
+        });
+    }
+
     // BEGIN Server time section /////////////////////////////////////////////////////////////
     // Local and servers time
     var timeLocal = new Date();
