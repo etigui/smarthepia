@@ -1,5 +1,5 @@
 # *Smarthepia*
-<table  style="border-collapse: collapse;" bordercolor="red" align="center" cellspacing="0" cellpadding="0" >
+<table  style="border-collapse: collapse; border: 1px solid #CCC;" bordercolor="red" align="center" cellspacing="0" cellpadding="0" >
     <tr style="border: none;" >
         <td style="border: none;" ><img src="/images/hepia_logo.png" alt="hepia logo" height="100" width="300"></img></th>
         <td><img src="/images/smarthepia_logo.png" alt="smarthepia logo" height="212" width="212"></img></th>
