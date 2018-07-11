@@ -1,11 +1,9 @@
 import requests
+requests.packages.urllib3.disable_warnings()
 from platform import system as system_name
 from subprocess import call as system_call
 import os
 import subprocess
-import datetime
-import json
-#import urllib3
 
 # Client SMTP
 import smtplib
@@ -50,7 +48,7 @@ def send_ping(host):
 # Get http request
 def get_http(url):
     try:
-        r = requests.get(url, timeout=3)
+        r = requests.get(url, timeout=3, verify=False)
         r.raise_for_status()
         return True
     except requests.exceptions.HTTPError as errh:
@@ -89,7 +87,7 @@ def add_one_time_value_in_list(datas, index):
 # Get http request
 def request_api(url):
     try:
-        r = requests.get(url, timeout=3)
+        r = requests.get(url, timeout=3, verify=False)
         return True, r.json()
     except requests.exceptions.HTTPError as errh:
         return False, None
@@ -148,8 +146,8 @@ def notify_alarm_change(url_get, notify_response):
     try:
         s = requests.Session()
         data = {"email": const.ws_notify_email, "password": const.ws_notify_password}
-        s.post(const.ws_notify_url_post, data=data)
-        response = s.get(url_get)
+        s.post(const.ws_notify_url_post, data=data, verify=False)
+        response = s.get(url_get, verify=False)
 
         if response.json() != notify_response:
             return True
@@ -177,26 +175,10 @@ def remove_duplicates(datas):
             seen.add(data)
     return output
 
-# Get device measures
-'''
-def get_mesures(route):
-    http = urllib3.PoolManager()
-    response = http.request('GET', route)
-
-    # if != 200 => HTTP error
-    if response.status == 200:
-        data = response.data.decode("utf-8")
-        if data != const.wrong_not_available_device:
-            return True, json.loads(data)
-        return False, None
-    else:
-        return False, None
-'''
-
 # Get http request
 def http_get_request_json(url):
     try:
-        r = requests.get(url, timeout=3)
+        r = requests.get(url, timeout=3, verify=False)
         if r.status_code == 200:
             return True, r.json()
         else:

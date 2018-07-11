@@ -69,7 +69,7 @@ router.post('/create', isAuth, function(req, res, next) {
                         }
 
                         // Update knx ids in the
-                        request('http://10.10.7.35:5000/update', { json: true }, (err, res, body) => {
+                        request('http://localhost:5000/update', { json: true }, (err, res, body) => {
                             if (err) { return console.log(err); }
                         });
 
@@ -141,6 +141,10 @@ router.post('/edit', isAuth, function(req, res, next) {
                         if (err) {
                             return next(err);
                         }
+                        // Update knx ids in the
+                        request('http://localhost:5000/update', { json: true }, (err, res, body) => {
+                            if (err) { return console.log(err); }
+                        });
                         res.type('json');
                         return res.json({status: "success", message: "Device " + nameEdit + " has been successfully edited"});
                     });
@@ -154,6 +158,10 @@ router.post('/edit', isAuth, function(req, res, next) {
                             if (err) {
                                 return next(err);
                             }
+                            // Update knx ids in the
+                            request('http://localhost:5000/update', { json: true }, (err, res, body) => {
+                                if (err) { return console.log(err); }
+                            });
                             res.type('json');
                             return res.json({status: "success", message: "Device " + nameEdit + " has been successfully edited"});
                         });
@@ -195,6 +203,10 @@ router.post('/delete', isAuth, function(req, res, next) {
                     if (err) {
                         return next(err);
                     }
+                    // Update knx ids in the
+                    request('http://localhost:5000/update', { json: true }, (err, res, body) => {
+                        if (err) { return console.log(err); }
+                    });
                     res.type('json');
                     return res.json({
                         status: "success",

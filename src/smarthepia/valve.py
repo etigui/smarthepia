@@ -1,6 +1,15 @@
+import datetime
+from dateutil.tz import gettz
+
 # Local import
 import const
 import utils
+
+# Save valve setted value
+def save_stat_actuator(actuator, db, value):
+    # Add local date time otherwise mongodb add +02:00
+    date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+    db.sh.statsacs.insert({'value': value, 'address': actuator['address'], 'dependency': actuator['dependency'], 'parent': actuator['parent'], 'id': actuator['id'], 'updatetime': datetime.datetime.now(), 'type': actuator['type'], 'subtype': actuator['subtype'], 'name': actuator['name']})
 
 
 # Close all valve => value = 0
@@ -14,11 +23,11 @@ def close_all_valves(db, log, room):
             # Get ip and port for this actuator
             actuator_status, ip, port = get_knx_network_by_device(db, actuator['dependency'])
             if actuator_status:
-                close_one_valve(log, ip, port, actuator['address'])
+                close_one_valve(log, ip, port, actuator['address'], actuator, db)
 
 
 # Close one valve => value = 0
-def close_one_valve(log, ip, port, address):
+def close_one_valve(log, ip, port, address, actuator, db):
 
     # Check if the valve is not already close => 0
     # Prevent blind forcing
@@ -34,6 +43,8 @@ def close_one_valve(log, ip, port, address):
                     # TODO error (maybe alarm) if we cant do it after 20min
                     # Global var list of error blind
                     log.log_error(f"In function (close_one_valve), cannot write pid value ({const.valve_min_value}) to valve")
+                else:
+                    save_stat_actuator(actuator, db, const.valve_min_value)
 
 # Set the pid computed value for each valve in the room
 def set_all_valves(pids, db, log, automation_rule, room, indoor_temp):
@@ -51,13 +62,13 @@ def set_all_valves(pids, db, log, automation_rule, room, indoor_temp):
                 # Get pid value for the current room to set to valve
                 pid_value_status, pid_computed_value = get_pid_by_room(db, log, pids, automation_rule, room, indoor_temp)
                 if pid_value_status:
-                    set_one_valve(log, ip, port, actuator['address'], pid_computed_value)
+                    set_one_valve(log, ip, port, actuator['address'], pid_computed_value, actuator, db)
                 else:
                     log.log_error(f"In function (process_valves), the valve could not be setted")
 
 
 # Set on valve with pid value
-def set_one_valve(log, ip, port, address, pid_computed_value):
+def set_one_valve(log, ip, port, address, pid_computed_value, actuator, db):
 
     # Check if the valve is not already at pid value
     # Prevent blind forcing
@@ -73,6 +84,8 @@ def set_one_valve(log, ip, port, address, pid_computed_value):
                     # TODO error (maybe alarm) if we cant do it after 20min
                     # Global var list of error blind
                     log.log_error(f"In function (set_one_valve), cannot write pid value ({pid_computed_value}) to valve")
+                else:
+                    save_stat_actuator(actuator, db, pid_computed_value)
 
 
 # Get value (read) from valve

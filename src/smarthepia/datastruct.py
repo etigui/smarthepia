@@ -34,6 +34,7 @@ class StructAutomation():
         self.orientation = orientation
         self.room_id = room_id
         self.automation_active = automation_active
+        #self.room_pid = room_pid
 
 
 # Struct to store automation rule

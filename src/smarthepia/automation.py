@@ -121,9 +121,8 @@ class Automation(object):
                     # Walk through all room
                     for room in self.rooms:
                         pass
-
                         # Process blind rule
-                        #self.process_blinds(room)
+                        self.process_blinds(room)
 
                         # If True => we can process the room
                         #multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)

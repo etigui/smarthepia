@@ -198,13 +198,20 @@ def get_current_weather(db, log, local):
         # If get measures from api
         if status:
 
-            # If the api have a new measures then we add it to the db and return it
-            # Else give last measure from db
-            if datetime.datetime.fromtimestamp(int(db_datas['dt'])) < datetime.datetime.fromtimestamp(int(api_datas['dt'])):
+            # Check if data in db
+            if db_datas:
+
+                # If the api have a new measures then we add it to the db and return it
+                # Else give last measure from db
+                if datetime.datetime.fromtimestamp(int(db_datas['dt'])) < datetime.datetime.fromtimestamp(int(api_datas['dt'])):
+                    db.sh.apicurrents.insert(api_datas)
+                    return api_datas
+                else:
+                    return db_datas
+
+            else:
                 db.sh.apicurrents.insert(api_datas)
                 return api_datas
-            else:
-                return db_datas
         else:
             log.log_error(f"In function (get_current_weather), API measure available")
             return db_datas

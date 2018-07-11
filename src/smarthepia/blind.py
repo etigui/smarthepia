@@ -1,8 +1,18 @@
+import datetime
+from dateutil.tz import gettz
+
 # Local import
 import const
 import utils
 import sun
 import weather
+
+
+# Save blind setted value
+def save_stat_actuator(actuator, db, value):
+    # Add local date time otherwise mongodb add +02:00
+    date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+    db.sh.statsacs.insert({'value': value, 'address': actuator['address'], 'dependency': actuator['dependency'], 'parent': actuator['parent'], 'id': actuator['id'], 'updatetime': datetime.datetime.now(), 'type': actuator['type'], 'subtype': actuator['subtype'], 'name': actuator['name']})
 
 
 # Process closing all blind
@@ -17,11 +27,11 @@ def close_all_blinds(log, db, actuators):
             # Get ip and port for this actuator
             actuator_status, ip, port = get_knx_network_by_device(db, actuator['dependency'])
             if actuator_status:
-                close_one_blind(log, ip, port, actuator['address'])
+                close_one_blind(log, ip, port, actuator['address'], actuator, db)
 
 
 # Close one blind
-def close_one_blind(log, ip, port, address):
+def close_one_blind(log, ip, port, address, actuator, db):
 
     # Check if the blind is not already at max => 255
     # Prevent blind forcing
@@ -37,6 +47,9 @@ def close_one_blind(log, ip, port, address):
                     # TODO error (maybe alarm) if we cant do it after 20min
                     # Global var list of error blind
                     log.log_error(f"In function (close_one_blind), cannot write {const.blind_max_value} to blind")
+                else:
+                    save_stat_actuator(actuator, db, const.blind_max_value)
+
 
 # Get value (read) from blind
 def get_blind_value(log, ip, port, address):
