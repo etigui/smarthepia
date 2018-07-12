@@ -60,6 +60,14 @@ function formatDate(timeLocal){
     return day + "." + month + "." + year +" " + hour + ":" + min + ":" + sec;
 }
 
+function convertUnixDate(lastUpdateTimes){
+    var getDate = lastUpdateTimes.substr(8, 18);
+    var getTime = lastUpdateTimes.substr(0, 7);
+    var spl_res = getDate.split("-");
+    var new_date = getTime + " " + spl_res[0].replace(" ", "") + "/" + spl_res[1] + "/" +spl_res[2];
+    return new Date(new_date);
+}
+
 function timeStatus(){
 
     // Get last update time and remove string before
@@ -67,7 +75,8 @@ function timeStatus(){
     var lastUpdateTime = $('#lastUpdateStatus').text().replace('Last update ','');
     var now = new Date();
     var subMinutes = now.setMinutes(now.getMinutes() - 6);
-    var lastDate = new Date(lastUpdateTime);
+    //var lastDate = new Date(lastUpdateTime);
+    var lastDate = convertUnixDate(lastUpdateTime);
 
     if (subMinutes > lastDate) {
 

@@ -18,7 +18,7 @@ router.use(passport.session());
 // GET /actuator
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getUser())){
-        return res.render('pages/actuator', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "actuator" });
+        return res.render('pages/actuator', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "actuator" });
     }else{
         return res.redirect('/');
     }

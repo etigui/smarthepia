@@ -19,7 +19,7 @@ router.use(passport.session());
 // GET /device
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
-        return res.render('pages/device', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "device" });
+        return res.render('pages/device', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "device" });
     }else{
         return res.redirect('/');
     }

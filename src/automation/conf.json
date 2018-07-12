@@ -1,6 +1,6 @@
 {
   "defaultErrorEmail" : "smarthepia@gmail.com",
-  "logDirPath" : ".\\log",
+  "logDirPath" : "./log",
   "logExtName" : "smarthepialog",
   "logFileMaxSize" : 90
 }
