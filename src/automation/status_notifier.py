@@ -122,9 +122,11 @@ class Status(object):
             elif count >= 5:
                 self.__client.sh.status.update({"name": "automation"}, {'$set': {"color": 2, "status": f"Running {count}/4", "name": "automation", "updatetime": new_date}},upsert=True)
             else:
+                self.send_notify_alarm("Automation", "Automation process error")
                 self.__client.sh.status.update({"name": "automation"}, {'$set': {"color": 3, "status": f"Not running", "name": "automation", "updatetime": new_date}},upsert=True)
         else:
             self.__client.sh.status.update({"name": "automation"}, {'$set': {"color": 1, "status": "Running 4/4 win", "name": "automation", "updatetime": new_date}},upsert=True)
+
 
     # Check and Update/insert KNX REST status
     def check_knxrest(self, new_date):
@@ -135,6 +137,7 @@ class Status(object):
             if count >= 1:
                 self.__client.sh.status.update({"name": "knx"}, {'$set': {"color": 1, "status": "Running", "name": "knx", "updatetime": new_date}}, upsert=True)
             else:
+                self.send_notify_alarm("Automation", "KNX process error")
                 self.__client.sh.status.update({"name": "knx"}, {'$set': {"color": 3, "status": "Not running", "name": "knx", "updatetime": new_date}}, upsert=True)
         else:
             self.__client.sh.status.update({"name": "knx"},{'$set': {"color": 1, "status": "Running win", "name": "knx", "updatetime": new_date}},upsert=True)
@@ -198,4 +201,40 @@ class Status(object):
 
                 # Set as default email if db error
                 self.admin_email = [default_email]
+
+    def send_notify_alarm(self, process_type, process_message):
+
+        # Notify web sever of change and add to alarm collection
+        notify_status = utils.notify_alarm_change(const.ws_alarm_notify_url_get, const.ws_alarm_notify_response)
+        self.send_alarm(process_type, process_message)
+
+        # Check if the alarm notify has been well sent
+        if not notify_status:
+            self.alarm_log.log_error(f"In function (process_network), the alarm notify could not be sent")
+
+    def send_alarm(self, process_type, process_message):
+
+
+        # Add local date time otherwise mongodb add +02:00
+        date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+
+        # Check if device name and ack
+        # If length > 1 => we have already an alarm not ack, so we can update
+        # Else we create a new alarm entree
+        query = {'$and': [{"name": process_type}, {"ack": 0}, {"aseverity": const.severity_high},{"atype": const.error_alarm}]}
+        datas = self.__client.sh.alarms.find(query)
+        if datas.count() == 0:
+            query = {"name": process_type, "dtype": "process", "atype": const.error_alarm,
+                     "aseverity": const.severity_high, "amessage": process_message, "comment": "", "count": 1,
+                     "dstart": date_now, "dlast": date_now,
+                     "dend": date_now, "ack": 0, "postpone": date_now,
+                     "assign": "anyone", "detail": [date_now]}
+            self.__client.sh.alarms.insert(query)
+        else:
+            # Update device dependency not ack
+            # => add new date (new same alarm) fro details
+            # => add count + 1
+            # => add time last
+            value = {'$inc': {'count': 1}, '$set': {"dlast": date_now}, '$push': {"detail": date_now}}
+            self.__client.sh.alarms.update(query, value)
 
