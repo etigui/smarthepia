@@ -24,7 +24,7 @@ router.get('/', isAuth, function(req, res, next) {
             perm = "Smarthepia user undefined";
         }
 
-        return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email, lastConnection : dateFormat(req.session.lastConnection , "dd.mm.yyyy HH:MM:ss"), fullName: fullName, perm});
+        return res.render('pages/profile', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "profile", firstname: req.session.firstname, email: req.session.email, lastConnection : dateFormat(req.session.lastConnection , "dd.mm.yyyy HH:MM:ss"), fullName: fullName, perm});
     }else{
         return res.redirect('/');
     }

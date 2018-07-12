@@ -117,9 +117,9 @@ class Status(object):
 
             # We must have 4 smarthepia process
             count = self.check_process(const.process_smarthepia)
-            if count == 4:
+            if count == 5:
                 self.__client.sh.status.update({"name": "automation"}, {'$set': {"color": 1, "status": "Running 4/4", "name": "automation", "updatetime": new_date}},upsert=True)
-            elif 0 < count <= 4:
+            elif count >= 5:
                 self.__client.sh.status.update({"name": "automation"}, {'$set': {"color": 2, "status": f"Running {count}/4", "name": "automation", "updatetime": new_date}},upsert=True)
             else:
                 self.__client.sh.status.update({"name": "automation"}, {'$set': {"color": 3, "status": f"Not running", "name": "automation", "updatetime": new_date}},upsert=True)
@@ -132,7 +132,7 @@ class Status(object):
 
             # We must have at least one KNX REST process started
             count = self.check_process(const.process_knxrest)
-            if count == 1:
+            if count >= 1:
                 self.__client.sh.status.update({"name": "knx"}, {'$set': {"color": 1, "status": "Running", "name": "knx", "updatetime": new_date}}, upsert=True)
             else:
                 self.__client.sh.status.update({"name": "knx"}, {'$set': {"color": 3, "status": "Not running", "name": "knx", "updatetime": new_date}}, upsert=True)

@@ -18,7 +18,7 @@ router.use(passport.session());
 // GET /user
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getAdmin())){
-        return res.render('pages/user', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "user", type:  req.query.type, message:  req.query.message, email: req.session.email});
+        return res.render('pages/user', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "user", type:  req.query.type, message:  req.query.message, email: req.session.email});
     }else{
         return res.redirect('/');
     }

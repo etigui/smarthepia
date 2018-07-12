@@ -148,9 +148,11 @@ def notify_alarm_change(url_get, notify_response):
         data = {"email": const.ws_notify_email, "password": const.ws_notify_password}
         s.post(const.ws_notify_url_post, data=data, verify=False)
         response = s.get(url_get, verify=False)
-
-        if response.json() != notify_response:
-            return True
+        if response.status_code == 200:
+            if response.json() != notify_response:
+                return True
+            else:
+                return False
         else:
             return False
     except requests.exceptions.HTTPError as errh:

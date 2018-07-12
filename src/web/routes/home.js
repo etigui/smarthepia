@@ -23,7 +23,7 @@ router.use(passport.session());
 // GET /home
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getUser())){
-        return res.status(200).render('pages/home', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "home"});
+        return res.status(200).render('pages/home', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "home"});
     }else{
         return res.redirect('/');
     }

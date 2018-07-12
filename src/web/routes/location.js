@@ -11,7 +11,7 @@ var isAuth = require('../controllers/isAuth');
 // GET /location
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
-        return res.render('pages/location', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "location" });
+        return res.render('pages/location', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "location" });
     }else{
         return res.redirect('/');
     }
