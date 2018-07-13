@@ -17,10 +17,10 @@
 	sudo apt-get install git -y
 	sudo apt-get install python3-pyqt5 -y
 
-## Creat smarthepia root folder
+## Creat *Smarthepia* root folder
 	mkdir ~/bin
 
-## Clone smarthepia repo (GitHub)
+## Clone *Smarthepi*a repo (GitHub)
 	sudo apt-get install git
 	cd ~/bin/
 	mkdir tmp
@@ -37,20 +37,8 @@
 	sudo pip3 install flask
 	sudo pip3 install jsonify
 	sudo pip3 install request
-    
-## Install knxnet
-	cd ~/bin/smarthepia/knx/knxnet_iot
-	sudo python3 setup.py install
 
-## Lunch KNX simulator
-	cd ~/bin/smarthepia/knx/actuasim_iot
-	python3 actuasim.py
-
-## Lunch KNX REST server (debug mode)
-	cd ~/bin/smarthepia/knx
-	python3 KNX_REST_Server.py
-
-## Install smarthepia automation lib
+## Install *Smarthepia* automation lib
 	sudo pip3 install psutil
 	sudo pip3 install pysolar
 	sudo pip3 install simple-pid
@@ -83,17 +71,36 @@ https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubunt
 
 	sudo apt-get install mongodb -y
 
-## Automation package
-
-	sudo pip3 install pysolar
-	sudo pip3 install simple-pid
-	sudo pip3 install python-dateutil
-
 ## Ngnix self-signed cert
 https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-18-04
 
-## Run at first Smarthepia
-cd ~/bin/smarhepia/web
-npm install
-npm start
-test to => https://localhost
+## Install knxnet
+	cd ~/bin/smarthepia/knx/knxnet_iot
+	sudo python3 setup.py install
+	
+## Install web server
+	cd ~/bin/smarhepia/web
+	rm -rf node_modules
+	rm package-lock.json
+	npm install
+
+## Install PM2 (after)
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
+	
+	sudo npm install pm2@latest -g
+
+## Run KNX simulator
+	cd ~/bin/smarthepia/knx/actuasim_iot
+	python3 actuasim.py
+
+## Run KNX REST server (debug mode)
+	cd ~/bin/smarthepia/knx
+	python3 KNX_REST_Server.py
+
+## Run web server (without PM2)
+	cd ~/bin/smarhepia/web
+	npm start
+
+## Run automation
+	cd ~/bin/smarhepia/automation
+	python3 smarthepia.py
