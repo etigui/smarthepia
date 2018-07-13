@@ -13,13 +13,12 @@ recovery adddress: guignard.etienne@gmail.com
 
 ## Ubuntu 18.04 and ssh
 Username: smarthepia  
-pass: ____1234____  
+pass: \_\_1234__  
 
 ## Openweathermap API
 Link: https://home.openweathermap.org/users/sign_in  
 Username: smarthepia  
 Eamil: etienne.guignard@etu.hesge.ch  
-Password: aO8yk1dfn5hA87Y9JdMvHjrlZx5  
 Password: aO8yk1dfn5hA87Y9JdMvHjrlZx5  
 
 ## Metéo Suisse
