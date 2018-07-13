@@ -84,23 +84,23 @@ https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl
 	rm package-lock.json
 	npm install
 
-## Install PM2 (after)
+## Install PM2 (not done yet)
 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
 	
 	sudo npm install pm2@latest -g
 
-## Run KNX simulator
+## Run KNX simulator (new win/term)
 	cd ~/bin/smarthepia/knx/actuasim_iot
 	python3 actuasim.py
 
-## Run KNX REST server (debug mode)
+## Run KNX REST server (debug mode) (new win/term)
 	cd ~/bin/smarthepia/knx
 	python3 KNX_REST_Server.py
 
-## Run web server (without PM2)
+## Run web server (without PM2) (new win/term)
 	cd ~/bin/smarhepia/web
 	npm start
 
-## Run automation
+## Run automation (new win/term)
 	cd ~/bin/smarhepia/automation
 	python3 smarthepia.py
