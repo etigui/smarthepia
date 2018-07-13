@@ -1,9 +1,9 @@
 
 # Update/upgrade
- sudo apt-get update && sudo apt-get upgrade
+ 	sudo apt-get update && sudo apt-get upgrade
 
-# Install ssh
-    sudo apt-get install openssh-server -y
+# Install Openssh server
+ 	sudo apt-get install openssh-server -y
 
 # Gen and install ssh key
 # ssh-keygen -b 4096
