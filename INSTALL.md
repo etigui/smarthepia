@@ -1,68 +1,68 @@
 
-# Update/upgrade
+## Update/upgrade
  	sudo apt-get update && sudo apt-get upgrade
 
-# Install Openssh server
+## Install Openssh server
  	sudo apt-get install openssh-server -y
+	
+## Install python (3.6)
+	sudo apt-get install python3.6
 
-# Gen and install ssh key
-# ssh-keygen -b 4096
-# Enter
-# passphrase: #!smarthepia_pass_ssh_2018!#
-# passphrase: #!smarthepia_pass_ssh_2018!#
+## Install net tool => ifconfig command
+	sudo apt install net-tools -y
 
-
-# Add public key to autorised host (to connect to smarthpia)
-#cat ssh_public_key.ppk >> ~/.ssh/authorized_keys
-# chmod 600 ~/.ssh/authorized_keys
-
-# Creat root smarthepia
-    mkdir ~/bin
-
-# Install net tool => ifconfig commande
-    sudo apt install net-tools -y
-
-# Install KNX simulator and REST server
+## Install KNX simulator and REST server
 	sudo apt-get install python3-setuptools -y
 	sudo apt-get install python3-pip -y
 	sudo apt-get install git -y
 	sudo apt-get install python3-pyqt5 -y
 
-# Clone or copy smarthepia repo (GitHub)
+## Creat smarthepia root folder
+	mkdir ~/bin
+
+## Clone smarthepia repo (GitHub)
 	sudo apt-get install git
+	cd ~/bin/
+	mkdir tmp
+	mkdir smarthepia
+	cd ~/bin/tmp/
 	git clone https://username:password@github.com/raccoonmaster/smarthepia.git
-
-# Install KNX and simulateur lib
-    sudo pip3 install flask
-    sudo pip3 install jsonify
-    sudo pip3 install request
-    sudo pip3 install pymongo
-    
-# Install knxnet and lib
-cd ~/bin/smarthepia/knx/knxnet_iot
-sudo python3 setup.py install
-
-# Lunch KNX simulator
-cd ~/bin/smarthepia/knx/actuasim_iot
-    python3 actuasim.py &
-
-# Lunch and install lib KNX REST server (debug mode)
-    cd ~/bin/smarthepia/knx
-
-    python3 KNX_REST_Server.py
-
-# For smarthepia automation
-    sudo pip3 install psutil
-
-
-# Mongodb python 3.6 lib
+	mv ~/bin/tmp/smarthepia/src/* ~/bin/smarthepia/
+	rm -rf ~/bin/tmp/
+	
+## Mongodb python 3.6 lib
 	sudo pip3 install pymongo==3.7.0
+	
+## Install KNX and simulateur lib
+	sudo pip3 install flask
+	sudo pip3 install jsonify
+	sudo pip3 install request
+    
+## Install knxnet
+	cd ~/bin/smarthepia/knx/knxnet_iot
+	sudo python3 setup.py install
 
-# Install nodjs & npm
+## Lunch KNX simulator
+	cd ~/bin/smarthepia/knx/actuasim_iot
+	python3 actuasim.py
+
+## Lunch KNX REST server (debug mode)
+	cd ~/bin/smarthepia/knx
+	python3 KNX_REST_Server.py
+
+## Install smarthepia automation lib
+	sudo pip3 install psutil
+	sudo pip3 install pysolar
+	sudo pip3 install simple-pid
+	sudo pip3 install python-dateutil
+
+## Install Nodejs & npm
 	sudo apt-get install nodejs -y
 	sudo apt-get install npm -y
 
-# Install Ngnix and config
+## Install Ngnix and config
+https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04
+
 	sudo apt-get install nginx -y
 
 	sudo nano /etc/nginx/sites-available/default
@@ -75,29 +75,24 @@ cd ~/bin/smarthepia/knx/actuasim_iot
         proxy_cache_bypass $http_upgrade;
     }
 
-
 	sudo nginx -t
 	sudo systemctl restart nginx
 
-# Install Mongodb
+## Install Mongodb
+https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04
+
 	sudo apt-get install mongodb -y
 
-# Install githcraken easy manage git repo
-	wget https://release.gitkraken.com/linux/gitkraken-amd64.deb
-	sudo dpkg -i gitkraken-amd64.deb
-	rm -f gitkraken-amd64.deb
-
-
-# Automation package
+## Automation package
 
 	sudo pip3 install pysolar
 	sudo pip3 install simple-pid
 	sudo pip3 install python-dateutil
 
-# Ngnix self-signed cert
- https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-18-04
+## Ngnix self-signed cert
+https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-18-04
 
-# Run at first Smarthepia
+## Run at first Smarthepia
 cd ~/bin/smarhepia/web
 npm install
 npm start
