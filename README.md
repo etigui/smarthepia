@@ -13,4 +13,5 @@
 On a également souhaité que ces deux applications soient le plus facile d’utilisation pour ceux qui seront amenés à l’employer. On va donc porter une attention toute particulière à l’ergonomie et le design de leurs interfaces</p>
 
 
-.
+## Procédure d'installation
+[Lien](/INSTALL.md)
