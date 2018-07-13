@@ -1,6 +1,6 @@
 
 # Update/upgrade
-    sudo apt-get update && sudo apt-get upgrade
+ sudo apt-get update && sudo apt-get upgrade
 
 # Install ssh
     sudo apt-get install openssh-server -y
