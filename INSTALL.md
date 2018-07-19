@@ -20,7 +20,7 @@
 ## Creat *Smarthepia* root folder
 	mkdir ~/bin
 
-## Clone *Smarthepi*a repo (GitHub)
+## Clone *Smarthepia* repo (GitHub)
 	sudo apt-get install git
 	cd ~/bin/
 	mkdir tmp
@@ -33,7 +33,7 @@
 ## Mongodb python 3.6 lib
 	sudo pip3 install pymongo==3.7.0
 	
-## Install KNX and simulateur lib
+## Install KNX and simulator lib
 	sudo pip3 install flask
 	sudo pip3 install jsonify
 	sudo pip3 install request
