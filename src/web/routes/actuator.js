@@ -66,10 +66,9 @@ router.get('/measure', isAuth, function(req, res, next) {
         var dateFrom = req.query.dateFrom;
         var dateTo = req.query.dateTo;
         var room = req.query.room;
-        var devices = req.query.devices;
         let toRemove = {_id: false, __v: false, parent: false,};
         //parent: room, id: devices, "$and" : [{updatetime : {"$gte": new Date(dateFrom)}}, {updatetime : {"$lte": new Date(dateTo)}}]
-        StatAcSchema.find({parent: parseInt(room), id: parseInt(devices), "$and" : [{updatetime : {"$gte": new Date(dateFrom)}}, {updatetime : {"$lte": new Date(dateTo)}}]}, toRemove, function(err, user) {
+        StatAcSchema.find({parent: parseInt(room), "$and" : [{updatetime : {"$gte": new Date(dateFrom)}}, {updatetime : {"$lte": new Date(dateTo)}}]}, toRemove, {sort: {updatetime: 1}}, function(err, user) {
             if (err) {
                 return next(err);
             }

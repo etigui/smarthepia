@@ -1,256 +1,148 @@
-var dom_chart_temp = document.getElementById("graphTemp");
-var dom_chart_hum = document.getElementById("graphHum");
-var dom_chart_motion = document.getElementById("graphMotion");
-var dom_chart_luminance = document.getElementById("graphLuminance");
-var dom_chart_battery = document.getElementById("graphBattery");
 
-var chart_temp = echarts.init(dom_chart_temp);
-var chart_hum = echarts.init(dom_chart_hum);
-var chart_motion = echarts.init(dom_chart_motion);
-var chart_luminance = echarts.init(dom_chart_luminance);
-var chart_battery = echarts.init(dom_chart_battery);
-
-chart_temp.showLoading();
-chart_hum.showLoading();
-chart_motion.showLoading();
-chart_luminance.showLoading();
-chart_battery.showLoading();
-
-option_temp = null;
-option_hum = null;
-option_motion = null;
-option_luminance = null;
-option_battery = null;
-
-function loadGraphTem(dateFrom, dateTo, room, devices){
-
-    $.get('/multisensor/mst', {dateFrom : dateFrom, dateTo : dateTo, room: room, devices: devices}).done( function (data) {
-
-        function process_data(d){
-            var out = []
-            for(var xx in d) {
-
-                var ds = new Date(d[xx].updatetime);
-                let new_val = {name: ds, value: [d[xx].updatetime, d[xx].temperature]};
-                out.push(new_val);
-
-            }
-            return out;
-        }
-
-        chart_temp.setOption(option = {
-            title: {text: 'Temparture', subtext: '', x: 'center'},
-            tooltip: {
-                trigger: 'axis',
-                formatter: function (params) {
-                    params = params[0];
-                    var date = new Date(params.name);
-                    return "Date: " +date.getHours() + ":" + date.getMinutes() +":"+ date.getSeconds() + " " +date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "</br> Temperature: " + params.value[1];
-                },
-                axisPointer: {animation: false}
-            },
-            xAxis: {type: 'time', name : '(Date)', splitLine: {show: false}
-            },
-            yAxis: {type: 'value', name : '(°C)', boundaryGap: [0, '100%'], splitLine: {show: false}
-            },
-            series: [{
-                name: 'hepia',
-                type: 'line',
-                roam: false,
-                selectedMode: false,
-                data: process_data(data.data),
-                breadcrumb: {show: true, textStyle: {fontSize: 100}},
-            }]
-        });
-
-        if (option_temp && typeof option_temp === "object") {
-            chart_temp.setOption(option_temp, true);
-        }
-        chart_temp.hideLoading();
-    });
+// Convert datetime to timestamp
+function toTimestamp(strDate){
+    var datum = Date.parse(strDate);
+    return datum;
 }
-function loadGraphHum(dateFrom, dateTo, room, devices){
 
-    $.get('/multisensor/msh', {dateFrom : dateFrom, dateTo : dateTo, room: room, devices: devices}).done(function (data) {
+// Format series
+function prepare_series(data){
+    var series = [];
+    for (var i = 0, len = data.data.length; i < len; i++) {
 
-        function process_data(d){
-            var out = []
-            for(var xx in d) {
-                var ds = new Date(d[xx].updatetime);
-                let new_val = {name: ds, value: [d[xx].updatetime, d[xx].humidity]};
-                out.push(new_val);
+        var new_serie = {name: data.data[i].name, data: []};
 
+        // First time add cause empty
+        if (series.length === 0){
+            series.push(new_serie);
+        }else{
+            var hasDuplicate = series.map(function(e){return e.name === new_serie.name}).reduce(function(pre, cur) {return pre || cur});
+            if (!hasDuplicate) {
+                series.push(new_serie);
             }
-            return out;
         }
-
-        chart_hum.setOption(option = {
-            title: {text: 'Humidity', subtext: '', x: 'center'},
-            tooltip: {
-                trigger: 'axis',
-                formatter: function (params) {
-                    params = params[0];
-                    var date = new Date(params.name);
-                    return "Date: " +date.getHours() + ":" + date.getMinutes() +":"+ date.getSeconds() + " " +date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "</br> Humidity: " + params.value[1];
-                },
-                axisPointer: {animation: false}
-            },
-            xAxis: {type: 'time', name : '(Date)', splitLine: {show: false}
-            },
-            yAxis: {type: 'value', name : '(%)', boundaryGap: [0, '100%'], splitLine: {show: false}
-            },
-            series: [{
-                name: 'hepia',
-                type: 'line',
-                roam: false,
-                selectedMode: false,
-                data: process_data(data.data),
-                breadcrumb: {show: true, textStyle: {fontSize: 100}},
-            }]
-        });
-
-        if (option_hum && typeof option_hum === "object") {
-            chart_hum.setOption(option_hum, true);
-        }
-        chart_hum.hideLoading();
-    });
+    }
+    return series;
 }
-function loadGraphMotion(dateFrom, dateTo, room, devices){
-    $.get('/multisensor/msm', {dateFrom : dateFrom, dateTo : dateTo, room: room, devices: devices}).done(function (data) {
 
-        function process_data(d){
-            var out = []
-            for(var xx in d) {
+// Format series
+function gen_series(series, data, measure_type){
+    for (var i = 0, len = data.data.length; i < len; i++) {
 
-                var ds = new Date(d[xx].updatetime);
-                let new_val = {name: ds, value: [d[xx].updatetime, d[xx].motion]};
-                out.push(new_val);
+        for (var j = 0; j < series.length; j++) {
+            if (series[j].name === data.data[i].name) {
 
+                var t = measure_type.split(" ")[0].toLowerCase();
+                if(t === "motion"){
+                    series[j].data.push([toTimestamp(data.data[i].updatetime), convert_motion(data.data[i][t])]);
+                }else{
+                    series[j].data.push([toTimestamp(data.data[i].updatetime), data.data[i][t]]);
+                }
             }
-            return out;
         }
-
-        chart_motion.setOption(option = {
-            title: {text: 'Motion', subtext: '', x: 'center'},
-            tooltip: {
-                trigger: 'axis',
-                formatter: function (params) {
-                    params = params[0];
-                    var date = new Date(params.name);
-                    return "Date: " +date.getHours() + ":" + date.getMinutes() +":"+ date.getSeconds() + " " +date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "</br> Motion: " + params.value[1];
-                },
-                axisPointer: {animation: false}
-            },
-            xAxis: {type: 'time', name : '(Date)', splitLine: {show: false}
-            },
-            yAxis: {type: 'value', name : '(-)', boundaryGap: [0, '100%'], splitLine: {show: false}
-            },
-            series: [{
-                name: 'hepia',
-                type: 'line',
-                roam: false,
-                selectedMode: false,
-                data: process_data(data.data),
-                breadcrumb: {show: true, textStyle: {fontSize: 100}},
-            }]
-        });
-
-        if (option_motion && typeof option_motion === "object") {
-            chart_motion.setOption(option_motion, true);
-        }
-        chart_motion.hideLoading();
-    });
+    }
+    return series;
 }
-function loadGraphLum(dateFrom, dateTo, room, devices){
-    $.get('/multisensor/msl', {dateFrom : dateFrom, dateTo : dateTo, room: room, devices: devices}).done(function (data) {
 
-        function process_data(d){
-            var out = []
-            for(var xx in d) {
-
-                var ds = new Date(d[xx].updatetime);
-                let new_val = {name: ds, value: [d[xx].updatetime, d[xx].luminance]};
-                out.push(new_val);
-
-            }
-            return out;
-        }
-
-        chart_luminance.setOption(option = {
-            title: {text: 'Luminance', subtext: '', x: 'center'},
-            tooltip: {
-                trigger: 'axis',
-                formatter: function (params) {
-                    params = params[0];
-                    var date = new Date(params.name);
-                    return "Date: " +date.getHours() + ":" + date.getMinutes() +":"+ date.getSeconds() + " " +date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "</br> Luminance: " + params.value[1];
-                },
-                axisPointer: {animation: false}
-            },
-            xAxis: {type: 'time', name : '(Date)', splitLine: {show: false}
-            },
-            yAxis: {type: 'value', name : '(lum)', boundaryGap: [0, '100%'], splitLine: {show: false}
-            },
-            series: [{
-                name: 'hepia',
-                type: 'line',
-                roam: false,
-                selectedMode: false,
-                data: process_data(data.data),
-                breadcrumb: {show: true, textStyle: {fontSize: 100}},
-            }]
-        });
-
-        if (option_luminance && typeof option_luminance === "object") {
-            chart_luminance.setOption(option_luminance, true);
-        }
-        chart_luminance.hideLoading();
-    });
+// Convert
+// true->1
+// false->0
+function convert_motion(motion){
+    if(motion){
+        return 1;
+    }else{
+        return 0;
+    }
 }
-function loadGraphBat(dateFrom, dateTo, room, devices){
-    $.get('/multisensor/msb', {dateFrom : dateFrom, dateTo : dateTo, room: room, devices: devices}).done(function (data) {
 
-        function process_data(d){
-            var out = []
-            for(var xx in d) {
-
-                var ds = new Date(d[xx].updatetime);
-                let new_val = {name: ds, value: [d[xx].updatetime, d[xx].battery]};
-                out.push(new_val);
-
-            }
-            return out;
-        }
-
-        chart_battery.setOption(option = {
-            title: {text: 'Humidity', subtext: '', x: 'center'},
-            tooltip: {
-                trigger: 'axis',
-                formatter: function (params) {
-                    params = params[0];
-                    var date = new Date(params.name);
-                    return "Date: " +date.getHours() + ":" + date.getMinutes() +":"+ date.getSeconds() + " " +date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + "</br> Battery: " + params.value[1];
-                },
-                axisPointer: {animation: false}
-            },
-            xAxis: {type: 'time', name : '(Date)', splitLine: {show: false}
-            },
-            yAxis: {type: 'value', name : '(%)', boundaryGap: [0, '100%'], splitLine: {show: false}
-            },
-            series: [{
-                name: 'hepia',
-                type: 'line',
-                roam: false,
-                selectedMode: false,
-                data: process_data(data.data),
-                breadcrumb: {show: true, textStyle: {fontSize: 100}},
-            }]
+// Get data from db and load graph
+function genMsGraph(dateFrom, dateTo, room, measure_type){
+    var mt = {"Temperature (°C)":"mst", "Humidity (%)":"msh", "Battery (%)":"msb", "Luminance (lum)":"msl", "Motion":"msm"};
+    if (mt[measure_type]) {
+        $.get('/multisensor/' + mt[measure_type], {dateFrom: dateFrom, dateTo: dateTo, room: room}).done(function (data) {
+            var series = gen_series(prepare_series(data), data, measure_type);
+            loadMsGraph(series, measure_type);
         });
+    }else{
+        toastr.error("Could not load graph data", "error", {closeButton: true});
+    }
+}
 
-        if (option_battery && typeof option_battery === "object") {
-            chart_battery.setOption(option_battery, true);
-        }
-        chart_battery.hideLoading();
+// Load multisensor graph
+function loadMsGraph(series, measure_type){
+
+    // Clear charts
+    clearGraph('#graphMultisensor');
+
+    // Fill charts
+    $('#graphMultisensor').highcharts({
+        title: {
+            text: 'Chart ' + measure_type.split(" ")[0]
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: "%e. %b",
+                month: "%b '%y",
+                year: "%Y"
+            },title: {
+                text: 'Date'
+            },
+        },
+        yAxis: {
+            title: {
+                text: measure_type
+            }
+        },
+        series: series,
     });
 }
 
+// Clear chart
+function clearGraph(charts){
+    var chart = $(charts).highcharts();
+    if(chart) {
+        var seriesLength = chart.series.length;
+        for (var i = seriesLength - 1; i > -1; i--) {
+            chart.series[i].remove();
+        }
+    }
+}
+
+// Get data from db and load graph
+function genAcGraph(dateFrom, dateTo, room){
+    $.get('/actuator/measure', {dateFrom: dateFrom, dateTo: dateTo, room: room}).done(function (data) {
+        var series = gen_series(prepare_series(data), data, "value");
+        loadAcGraph(series);
+    });
+}
+
+// Load multisensor graph
+function loadAcGraph(series){
+
+    // Clear charts
+    clearGraph('#graphActuator');
+
+    // Fill charts
+    $('#graphActuator').highcharts({
+        title: {
+            text: 'Chart actuator position'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+                day: "%e. %b",
+                month: "%b '%y",
+                year: "%Y"
+            },title: {
+                text: 'Date'
+            },
+        },
+        yAxis: {
+            title: {
+                text: "Position"
+            }
+        },
+        series: series,
+    });
+}

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <title>Smarthepia - Statistic</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/vendors.css">
+    <link rel="stylesheet" type="text/css" href="/vendors/css/ui/prism.min.css">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN STACK CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <!-- END STACK CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="/css/core/colors/palette-gradient.css">
+    <!-- END Page Level CSS-->
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <!-- END Custom CSS-->
+
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-datetimepicker.css">
+    <!-- END Custom CSS-->
+
+    <!-- BEGIN toastr -->
+    <link rel="stylesheet" type="text/css" href="/vendors/css/extensions/toastr.css">
+    <!-- END toastr -->
+
+</head>
+<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+<% include ../partials/nav %>
+<% include ../partials/menu %>
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-6 col-12 mb-1">
+                <h3 class="content-header-title">Statistic</h3>
+                <span id="serverTime"></span>
+            </div>
+        </div>
+        <div class="content-body">
+            <!-- advance charts section start -->
+            <section id="advance-charts">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title">Statistic</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+                                    <form id="statSubmit" class="form">
+                                        <div class="row">
+                                            <div class="col-xl-6 col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="">Date time from
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <input id="dateFrom" name="dateFrom" type="text" value="" readonly class="form-control square dtpicker" required>
+                                                </div>
+                                                <div id="" class="form-group">
+                                                    <label for="">Room
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="roomSel" id="roomSel" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select room</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="">Date time to
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <input id="dateTo" name="dateTo" type="text" value="" readonly class="form-control square form_datetime dtpicker" required>
+                                                </div>
+                                                <div id="" class="form-group">
+                                                    <label for="">Device
+                                                        <span class="danger">*</span>
+                                                    </label>
+                                                    <select name="deviceSel" id="deviceSel" class="form-control square" required>
+                                                        <option value="" selected="" disabled="" hidden="">Select device</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-actions right">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-check-square-o"></i> Show
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="cardGraph">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-top-primary">
+                            <div class="card-header">
+                                <h4 class="card-title">Statistic</h4>
+                                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body">
+
+                                    <div id="graphTemp" class="height-400 echart-container"></div>
+                                    <div id="graphHum" class="height-400 echart-container"></div>
+                                    <div id="graphMotion" class="height-400 echart-container"></div>
+                                    <div id="graphLuminance" class="height-400 echart-container"></div>
+                                    <div id="graphBattery" class="height-400 echart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<% include ../partials/footer %>
+
+<!-- BEGIN VENDOR JS-->
+<script src="/vendors/js/vendors.min.js" type="text/javascript"></script>
+<!-- BEGIN VENDOR JS-->
+<!-- BEGIN PAGE VENDOR JS-->
+<script type="/text/javascript" src="vendors/js/ui/prism.min.js"></script>
+<!-- END PAGE VENDOR JS-->
+<!-- BEGIN STACK JS-->
+<script src="/js/core/app-menu.js" type="text/javascript"></script>
+<script src="/js/core/app.js" type="text/javascript"></script>
+<script src="/js/scripts/customizer.js" type="text/javascript"></script>
+<!-- END STACK JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+<!-- END PAGE LEVEL JS-->
+
+<!-- BEGIN libs for echarts -->
+<script type="text/javascript" src="/test/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.4.1/math.min.js"></script>
+<!-- END libs for echarts -->
+
+<!-- BEGIN websocket -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/shared.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/statgraph.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN websocket -->
+<script src="/js/scripts/bootstrap-datetimepicker.min.js"></script>
+<!-- END websocket -->
+
+<!-- BEGIN toastr -->
+<script src="/vendors/js/extensions/toastr.min.js" type="text/javascript"></script>
+<script src="/js/scripts/extensions/toastr.js" type="text/javascript"></script>
+<!-- END toastr -->
+
+<!-- https://www.malot.fr/bootstrap-datetimepicker/demo.php -->
+<script>
+
+    onLoad();
+
+    function onLoad(){
+        $('#cardGraph').hide();
+        loadRooms();
+        $('#deviceSel').attr('disabled', 'disabled');
+    }
+
+    // Set datetime picker
+    $(".dtpicker").datetimepicker({
+        format: 'mm-dd-yyyy hh:ii',
+        autoclose: true,
+        todayBtn: true
+    });
+
+    // Select room and load devices
+    $('#roomSel').change(function(){
+        loadDevices($("#roomSel").val());
+        $('#deviceSel').removeAttr('disabled');
+    });
+
+    // Check parm and load graph
+    $("#statSubmit").submit(function( event ) {
+        event.preventDefault();
+
+        // Get and check date from/to
+        var dateFrom = new Date($("#dateFrom").val());
+        var dateTo = new Date($("#dateTo").val());
+        if (dateFrom > dateTo){
+            toastr.error("Date from must be before date to", "error", {closeButton: true});
+        }else{
+            var room = $("#roomSel").val();
+            var devices = $("#deviceSel").val();
+            loadGraphTem(dateFrom, dateTo, room, devices);
+            loadGraphHum(dateFrom, dateTo, room, devices);
+            loadGraphMotion(dateFrom, dateTo, room, devices);
+            loadGraphLum(dateFrom, dateTo, room, devices);
+            loadGraphBat(dateFrom, dateTo, room, devices);
+            $('#cardGraph').show();
+        }
+    });
+
+    function loadDevices(id){
+        $.ajax({
+            url: "/multisensor/devices",
+            type: "get",
+            dataType: "json",
+            data: {id: id},
+            success: function (response) {
+                console.log(response);
+
+                var selDevices = $('#deviceSel');
+                selDevices.empty().append('<option value="" selected disabled hidden>Select device</option>');
+                $.each(response.data, function (i, item) {
+                    selDevices.append($('<option>', {
+                        value: item.address,
+                        text : item.name
+                    }));
+                });
+            }
+        });
+    }
+
+    function loadRooms(){
+        $.ajax({
+            url: "/multisensor/room",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+
+                var selRoom = $('#roomSel');
+                selRoom.empty().append('<option value="" selected disabled hidden>Select room</option>');
+                $.each(response.data, function (i, item) {
+                    selRoom.append($('<option>', {
+                        value: item.id,
+                        text : item.name
+                    }));
+                });
+            }
+        });
+    }
+
+    // BEGIN Server time section /////////////////////////////////////////////////////////////
+    // Local and servers time
+    var timeLocal = new Date();
+    var timeServer = new Date("<%= dateTime %>");
+
+    //C alculate the difference (returns milliseconds)
+    var millDiff = timeLocal - timeServer;
+
+    // Init the clock on loading of page
+    window.onload = function () {
+        //set the interval so clock ticks
+        var timeClock = setInterval("timeTick()", 10);
+    };
+    // END Server time section /////////////////////////////////////////////////////////////
+
+    <% if((typeof permission !== 'undefined') && permission > 0) {%>
+    // BEGIN alarm section ////////////////////////////////////////////////////////////////
+
+    function loadBadge(){
+        $.ajax({
+            url: "/alarm/badge",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                var span = $('#alarmBadge');
+                updateBadge(span, response.atype, response.count);
+            }
+        });
+    }
+
+
+    var socket = io.connect();
+    socket.on('connect', function () {
+        console.log('Socket connected');
+    });
+
+    socket.on('welcome',function(data){
+        console.log("Receive welcome");
+        loadBadge();
+    });
+
+    // Manager, admin receive notif when graph change
+    socket.on('alarmNotify',function(data){
+        console.log("Receive alarmNotify");
+        loadBadge();
+    });
+    // END alarm section /////////////////////////////////////////////////////////////////
+    <%}%>
+</script>
+
+</body>
+</html>

@@ -93,7 +93,8 @@ class Sensor(object):
                     already_exist = self.__client.sh.stats.find({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}, {'reftime': ref_time}]}).count()
                     print(already_exist)
                     if already_exist == 0:
-                        self.__client.sh.stats.insert({'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
+                        # TODO add 'name': device['name']
+                        self.__client.sh.stats.insert({'name': device['name'], 'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
                 else:
                     self.measure_log.log_error(f"In function (add_db_measures), the multisensor measure could not be given")
 
