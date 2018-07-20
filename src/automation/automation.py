@@ -111,7 +111,7 @@ class Automation(object):
 
             # Get last weather measures and forecast
             self.weather_forecast = weather.get_forecast(self.__client, self.automation_log, False)
-            self.weather_current = weather.get_current_weather(self.__client, self.automation_log, True)
+            self.weather_current = weather.get_current_weather(self.__client, self.automation_log, False)
             if self.weather_forecast and self.weather_current:
 
                 # Check if we have room to process automation
@@ -125,13 +125,12 @@ class Automation(object):
                         self.process_blinds(room)
 
                         # If True => we can process the room
-                        #multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)
-                        #if multisensor_status:
+                        multisensor_status, temp, measures = multisensor.check_multisensor(self.__client, self.automation_log, self.automation_rule, room.sensors)
+                        if multisensor_status:
 
                             # Process valve rule
-                            #self.process_valves(room, temp)
+                            self.process_valves(room, temp)
                             #self.process_valves(room, 26)
-                    i = 0
             else:
                 self.automation_log.log_error(f"In function (process_automation), could not get weather or forecast")
 
@@ -233,7 +232,7 @@ class Automation(object):
         # If it's night time => close blind
         # Else => process day time rule by room
         night_time_status = weather.check_night_time(room.rule['dt'], room.rule['nt'])
-        if not night_time_status:
+        if night_time_status:
 
             # Close only one time the blind
             # At day time the value will be setted to False again
@@ -250,7 +249,7 @@ class Automation(object):
                 if const.DEBUG: print(f"Night time dismissed")
         else:
             if const.DEBUG: print(f"Day time")
-            night_dismissed = False
+            self.night_dismissed = False
 
             # Check if all multisensor dont return false
             # True => Someone in the room or (multisensor error/not up to date)

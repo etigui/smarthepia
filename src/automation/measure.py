@@ -93,8 +93,10 @@ class Sensor(object):
                     already_exist = self.__client.sh.stats.find({'$and': [{'address': str(measures['sensor'])}, {'dependency': device['dependency']}, {'reftime': ref_time}]}).count()
                     print(already_exist)
                     if already_exist == 0:
-                        # TODO add 'name': device['name']
-                        self.__client.sh.stats.insert({'name': device['name'], 'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': datetime.datetime.now(), 'reftime': ref_time})
+
+                        # Add local date time otherwise mongodb add +02:00
+                        date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+                        self.__client.sh.stats.insert({'name': device['name'], 'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': date_now, 'reftime': ref_time})
                 else:
                     self.measure_log.log_error(f"In function (add_db_measures), the multisensor measure could not be given")
 
@@ -131,7 +133,7 @@ class Sensor(object):
     def get_db_devices(self):
         devices = []
         query = {'$and': [{'subtype': 'Multisensor'}, {'dependency': {'$ne': '-'}}, {'enable': {'$eq': True}}, {'itemStyle.color': {'$eq': const.device_color_no_error}}]}
-        avoid = {'name': False, 'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
+        avoid = {'itemStyle': False,'id': False, '_id': False, '__v': False, 'value': False, 'comment': False, 'group': False, 'rules': False, 'orientation': False, 'action': False, 'type': False, 'enable': False}
         datas = self.__client.sh.devices.find(query, avoid)
 
         # Get all devices

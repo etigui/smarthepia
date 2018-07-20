@@ -128,31 +128,14 @@ def check_night_time(rule_day_time, rule_night_time):
     midnight = datetime.datetime.strptime(f"00:00:00", '%H:%M:%S').time()
     after_midnight = datetime.datetime.strptime(f"00:00:01", '%H:%M:%S').time()
 
-    # Sleep 1 sec if 00:00:00
+    # Add one sec if 00:00:00
     if time_now == midnight:
-        time.sleep(1)
+        time_now = after_midnight
 
-    # We are in new day
-    nt = True
-    if time_now >= after_midnight:
-        if time_now > day_time:
-            nt = False
-        else:
-            nt = True
-
-    elif time_now <= before_midnight:
-        if time_now > night_time:
-            nt = True
-        else:
-            nt = False
-
-    return nt
-
-    # If we are during the night period
-    # Between => eg: 23:00:00 => 08:00:00
-    #if night_time <= time_now <= day_time:
-    #    return True
-    #return False
+    if time_now >= night_time or time_now <= day_time:
+        return True
+    else:
+        return False
 
 
 # Get last current weather measure from db
