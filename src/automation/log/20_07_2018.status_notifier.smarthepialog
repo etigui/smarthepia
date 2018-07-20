@@ -1,0 +1,6 @@
+[14:51:00 20-07-2018];info;Subprocess status_notifier started
+[14:51:56 20-07-2018];error;In function (run), could not connect to the db
+[14:53:25 20-07-2018];info;Subprocess status_notifier started
+[14:54:20 20-07-2018];error;In function (run), could not connect to the db
+[14:56:41 20-07-2018];info;Subprocess status_notifier started
+[14:57:36 20-07-2018];error;In function (run), could not connect to the db

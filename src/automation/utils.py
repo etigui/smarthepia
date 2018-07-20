@@ -1,21 +1,17 @@
 import requests
-requests.packages.urllib3.disable_warnings()
 from platform import system as system_name
 from subprocess import call as system_call
 import os
 import subprocess
 
+# Local import
+import const
+
 # Client SMTP
 import smtplib
 import email.message
 
-# Local import
-import const
-
-# HTML mail
-from html import database
-from html import web_server
-
+requests.packages.urllib3.disable_warnings()
 
 # Split email to get only username
 def email_splitter(email):
@@ -52,16 +48,16 @@ def get_http(url):
         r.raise_for_status()
         return True
     except requests.exceptions.HTTPError as errh:
-        if const.DEBUG: print("Http Error:", errh)
+        #if const.DEBUG: print("Http Error:", errh)
         return False
     except requests.exceptions.ConnectionError as errc:
-        if const.DEBUG: print("Error Connecting:", errc)
+        #if const.DEBUG: print("Error Connecting:", errc)
         return False
     except requests.exceptions.Timeout as errt:
-        if const.DEBUG: print("Timeout Error:", errt)
+        #if const.DEBUG: print("Timeout Error:", errt)
         return False
     except requests.exceptions.RequestException as err:
-        if const.DEBUG: print("OOps: Something Else", err)
+        #if const.DEBUG: print("OOps: Something Else", err)
         return False
 
 
@@ -126,6 +122,7 @@ def send_mail(email_from, email_to, password, message, subject):
 
 # Send mail if the database is down
 def send_database_alert(email_from, admin_email, password, subject):
+    from html import database
 
     # Send email to all admin
     for email_to in admin_email:
@@ -135,6 +132,7 @@ def send_database_alert(email_from, admin_email, password, subject):
 
 # Send mail if the web server is down
 def send_web_server_alert(email_from, email_to, password, subject):
+    from html import web_server
     message = web_server.email_html_web_server(email_splitter(email_to))
     send_mail(email_from, email_to, password, message, subject)
 

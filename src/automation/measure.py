@@ -1,6 +1,7 @@
 import time
 import datetime
 import os
+from dateutil.tz import gettz
 
 # Mongodb driver
 import pymongo
@@ -65,7 +66,7 @@ class Sensor(object):
     # Connect to the database
     def db_connect(self):
         try:
-            client = pymongo.MongoClient(const.db_host, const.db_port, serverSelectionTimeoutMS=1)
+            client = pymongo.MongoClient(const.db_host, const.db_port)
             client.server_info()
             if client is not None:
                 return True, client

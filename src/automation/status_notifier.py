@@ -4,6 +4,7 @@ import const
 import os
 import time
 from platform import system as system_name
+from dateutil.tz import gettz
 import psutil
 
 # MongoDB driver
@@ -86,7 +87,7 @@ class Status(object):
     # Connect to the database
     def db_connect(self):
         try:
-            client = pymongo.MongoClient(const.db_host, const.db_port, serverSelectionTimeoutMS=1)
+            client = pymongo.MongoClient(const.db_host, const.db_port)
             client.server_info()
             if client is not None:
                 return True, client

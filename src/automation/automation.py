@@ -87,8 +87,7 @@ class Automation(object):
         try:
             #, serverSelectionTimeoutMS=10, connectTimeoutMS=20000
             client = pymongo.MongoClient(const.db_host, const.db_port)
-            info = client.server_info()
-            #client.admin.command('ismaster')
+            client.server_info()
             if client is not None:
                 return True, client
             else:
