@@ -96,8 +96,14 @@ class Sensor(object):
                     if already_exist == 0:
 
                         # Add local date time otherwise mongodb add +02:00
-                        date_now = datetime.datetime.now(gettz('Europe/Berlin'))
-                        self.__client.sh.stats.insert({'name': device['name'], 'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': date_now, 'reftime': ref_time})
+                        #date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+                        #self.__client.sh.stats.insert({'name': device['name'], 'address': device['address'], 'dependency': device['dependency'], 'parent': device['parent'], 'battery': measures['battery'], 'temperature': measures['temperature'], 'humidity': measures['humidity'], 'luminance': measures['luminance'], 'motion': measures['motion'], 'updatetime': date_now, 'reftime': ref_time})
+                        self.__client.sh.stats.insert(
+                            {'name': device['name'], 'address': device['address'], 'dependency': device['dependency'],
+                             'parent': device['parent'], 'battery': measures['battery'],
+                             'temperature': measures['temperature'], 'humidity': measures['humidity'],
+                             'luminance': measures['luminance'], 'motion': measures['motion'],
+                             'updatetime': datetime.datetime.now(), 'reftime': ref_time})
                 else:
                     self.measure_log.log_error(f"In function (add_db_measures), the multisensor measure could not be given")
 

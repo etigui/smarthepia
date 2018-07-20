@@ -38,7 +38,7 @@ class Automation(object):
     def run(self):
 
         # For first start tempo
-        #time.sleep(const.st_start)
+        time.sleep(const.st_start)
 
         # Check if log are well init
         if self.log_init():

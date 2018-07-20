@@ -8,7 +8,8 @@ import utils
 # Save valve setted value
 def save_stat_actuator(actuator, db, value):
     # Add local date time otherwise mongodb add +02:00
-    date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+    #date_now = datetime.datetime.now(gettz('Europe/Berlin'))
+    #db.sh.statsacs.insert({'value': value, 'address': actuator['address'], 'dependency': actuator['dependency'], 'parent': actuator['parent'], 'id': actuator['id'], 'updatetime': date_now, 'type': actuator['type'], 'subtype': actuator['subtype'], 'name': actuator['name']})
     db.sh.statsacs.insert({'value': value, 'address': actuator['address'], 'dependency': actuator['dependency'], 'parent': actuator['parent'], 'id': actuator['id'], 'updatetime': datetime.datetime.now(), 'type': actuator['type'], 'subtype': actuator['subtype'], 'name': actuator['name']})
 
 

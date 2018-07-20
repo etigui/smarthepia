@@ -4,9 +4,13 @@ var auth = require('../controllers/auth');
 var dateFormat = require('dateformat');
 var Devices = require('../models/devices');
 var validation = require('../controllers/validation');
+var passport = require('../controllers/passport'); // add after
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
+
+// Middleware
+router.use(passport.session());
 
 // GET /location
 router.get('/', isAuth, function(req, res, next) {

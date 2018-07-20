@@ -5,9 +5,13 @@ var validation = require('../controllers/validation');
 var User = require('../models/user');
 var dateFormat = require('dateformat');
 var bcrypt = require('bcrypt');
+var passport = require('../controllers/passport'); // add after
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
+
+// Middleware
+router.use(passport.session());
 
 // GET /profile
 router.get('/', isAuth, function(req, res, next) {

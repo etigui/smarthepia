@@ -49,7 +49,7 @@ def check_motion_all_multisensors_in_room(db, sensors):
 
     # Get all multisensor and get dependency name and address
     # to check if motion is recorded
-    motion = False
+    motion = []
     for sensor in sensors:
         motion_status = check_multisensor_motion(db, sensor['dependency'], sensor['address'])
 
@@ -57,9 +57,19 @@ def check_motion_all_multisensors_in_room(db, sensors):
         # 0 => Nobody in the room
         # 1 => Someone on the room
         # -1 => Multisensor error or date not up to date
-        if motion_status == 1 or motion_status == -1:
-            motion = True
-    return motion
+        if motion_status == 1:
+            motion.append(1)
+        elif motion_status == -1:
+            motion.append(-1)
+        else:
+            motion.append(0)
+
+    if 1 in motion:
+        return True
+    elif 0 in motion:
+        return False
+    else:
+        return True
 
 
 # Get last 4 motion measure to check if no one is in the room

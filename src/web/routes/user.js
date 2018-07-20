@@ -12,7 +12,7 @@ var config = require('../configs/config');
 var isAuth = require('../controllers/isAuth');
 
 // Middleware
-router.use(passport.initialize());
+//router.use(passport.initialize());
 router.use(passport.session());
 
 // GET /user

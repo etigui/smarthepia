@@ -5,14 +5,18 @@ var Dependency = require('../models/dependency');
 var auth = require('../controllers/auth');
 var validation = require('../controllers/validation');
 var Devices = require('../models/devices');
+var passport = require('../controllers/passport'); // add after
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
 
+// Middleware
+router.use(passport.session());
+
 // GET /dependency
 router.get('/', isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getUser())){
-        return res.render('pages/dependency', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "dependency" });
+        return res.render('pages/dependency', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "dependency" });
     }else{
         return res.redirect('/');
     }

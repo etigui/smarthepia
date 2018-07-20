@@ -5,9 +5,13 @@ var validation = require('../controllers/validation');
 var dateFormat = require('dateformat');
 var Rule = require('../models/rule');
 var Devices = require('../models/devices');
+var passport = require('../controllers/passport'); // add after
 
 // Module variables
 var isAuth = require('../controllers/isAuth');
+
+// Middleware
+router.use(passport.session());
 
 // GET /rule
 router.get('/', isAuth, function(req, res, next) {
@@ -45,33 +49,45 @@ router.post('/create', isAuth, function(req, res, next) {
             // Check if night time is after day time
             if (dayTimeStart < nightTimeStart) {
 
-                // Check if the rule rule name already exist
-                validation.checkUniqueRule(ruleName, function (matchRule) {
-                    if (matchRule) {
-                        var newRule = {
-                            name: ruleName,
-                            active: active,
-                            dt: dayTimeStart,
-                            nt: nightTimeStart,
-                            temp: temps,
-                            humidity: humidity,
-                            vdnr: dayNightValve,
-                            bdr: dayRulesBlind,
-                            bnr: nightRulesBlind
-                        };
-                        Rule.create(newRule, function (err, rule) {
-                            if (err) {
-                                return next(err);
-                            }
-                            res.type('json');
-                            return res.json({status: "success", message: "Rule " + ruleName + " has been successfully created"});
+                if (dayTimeStart === "00:00" || nightTimeStart === "00:00") {
 
-                        });
-                    } else {
-                        res.type('json');
-                        return res.json({status: "error", message: "Rule name must be unique"});
-                    }
-                });
+                    // Check if the rule rule name already exist
+                    validation.checkUniqueRule(ruleName, function (matchRule) {
+                        if (matchRule) {
+                            var newRule = {
+                                name: ruleName,
+                                active: active,
+                                dt: dayTimeStart,
+                                nt: nightTimeStart,
+                                temp: temps,
+                                humidity: humidity,
+                                vdnr: dayNightValve,
+                                bdr: dayRulesBlind,
+                                bnr: nightRulesBlind
+                            };
+                            Rule.create(newRule, function (err, rule) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                res.type('json');
+                                return res.json({
+                                    status: "success",
+                                    message: "Rule " + ruleName + " has been successfully created"
+                                });
+
+                            });
+                        } else {
+                            res.type('json');
+                            return res.json({status: "error", message: "Rule name must be unique"});
+                        }
+                    });
+                }else {
+                    res.type('json');
+                    return res.json({
+                        status: "error",
+                        message: "Midnight cannot be an hour to start day or night time"
+                    });
+                }
             }else{
                 res.type('json');
                 return res.json({status: "error", message: "The night start time must be before (day meaning), the day time start"});
