@@ -119,7 +119,7 @@ class Automation(object):
 
                     # Walk through all room
                     for room in self.rooms:
-                        pass
+
                         # Process blind rule
                         self.process_blinds(room)
 

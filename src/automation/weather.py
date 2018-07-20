@@ -51,7 +51,7 @@ def is_raining_drizzle(weather_id: str):
 
         # Check if rain or drizzle
         # Check the first char eg: condition_rain_id => 500 -> 599 => 5
-        if str(weather_id)[0] == condition_thunderstorm_id[0] or str(weather_id)[0] == condition_drizzle_id[0] or str(weather_id)[0] == condition_thunderstorm_id[0]:
+        if str(weather_id)[0] == condition_rain_id[0] or str(weather_id)[0] == condition_drizzle_id[0] or str(weather_id)[0] == condition_thunderstorm_id[0]:
             return True
     return False
 
