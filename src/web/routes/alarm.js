@@ -17,7 +17,7 @@ router.use(passport.session());
 // GET /alarm
 router.get('/',  isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
-        return res.render('pages/alarm', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "alarm"});
+        return res.render('pages/alarm', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "alarm"});
     }else{
         return res.redirect('/');
     }

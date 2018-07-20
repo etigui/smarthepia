@@ -17,7 +17,7 @@ router.use(passport.session());
 // GET /automation
 router.get('/',  isAuth, function(req, res, next) {
     if(auth.checkPermission(req, auth.getManager())){
-        return res.render('pages/automation', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm-dd-yyyy"),permission: req.session.permissions, page: "automation"});
+        return res.render('pages/automation', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "automation"});
     }else{
         return res.redirect('/');
     }
