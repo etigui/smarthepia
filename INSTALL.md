@@ -71,7 +71,10 @@ https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubunt
 
 	sudo apt-get install mongodb -y
 	sudo systemctl start mongod
-
+Verify Mongodb status:
+	sudo systemctl status mongodb
+Change Mongodb conf:
+	sudo systemctl status mongodb
 ## Ngnix self-signed cert
 https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-18-04
 
