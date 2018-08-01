@@ -17,7 +17,7 @@ router.use(passport.session());
 
 // GET /test
 router.get('/',  isAuth, function(req, res, next) {
-    if(auth.checkPermission(req, auth.getManager())){
+    if(auth.checkPermission(req, auth.getUser())){
         return res.render('pages/multisensor', { lastname: req.session.lastname, dateTime: dateFormat(new Date(), "HH:MM:ss mm/dd/yyyy"),permission: req.session.permissions, page: "multisensor"});
     }else{
         return res.redirect('/');
