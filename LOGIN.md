@@ -25,3 +25,19 @@ Password: aO8yk1dfn5hA87Y9JdMvHjrlZx5
 Link: https://gate.meteoswiss.ch/idaweb/login.do?language=fr  
 Username: etienne.guignard@etu.hesge.ch  
 Pass: 190FB846AE  
+
+## *Smarthepia* test login
+
+### User
+First name: fnusertest   
+Lastname: lnusertest   
+Username/email: usertest@gmail.com   
+Permission: User   
+password: n5wVQ7sBBs2X_HpFzQ7yrMG#xLTC3   
+
+### Admin
+First name: fnadmintest   
+Lastname: lnadmintest   
+Username/email: admintest@gmail.com   
+Permission: admin   
+password: zAWVlHv6#czRVyQ9_iqeAuAYQLciK   
