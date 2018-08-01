@@ -70,6 +70,7 @@ https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-
 https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04
 
 	sudo apt-get install mongodb -y
+	sudo systemctl start mongod
 
 ## Ngnix self-signed cert
 https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-18-04
