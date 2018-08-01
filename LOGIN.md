@@ -38,6 +38,6 @@ password: n5wVQ7sBBs2X_HpFzQ7yrMG#xLTC3
 ### Admin
 First name: fnadmintest   
 Lastname: lnadmintest   
-Username/email: admintest@gmail.com   
+Username/email: eric.jenny@hesge.ch   
 Permission: admin   
 password: zAWVlHv6#czRVyQ9_iqeAuAYQLciK   
