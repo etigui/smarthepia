@@ -399,7 +399,6 @@
     });
 
     $("#userTable tbody").on("click","#deleteUserSubmit", function () {
-        alert("Delete");
         var row = $(this).parents('tr').find("td");
         var userMail = row[2].innerText
         if(userMail){
