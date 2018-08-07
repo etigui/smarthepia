@@ -17,6 +17,8 @@ import datastruct
 import conf
 import logger
 
+requests.packages.urllib3.disable_warnings()
+
 
 class Alarm(object):
 
@@ -480,55 +482,74 @@ class Alarm(object):
             self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm,"severity": const.severity_high, "message": "Wrong actuator type"}))
             return
 
-        # Get KNX device value
-        route = const.route_knx_device_value_read(ip, port, id, type)
-        r = requests.get(route)
+        try:
 
-        # Error are not displayed as json.... => Node not ready or wrong sensor node type !
-        # So we must check the header to convert to json or not
-        header = r.headers['content-type']
-        if 'text/html' in header:
+            # Get KNX device value
+            route = const.route_knx_device_value_read(ip, port, id, type)
+            r = requests.get(route)
 
-            # If return != 200 means that server internal error (5xx)
-            if r.status_code != 200:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Id malformed"}))
-        else:
-            result = r.json()
-            if result.get('result'):
+            # Error are not displayed as json.... => Node not ready or wrong sensor node type !
+            # So we must check the header to convert to json or not
+            header = r.headers['content-type']
+            if 'text/html' in header:
 
-                # Check if the sensor id is wrong
-                if result['result'] == const.wrong_radiator_id or result['result'] == const.wrong_store_id:
-                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong actuator id"}))
+                # If return != 200 means that server internal error (5xx)
+                if r.status_code != 200:
+                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Id malformed"}))
+            else:
+                result = r.json()
+                if result.get('result'):
+
+                    # Check if the sensor id is wrong
+                    if result['result'] == const.wrong_radiator_id or result['result'] == const.wrong_store_id:
+                        self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong actuator id"}))
+        except requests.exceptions.HTTPError as errh:
+            pass
+        except requests.exceptions.ConnectionError as errc:
+            pass
+        except requests.exceptions.Timeout as errt:
+            pass
+        except requests.exceptions.RequestException as err:
+            pass
 
     # Check device with the label type => sensor
     def check_network_sensor(self, device, ip, port):
 
-        # Get all measure for a sensor
-        r = requests.get(const.route_zwave_device_all_measures(ip, port, device['address']))
-        header = r.headers['content-type']
+        try:
 
-        # Error are not displayed as json.... => Node not ready or wrong sensor node type !
-        # So we must check the header to convert to json or not
-        if 'text/html' in header:
-            r.encoding = "utf-8"
-            if r.status_code == 200 and r.text == const.wrong_not_available_device:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Sensor not exists"}))
+            # Get all measure for a sensor
+            r = requests.get(const.route_zwave_device_all_measures(ip, port, device['address']))
+            header = r.headers['content-type']
+
+            # Error are not displayed as json.... => Node not ready or wrong sensor node type !
+            # So we must check the header to convert to json or not
+            if 'text/html' in header:
+                r.encoding = "utf-8"
+                if r.status_code == 200 and r.text == const.wrong_not_available_device:
+                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Sensor not exists"}))
+                else:
+                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong id"}))
             else:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong id"}))
-        else:
 
-            # We sub 2h to now
-            # if last updateTime < (now -2h) => means that the sensor is not giving the right value
-            result = r.json()
-            diff = datetime.datetime.now() + datetime.timedelta(hours=(-2))
-            device_update_time = datetime.datetime.fromtimestamp(int(result['updateTime']))
-            if device_update_time < diff:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Measures are not up-to-date"}))
-            elif int(result['battery']) < const.battery_min_warning:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.warning_alarm, "severity": const.severity_medium, "message": "Battery less than 10%"}))
-            elif int(result['battery']) < const.battery_min_info:
-                self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.info_alarm, "severity": const.severity_medium, "message": "Battery less than 20%"}))
-
+                # We sub 2h to now
+                # if last updateTime < (now -2h) => means that the sensor is not giving the right value
+                result = r.json()
+                diff = datetime.datetime.now() + datetime.timedelta(hours=(-2))
+                device_update_time = datetime.datetime.fromtimestamp(int(result['updateTime']))
+                if device_update_time < diff:
+                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Measures are not up-to-date"}))
+                elif int(result['battery']) < const.battery_min_warning:
+                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.warning_alarm, "severity": const.severity_medium, "message": "Battery less than 10%"}))
+                elif int(result['battery']) < const.battery_min_info:
+                    self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_sensor, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.info_alarm, "severity": const.severity_medium, "message": "Battery less than 20%"}))
+        except requests.exceptions.HTTPError as errh:
+            pass
+        except requests.exceptions.ConnectionError as errc:
+            pass
+        except requests.exceptions.Timeout as errt:
+            pass
+        except requests.exceptions.RequestException as err:
+            pass
 
     # Empty alarm device array
     # Set green color to the graph
