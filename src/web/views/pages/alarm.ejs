@@ -606,7 +606,12 @@
                 var ids = []
                 var table = $('#alarmTable').DataTable();
                 $.each(table.rows('.selected').data(), function( key, value ) {
-                    ids.push(value)
+
+                    // Remove detail => cause url-size-too-long
+                    if("detail" in value) {
+                        delete value["detail"];
+                        ids.push(value);
+                    }
                 });
                 var datas = {email: emailUser, many: many, id: ids}
                 send_alarm("/alarm/assign", "get", datas, "#modalAssignAlarm")
@@ -656,7 +661,12 @@
                 var ids = []
                 var table = $('#alarmTable').DataTable();
                 $.each(table.rows('.selected').data(), function( key, value ) {
-                    ids.push(value)
+
+                    // Remove detail => cause url-size-too-long
+                    if("detail" in value) {
+                        delete value["detail"];
+                        ids.push(value);
+                    }
                 });
                 var datas = {many: many, id: ids, comment: comment}
                 send_alarm("/alarm/ack", "get", datas, "#modalAckAlarm");
