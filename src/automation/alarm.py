@@ -503,14 +503,16 @@ class Alarm(object):
                     # Check if the sensor id is wrong
                     if result['result'] == const.wrong_radiator_id or result['result'] == const.wrong_store_id:
                         self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Wrong actuator id"}))
+                    elif result['status'] == 1:
+                        self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Request error"}))
         except requests.exceptions.HTTPError as errh:
-            pass
+            self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Http error"}))
         except requests.exceptions.ConnectionError as errc:
-            pass
+            self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Connection error"}))
         except requests.exceptions.Timeout as errt:
-            pass
+            self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Connection timeout"}))
         except requests.exceptions.RequestException as err:
-            pass
+            self.alarm.append(datastruct.StructAlarm(const.alarm_type_device, const.alarm_sub_type_actuator, device['name'], device['subtype'], {"id": device['id'], "parent": device['parent'], "type": const.error_alarm, "severity": const.severity_high, "message": "Request error"}))
 
     # Check device with the label type => sensor
     def check_network_sensor(self, device, ip, port):
